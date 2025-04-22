@@ -5,7 +5,7 @@ class PointWithTrace(Scene):
     def construct(self):
         # this path does not actually display as of 0.19.0
         # see https://github.com/ManimCommunity/manim/issues/4218
-        path = VMobject(stroke_color=YELLOW, stroke_width=2)
+        path = VMobject()
         dot = Dot()
 
         path.set_points_as_corners([dot.get_center(), dot.get_center()])
