@@ -3,11 +3,9 @@ from manim import *
 from data import OCC_options_ADV  # noqa
 
 
-# TODO: also want "title card" style animation at the beginning
-
 class BlackScholesIntroduction(Scene):
     def play_BSM_title(self):
-        title = Text("1973: Black-Scholes-Merton Formula", font_size=48, t2c={"1973": YELLOW})
+        title = Text("1973: Black-Scholes-Merton Formula for Pricing Options", font_size=36, t2c={"1973": YELLOW})
         title.to_edge(UP, buff=0.5)
 
         self.play(Write(title))
@@ -79,11 +77,11 @@ class BlackScholesIntroduction(Scene):
             Create(graph, run_time=2.0)
         )
         self.wait(2.0)
-        return graph
+        return axes, graph, x_label, y_label
 
     def construct(self):
         BSM_title = self.play_BSM_title()
         self.play_author_images()
         nobel_image = self.play_nobel_prize()
-        OCC_graph = self.play_OCC_volume_plot(BSM_title, nobel_image)
-        self.play(FadeOut(BSM_title), FadeOut(nobel_image), FadeOut(OCC_graph))
+        OCC_components = self.play_OCC_volume_plot(BSM_title, nobel_image)
+        self.play(*[FadeOut(x) for x in (BSM_title, nobel_image) + OCC_components])
