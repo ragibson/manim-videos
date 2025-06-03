@@ -74,7 +74,7 @@ class BlackScholesIntroduction(Scene):
             Write(y_label),  # using this as kind of a slide header
             nobel_image.animate.shift(LEFT * 1.0),
             Create(axes, run_time=2.0), Write(x_label),
-            Create(graph, run_time=2.0)
+            Create(graph, run_time=2.0, rate_func=linear)
         )
         self.wait(2.0)
         return axes, graph, x_label, y_label
