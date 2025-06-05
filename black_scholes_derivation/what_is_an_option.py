@@ -5,6 +5,7 @@ def simple_stock_simulation(start_price=100, sigma=0.15, dt=1 / 252, T=1, seed=0
     np.random.seed(seed)
     n_steps = int(T / dt)
     increments = np.random.normal(0, sigma * np.sqrt(dt), n_steps)
+    increments[0] = 0.0  # want t0 exactly at the start price
     prices = start_price * np.exp(np.cumsum(increments))  # ignoring drift
     return prices
 
@@ -29,7 +30,7 @@ class WhatIsAStock(Scene):
         # breaking off one of the shares of the company, moving to left
         share_block = company_blocks[0].copy()
         share_block.set_color(RED)
-        share_label = Text("Share", font_size=24)
+        share_label = Text("Share (Stock)", font_size=24)
 
         self.play(
             share_block.animate.move_to(LEFT * 4).align_to(company_blocks, DOWN),
@@ -52,9 +53,8 @@ class WhatIsAStock(Scene):
         ])
         self.play(FadeIn(company_product))
         self.wait(1.0)
-        self.play(FadeIn(customer), FadeIn(customer_label))
+        self.play(FadeIn(customer), FadeIn(customer_label), FadeIn(customer_money))
         self.wait(1.0)
-        self.play(FadeIn(customer_money))
 
         # exchanging money <-> product
         self.play(
@@ -84,26 +84,47 @@ class WhatIsAStock(Scene):
                   FadeOut(profit_money))
 
 
-class WhatIsAnOption(Scene):
+class StockSimulation(Scene):
     def construct(self):
-        simulated_path = simple_stock_simulation(start_price=100, sigma=0.15, seed=0)
-
         ax = Axes(
-            x_range=[0, 1.1, 5],
+            x_range=[0, 1.1, 0.25],
             y_range=[80, 125, 10],
             x_length=8,
             y_length=6,
-            axis_config={"include_numbers": True}
+            axis_config={"include_numbers": True},
+            tips=False
         ).to_edge(DOWN)
 
         labels = ax.get_axis_labels(x_label=r"\text{Time (years)}", y_label=r"\text{Stock Price}")
+        self.play(Create(ax[1]), Write(labels[1]))
+
+        # first, let's draw a flat line to describe what a price even means -- buyers and sellers basically "agree" on
+        # a price, people are willing to buy at ~$100 and others are willing to sell at that price
+        flat_price = ax.plot_line_graph(
+            x_values=np.linspace(0, 0.1, 10),
+            y_values=100 * np.ones(10),
+            line_color=BLUE,
+            add_vertex_dots=False
+        )
+        self.play(FadeIn(flat_price, run_time=0.5, rate_func=linear))
+        self.wait(1.0)
+        for _ in range(2):
+            self.play(flat_price.animate.shift(UP * 0.1), run_time=0.25, rate_func=rush_from)
+            self.play(flat_price.animate.shift(DOWN * 0.1), run_time=0.25, rate_func=rush_from)
+        self.wait(1.0)
+        for _ in range(2):
+            self.play(flat_price.animate.shift(DOWN * 0.1), run_time=0.25, rate_func=rush_from)
+            self.play(flat_price.animate.shift(UP * 0.1), run_time=0.25, rate_func=rush_from)
+        self.play(FadeOut(flat_price))
+
+        # now include time dimension and simulation
+        simulated_path = simple_stock_simulation(start_price=100, sigma=0.15, seed=10)
         graph = ax.plot_line_graph(
             x_values=np.linspace(0, 1, len(simulated_path)),
             y_values=simulated_path,
             line_color=BLUE,
             add_vertex_dots=False
         )
-
-        self.play(Create(ax), Write(labels))
-        self.play(Create(graph, run_time=5.0, rate_func=linear))
-        self.wait(1)
+        self.play(Create(ax[0]), Write(labels[0]))
+        self.play(Create(graph, run_time=2.0, rate_func=linear))
+        self.wait(1.0)
