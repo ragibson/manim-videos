@@ -92,8 +92,19 @@ class StockSimulation(Scene):
             x_length=8,
             y_length=6,
             axis_config={"include_numbers": True},
+            y_axis_config={"include_numbers": False},
             tips=False
         ).to_edge(DOWN)
+
+        # HACK: manually adding in dollar signs on the left of the y-axis label numbers
+        # for some reason, this seems impossible or incredibly difficult with NumberLine, label_constructor, etc.
+        y_labels = VGroup()
+        for tick in range(*ax.y_range):
+            # 36 TeX font size and 0.25 buff is almost perfect to match existing labels when include_numbers is True
+            label = MathTex(fr"\${int(tick)}", font_size=36)
+            label.next_to(ax.c2p(0, tick), LEFT, buff=0.25)
+            y_labels.add(label)
+        ax.y_axis.add(y_labels)
 
         labels = ax.get_axis_labels(x_label=r"\text{Time (years)}", y_label=r"\text{Stock Price}")
         self.play(Create(ax[1]), Write(labels[1]))
