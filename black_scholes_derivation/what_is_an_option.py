@@ -139,3 +139,65 @@ class StockSimulation(Scene):
         self.play(Create(ax[0]), Write(labels[0]))
         self.play(Create(graph, run_time=2.0, rate_func=linear))
         self.wait(1.0)
+
+
+class WrittenOptionDescription(Scene):
+    def construct(self):
+        lines = [
+            f'An option<sup>*</sup> is a contract that:',
+            f'• gives you the <span foreground="{YELLOW}">option</span> to buy a stock',
+            f'• at a <span foreground="{GREEN}">predetermined price</span> (the "strike price")',
+            f'• on a <span foreground="{BLUE}">specific date</span> in the future.'
+        ]
+
+        option_definition_lines = (VGroup(*[MarkupText(line, font_size=24) for line in lines])
+                                   .arrange(DOWN, aligned_edge=LEFT, buff=0.25)
+                                   .to_edge(UP))
+        for line in option_definition_lines:
+            self.play(Write(line))
+            self.wait(0.5)
+
+        footnote = Tex(r"$^*$Technically, this type is called a ``European call option''.", font_size=16)
+        footnote.to_edge(DOWN, buff=0.5).align_to(option_definition_lines, LEFT)
+        self.play(FadeIn(footnote))
+        self.wait(2.0)
+
+        # briefly mention standard financial-ese here on the right but not the obligation
+        alternate_line2 = MarkupText(
+            f'• gives you the <span foreground="{YELLOW}">right, but not the obligation,</span> to buy a stock',
+            font_size=24
+        )
+        alternate_line2.move_to(option_definition_lines[1].get_left(), aligned_edge=LEFT)
+        original_line2 = option_definition_lines[1].copy()
+        self.play(Transform(option_definition_lines[1], alternate_line2))
+        self.wait(2.0)
+        self.play(Transform(option_definition_lines[1], original_line2))
+        self.wait(2.0)
+
+        # example to make things a bit more concrete
+        example_text = MarkupText(
+            f'Example: You buy an <span foreground="{YELLOW}">option to buy 1 share</span> of Apple\'s stock '
+            f'<span foreground="{GREEN}">for $300</span> in '
+            f'<span foreground="{BLUE}">3 months</span>.',
+            font_size=24
+        ).next_to(option_definition_lines.get_bottom(), DOWN, buff=1.0)
+        self.play(FadeOut(footnote), Write(example_text))
+
+        # two cases to show off asymmetry
+        lines = [
+            f'• If Apple\'s stock increases to $325, you make $25!',
+            f'• If Apple\'s stock falls to $275, you make nothing.',
+        ]
+        example_lines = (VGroup(*[MarkupText(line, font_size=24) for line in lines])
+                         .arrange(DOWN, aligned_edge=LEFT, buff=0.25)
+                         .next_to(example_text, DOWN, buff=0.25)
+                         .align_to(option_definition_lines, LEFT))
+        for line in example_lines:
+            self.play(Write(line))
+            self.wait(1.0)
+        self.wait(1.0)
+
+        # moving the example up to make room for a payoff diagram
+        example_block = VGroup(example_text, example_lines)
+        self.play(FadeOut(option_definition_lines), example_block.animate.to_edge(UP))
+        self.wait(1.0)
