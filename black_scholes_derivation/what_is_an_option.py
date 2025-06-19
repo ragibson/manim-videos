@@ -142,7 +142,7 @@ class StockSimulation(Scene):
 
 
 class WrittenOptionDescription(Scene):
-    def construct(self):
+    def written_description(self):
         lines = [
             f'An option<sup>*</sup> is a contract that:',
             f'• gives you the <span foreground="{YELLOW}">option</span> to buy a stock',
@@ -174,6 +174,9 @@ class WrittenOptionDescription(Scene):
         self.play(Transform(option_definition_lines[1], original_line2))
         self.wait(2.0)
 
+        return option_definition_lines, footnote
+
+    def written_example(self, option_definition_lines, footnote):
         # example to make things a bit more concrete
         example_text = MarkupText(
             f'Example: You buy an <span foreground="{YELLOW}">option to buy 1 share</span> of Apple\'s stock '
@@ -197,7 +200,13 @@ class WrittenOptionDescription(Scene):
             self.wait(1.0)
         self.wait(1.0)
 
-        # moving the example up to make room for a payoff diagram
         example_block = VGroup(example_text, example_lines)
+        return example_block
+
+    def construct(self):
+        option_definition_lines, footnote = self.written_description()
+        example_block = self.written_example(option_definition_lines, footnote)
+
+        # moving the example up to make room for a payoff diagram
         self.play(FadeOut(option_definition_lines), example_block.animate.to_edge(UP))
         self.wait(1.0)
