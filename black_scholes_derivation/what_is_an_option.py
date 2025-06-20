@@ -147,7 +147,7 @@ class WhatIsAnOption(Scene):
                                    .arrange(DOWN, aligned_edge=LEFT, buff=0.25)
                                    .to_edge(UP))
         footnote = Tex(r"$^*$Technically, this specific type is called a ``European call option''.",
-                       font_size=20)
+                       font_size=22)
         footnote.to_edge(DOWN, buff=0.25).align_to(option_definition_lines, LEFT)
 
         self.play(Write(option_definition_lines[0]), FadeIn(footnote))
@@ -203,44 +203,59 @@ class WhatIsAnOption(Scene):
             x_length=6,
             y_length=4.5,
             axis_config={"include_numbers": False, "font_size": 24, "numbers_to_exclude": [300]},
+            x_axis_config={"label_direction": UP},
             y_axis_config={"include_numbers": False},
             tips=False
         ).shift(DOWN * 1.0)
 
         # HACK: manually force tick labels to include dollar signs
-        ax.x_axis.add_labels({i: fr"\${i:.0f}" for i in range(*ax.x_range) if i != 300})
-        ax.y_axis.add_labels({i: fr"\${i:.0f}" if i >= 0 else fr"-\${abs(i):.0f}"
-                              for i in range(*ax.y_range) if i != 0})
+        x_line = ax.x_axis.add_labels({i: fr"\${i:.0f}" for i in range(*ax.x_range) if i != 300})
+        y_line = ax.y_axis.add_labels({i: fr"\${i:.0f}" if i >= 0 else fr"-\${abs(i):.0f}"
+                                       for i in range(*ax.y_range) if i != 0})
+        x_line.labels.set_stroke(BLACK, width=4.0, background=True).set_z_index(2)  # for visibility on overlap
+        y_line.labels.set_stroke(BLACK, width=4.0, background=True).set_z_index(2)
 
         # plot the actual payoff, ignoring premium for now
         # need to do this before shifting the axis
         left_side = ax.plot_line_graph(
             x_values=np.linspace(300, 250, 10),
             y_values=0 * np.ones(10),
-            line_color=BLUE, add_vertex_dots=False
+            line_color=BLUE, add_vertex_dots=False, z_index=1
         )
         right_side = ax.plot_line_graph(
             x_values=np.linspace(300, 350, 10),
             y_values=np.linspace(0, 50, 10),
-            line_color=BLUE, add_vertex_dots=False
+            line_color=BLUE, add_vertex_dots=False, z_index=1
         )
 
+        # brace and text for the premium, again needed before the axis shift
+        option_premium_brace = (BraceBetweenPoints(ax.c2p(265, -9 / 0.5), ax.c2p(265, -0.5),
+                                                   direction=LEFT, z_index=3)
+                                .scale(0.5).move_to(ax.c2p(265, -0.5), aligned_edge=UP))
+        option_premium_text = Tex(r"\text{Option Price (``Premium'')}", font_size=30)
+        option_premium_text.next_to(option_premium_brace, LEFT, buff=0.1)
+
         # (manually) centering y-axis at $300 instead of $0
+        # probably there was a better way to do this
         ax.get_axes()[1].shift(ax.c2p(300, 0) - ax.c2p(250, 0))
-        labels = ax.get_axis_labels(x_label=Tex(r"\text{Final Stock Price}", font_size=24),
-                                    y_label=Tex(r"\text{Option Profit}", font_size=24))
+        labels = ax.get_axis_labels(x_label=Tex(r"\text{Final Stock Price}", font_size=30),
+                                    y_label=Tex(r"\text{Option Profit}", font_size=30))
 
         self.play(Create(ax), Create(labels))
         self.wait(5.0)
 
         # emphasizing the part of the example corresponding to the left vs. right side while plotting
-        example_left, example_right = example_block[1]
-        self.play(Create(left_side, rate_func=linear, run_time=2.0), Indicate(example_left))
+        example_profit, example_worthless = example_block[1]
+        self.play(Create(right_side, rate_func=linear, run_time=2.0), Indicate(example_profit))
         self.wait(1.0)
-        self.play(Create(right_side, rate_func=linear, run_time=2.0), Indicate(example_right))
+        self.play(Create(left_side, rate_func=linear, run_time=2.0), Indicate(example_worthless))
         self.wait(1.0)
 
-        # TODO: premium
+        # adding in the premium
+        self.play(left_side.animate.shift(ax.c2p(0, -10) - ax.c2p(0, 0)),
+                  right_side.animate.shift(ax.c2p(0, -10) - ax.c2p(0, 0)))
+        self.play(FadeIn(option_premium_brace), FadeIn(option_premium_text))
+        self.wait(3.0)
 
     def construct(self):
         option_definition_lines, footnote = self.written_description()
