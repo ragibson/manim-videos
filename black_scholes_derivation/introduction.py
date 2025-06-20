@@ -154,8 +154,8 @@ class LookingAhead(Scene):
 
         # bullet points of topics
         topics = VGroup(  # probably could've used BulletedList here
-            Text("• What is an option?", font_size=32, t2c={"option": YELLOW}),
-            Text("• How would you assign a fair price for this?", font_size=32, t2c={"fair price": YELLOW}),
+            Text("• What is a stock? What is an option?", font_size=32, t2c={"option": YELLOW}),
+            Text("• How would you assign a fair price for an option?", font_size=32, t2c={"fair price": YELLOW}),
             Text("• Making things fully analytical", font_size=32, t2c={"analytical": YELLOW})
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.75)
         topics.to_edge(LEFT, buff=1.0)
