@@ -96,16 +96,8 @@ class StockSimulation(Scene):
             tips=False
         ).to_edge(DOWN)
 
-        # TODO: "improve" this as in the payoff diagram
         # HACK: manually adding in dollar signs on the left of the y-axis label numbers
-        # for some reason, this seems impossible or incredibly difficult with NumberLine, label_constructor, etc.
-        y_labels = VGroup()
-        for tick in range(*ax.y_range):
-            # 36 TeX font size and 0.25 buff is almost perfect to match existing labels when include_numbers is True
-            label = MathTex(fr"\${int(tick)}", font_size=36)
-            label.next_to(ax.c2p(0, tick), LEFT, buff=0.25)
-            y_labels.add(label)
-        ax.y_axis.add(y_labels)
+        ax.y_axis.add_labels({i: fr"\${i:.0f}" for i in range(*ax.y_range)})
 
         labels = ax.get_axis_labels(x_label=r"\text{Time (years)}", y_label=r"\text{Stock Price}")
         self.play(Create(ax[1]), Write(labels[1]))
@@ -142,7 +134,7 @@ class StockSimulation(Scene):
         self.wait(1.0)
 
 
-class WrittenOptionDescription(Scene):
+class WhatIsAnOption(Scene):
     def written_description(self):
         lines = [
             f'An option<sup>*</sup> is a contract that:',
@@ -207,7 +199,7 @@ class WrittenOptionDescription(Scene):
 
     def payoff_diagram(self, example_block):
         ax = Axes(
-            x_range=[250, 350, 10], y_range=[-20, 50, 10],
+            x_range=[250, 351, 10], y_range=[-20, 51, 10],
             x_length=6,
             y_length=4.5,
             axis_config={"include_numbers": False, "font_size": 24, "numbers_to_exclude": [300]},
@@ -216,9 +208,9 @@ class WrittenOptionDescription(Scene):
         ).shift(DOWN * 1.0)
 
         # HACK: manually force tick labels to include dollar signs
-        ax.x_axis.add_labels({i: fr"\${i:.0f}" for i in range(250, 351, 10) if i != 300})
+        ax.x_axis.add_labels({i: fr"\${i:.0f}" for i in range(*ax.x_range) if i != 300})
         ax.y_axis.add_labels({i: fr"\${i:.0f}" if i >= 0 else fr"-\${abs(i):.0f}"
-                              for i in range(-20, 51, 10) if i != 0})
+                              for i in range(*ax.y_range) if i != 0})
 
         # plot the actual payoff, ignoring premium for now
         # need to do this before shifting the axis
@@ -235,8 +227,8 @@ class WrittenOptionDescription(Scene):
 
         # (manually) centering y-axis at $300 instead of $0
         ax.get_axes()[1].shift(ax.c2p(300, 0) - ax.c2p(250, 0))
-        labels = ax.get_axis_labels(x_label=Tex(r"\text{Final Stock Price}", font_size=22),
-                                    y_label=Tex(r"\text{Option Profit}", font_size=22))
+        labels = ax.get_axis_labels(x_label=Tex(r"\text{Final Stock Price}", font_size=24),
+                                    y_label=Tex(r"\text{Option Profit}", font_size=24))
 
         self.play(Create(ax), Create(labels))
         self.wait(5.0)
