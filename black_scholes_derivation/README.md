@@ -1,7 +1,7 @@
 # black_scholes_derivation
 
 TODO: also want "title card" style animation at the beginning
-TODO: check for font size consistency?
+TODO: create frozen requirements.txt for final package versions
 
 The sequence of scenes here is:
 
