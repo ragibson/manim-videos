@@ -18,7 +18,7 @@ class WhatIsAStock(Scene):
             for i in range(3) for j in range(4)
         ])
         company_blocks.move_to(ORIGIN)
-        company_label = Text("Company", font_size=24).next_to(company_blocks, DOWN, buff=0.3)
+        company_label = Text("Company", font_size=36).next_to(company_blocks, DOWN, buff=0.3)
 
         # company's product shown above the company
         company_product = Triangle(radius=0.3, color=ORANGE, fill_opacity=0.7)
@@ -30,7 +30,7 @@ class WhatIsAStock(Scene):
         # breaking off one of the shares of the company, moving to left
         share_block = company_blocks[0].copy()
         share_block.set_color(RED)
-        share_label = Text("Share (Stock)", font_size=24)
+        share_label = Text("Share (Stock)", font_size=36)
 
         self.play(
             share_block.animate.move_to(LEFT * 4).align_to(company_blocks, DOWN),
@@ -44,11 +44,11 @@ class WhatIsAStock(Scene):
         customer = Circle(radius=0.5, color=GREEN, fill_opacity=0.7)
         customer.shift(RIGHT * 4)
         customer.align_to(company_blocks, DOWN)
-        customer_label = Text("Customer", font_size=24).next_to(customer, DOWN, buff=0.3)
+        customer_label = Text("Customer", font_size=36).next_to(customer, DOWN, buff=0.3)
         customer_label.align_to(company_label, DOWN)
 
         customer_money = VGroup([
-            Text("$", font_size=24, color=YELLOW).move_to(customer.get_center() + RIGHT * (i - 1) * 0.2)
+            Text("$", font_size=32, color=YELLOW).move_to(customer.get_center() + RIGHT * (i - 1) * 0.2)
             for i in range(3)
         ])
         self.play(FadeIn(company_product))
@@ -64,7 +64,7 @@ class WhatIsAStock(Scene):
         self.wait(1.0)
 
         # moving a tiny amount of the profit to the share on the left
-        profit_money = Text("$", font_size=20, color=YELLOW)
+        profit_money = Text("$", font_size=28, color=YELLOW)
         profit_money.move_to(customer_money[0].get_center())
         self.play(
             Transform(customer_money[0], profit_money),
@@ -137,29 +137,30 @@ class StockSimulation(Scene):
 class WhatIsAnOption(Scene):
     def written_description(self):
         lines = [
-            f'An option<sup>*</sup> is a contract that:',
+            f'An option is a contract that:',
             f'• gives you the <span foreground="{YELLOW}">option</span> to buy a stock',
             f'• at a <span foreground="{GREEN}">predetermined price</span> (the "strike price")',
-            f'• on a <span foreground="{BLUE}">specific date</span> in the future.'
+            f'• on a <span foreground="{BLUE}">specific date</span> in the future.<sup>*</sup>'
         ]
 
-        option_definition_lines = (VGroup(*[MarkupText(line, font_size=24) for line in lines])
+        option_definition_lines = (VGroup(*[MarkupText(line, font_size=36) for line in lines])
                                    .arrange(DOWN, aligned_edge=LEFT, buff=0.25)
                                    .to_edge(UP))
         footnote = Tex(r"$^*$Technically, this specific type is called a ``European call option''.",
-                       font_size=22)
+                       font_size=24)
         footnote.to_edge(DOWN, buff=0.25).align_to(option_definition_lines, LEFT)
 
-        self.play(Write(option_definition_lines[0]), FadeIn(footnote))
-        for line in option_definition_lines[1:]:
+        for line in option_definition_lines[:-1]:
             self.wait(0.5)
             self.play(Write(line))
+        self.play(Write(option_definition_lines[-1]))
+        self.play(FadeIn(footnote))
         self.wait(2.0)
 
         # briefly mention standard financial-ese here on the right but not the obligation
         alternate_line2 = MarkupText(
             f'• gives you the <span foreground="{YELLOW}">right, but not the obligation,</span> to buy a stock',
-            font_size=24
+            font_size=34
         )
         alternate_line2.move_to(option_definition_lines[1].get_left(), aligned_edge=LEFT)
         original_line2 = option_definition_lines[1].copy()
@@ -172,80 +173,85 @@ class WhatIsAnOption(Scene):
 
     def written_example(self, option_definition_lines, footnote):
         # example to make things a bit more concrete
-        example_text = MarkupText(
-            f'Example: You buy an <span foreground="{YELLOW}">option to buy 1 share</span> of Apple\'s stock '
+        example_text = (MarkupText("Example: ", font_size=32)
+                        .next_to(option_definition_lines.get_bottom(), DOWN, buff=1.0)
+                        .to_edge(LEFT, buff=0.5))
+        example_body = MarkupText(
+            f'You buy an <span foreground="{YELLOW}">option to buy 1 share</span> of Apple\'s stock\n'
             f'<span foreground="{GREEN}">for $300</span> in '
             f'<span foreground="{BLUE}">3 months</span>.',
-            font_size=24
-        ).next_to(option_definition_lines.get_bottom(), DOWN, buff=1.0)
-        self.play(FadeOut(footnote), Write(example_text))
+            font_size=32
+        ).next_to(example_text, RIGHT, buff=0.25).align_to(example_text, UP)
+        self.play(Write(example_text), run_time=0.25)
+        self.play(FadeOut(footnote), Write(example_body))
 
         # two cases to show off asymmetry
         lines = [
             f'• If Apple\'s stock increases to $325, you make $25!',
             f'• If Apple\'s stock falls to $275, you make nothing.',
         ]
-        example_lines = (VGroup(*[MarkupText(line, font_size=24) for line in lines])
+        example_lines = (VGroup(*[MarkupText(line, font_size=32) for line in lines])
                          .arrange(DOWN, aligned_edge=LEFT, buff=0.25)
-                         .next_to(example_text, DOWN, buff=0.25)
+                         .next_to(example_body, DOWN, buff=0.25)
                          .align_to(option_definition_lines, LEFT))
         for line in example_lines:
             self.play(Write(line))
             self.wait(1.0)
         self.wait(1.0)
 
-        example_block = VGroup(example_text, example_lines)
+        example_block = VGroup(example_text, example_body, example_lines)
         return example_block
 
     def payoff_diagram(self, example_block):
         ax = Axes(
-            x_range=[250, 351, 10], y_range=[-20, 51, 10],
+            x_range=[260, 340.1, 10], y_range=[-20, 40.1, 10],
             x_length=6,
-            y_length=4.5,
-            axis_config={"include_numbers": False, "font_size": 24, "numbers_to_exclude": [300]},
+            y_length=4.25,
+            axis_config={"include_numbers": False, "font_size": 28, "numbers_to_exclude": [300]},
             x_axis_config={"label_direction": UP},
             y_axis_config={"include_numbers": False},
             tips=False
-        ).shift(DOWN * 1.0)
+        ).to_edge(DOWN, buff=0.25)
 
         # HACK: manually force tick labels to include dollar signs
-        x_line = ax.x_axis.add_labels({i: fr"\${i:.0f}" for i in range(*ax.x_range) if i != 300})
+        x_line = ax.x_axis.add_labels({i: fr"\${i:.0f}" for i in np.arange(*ax.x_range) if i != 300})
         y_line = ax.y_axis.add_labels({i: fr"\${i:.0f}" if i >= 0 else fr"-\${abs(i):.0f}"
-                                       for i in range(*ax.y_range) if i != 0})
+                                       for i in np.arange(*ax.y_range) if i != 0})
         x_line.labels.set_stroke(BLACK, width=4.0, background=True).set_z_index(2)  # for visibility on overlap
         y_line.labels.set_stroke(BLACK, width=4.0, background=True).set_z_index(2)
 
         # plot the actual payoff, ignoring premium for now
         # need to do this before shifting the axis
         left_side = ax.plot_line_graph(
-            x_values=np.linspace(300, 250, 10),
+            x_values=np.linspace(300, 260, 10),
             y_values=0 * np.ones(10),
             line_color=BLUE, add_vertex_dots=False, z_index=1
         )
         right_side = ax.plot_line_graph(
-            x_values=np.linspace(300, 350, 10),
-            y_values=np.linspace(0, 50, 10),
+            x_values=np.linspace(300, 340, 10),
+            y_values=np.linspace(0, 40, 10),
             line_color=BLUE, add_vertex_dots=False, z_index=1
         )
 
         # brace and text for the premium, again needed before the axis shift
-        option_premium_brace = (BraceBetweenPoints(ax.c2p(265, -9 / 0.5), ax.c2p(265, -0.5),
+        option_premium_brace = (BraceBetweenPoints(ax.c2p(275, -9 / 0.5), ax.c2p(275, -0.5),
                                                    direction=LEFT, z_index=3)
-                                .scale(0.5).move_to(ax.c2p(265, -0.5), aligned_edge=UP))
-        option_premium_text = Tex(r"\text{Option Price (``Premium'')}", font_size=30)
+                                .scale(0.5).move_to(ax.c2p(275, -0.5), aligned_edge=UP))
+        option_premium_text = Tex(r"\text{Option Price (``Premium'')}", font_size=36)
         option_premium_text.next_to(option_premium_brace, LEFT, buff=0.1)
 
         # (manually) centering y-axis at $300 instead of $0
         # probably there was a better way to do this
-        ax.get_axes()[1].shift(ax.c2p(300, 0) - ax.c2p(250, 0))
-        labels = ax.get_axis_labels(x_label=Tex(r"\text{Final Stock Price}", font_size=30),
-                                    y_label=Tex(r"\text{Option Profit}", font_size=30))
+        ax.get_axes()[1].shift(ax.c2p(300, 0) - ax.c2p(ax.x_range[0], 0))
+        labels = ax.get_axis_labels(x_label=Tex(r"\text{Final Stock Price}", font_size=36, z_index=4),
+                                    y_label=Tex(r"\text{Option Profit}", font_size=36, z_index=4))
+        labels.shift(DOWN * 0.25)
 
         self.play(Create(ax), Create(labels))
         self.wait(5.0)
 
         # emphasizing the part of the example corresponding to the left vs. right side while plotting
-        example_profit, example_worthless = example_block[1]
+        example_profit, example_worthless = example_block[-1]
         self.play(Create(right_side, rate_func=linear, run_time=2.0), Indicate(example_profit))
         self.wait(1.0)
         self.play(Create(left_side, rate_func=linear, run_time=2.0), Indicate(example_worthless))
