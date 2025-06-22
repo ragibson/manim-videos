@@ -1,6 +1,6 @@
 from manim import *
 
-from data import OCC_options_ADV  # noqa
+from shared_data_and_functions import OCC_options_ADV  # noqa
 
 
 class BlackScholesIntroduction(Scene):

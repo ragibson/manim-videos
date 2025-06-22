@@ -1,13 +1,6 @@
 from manim import *
 
-
-def simple_stock_simulation(start_price=100, sigma=0.15, dt=1 / 252, T=1, seed=0):
-    np.random.seed(seed)
-    n_steps = int(T / dt)
-    increments = np.random.normal(0, sigma * np.sqrt(dt), n_steps)
-    increments[0] = 0.0  # want t0 exactly at the start price
-    prices = start_price * np.exp(np.cumsum(increments))  # ignoring drift
-    return prices
+from shared_data_and_functions import simple_stock_simulation
 
 
 class WhatIsAStock(Scene):
@@ -87,8 +80,8 @@ class WhatIsAStock(Scene):
 class StockSimulation(Scene):
     def construct(self):
         ax = Axes(
-            x_range=[0, 1.1, 0.25],
-            y_range=[80, 125, 10],
+            x_range=[0, 1.01, 0.25],
+            y_range=[80, 120.1, 10],
             x_length=8,
             y_length=6,
             axis_config={"include_numbers": True},

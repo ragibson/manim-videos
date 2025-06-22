@@ -1,3 +1,5 @@
+import numpy as np
+
 # just hardcoding this data here, as of May 10, 2025
 # from https://www.theocc.com/market-data/market-data-reports/volume-and-open-interest/historical-volume-statistics
 OCC_options_ADV = {1973: 6470, 1974: 22462, 1975: 71553, 1976: 127960, 1977: 157291, 1978: 227107, 1979: 254011,
@@ -9,3 +11,12 @@ OCC_options_ADV = {1973: 6470, 1974: 22462, 1975: 71553, 1976: 127960, 1977: 157
                    2012: 15888378, 2013: 16314586, 2014: 16926067, 2015: 16443005, 2016: 16123905, 2017: 16691422,
                    2018: 20466938, 2019: 19440621, 2020: 29513935, 2021: 39167335, 2022: 41117424, 2023: 44207806,
                    2024: 48508840, 2025: 58971333}
+
+
+def simple_stock_simulation(start_price=100, sigma=0.15, dt=1 / 252, T=1, seed=0):
+    np.random.seed(seed)
+    n_steps = int(T / dt)
+    increments = np.random.normal(0, sigma * np.sqrt(dt), n_steps)
+    increments[0] = 0.0  # want t0 exactly at the start price
+    prices = start_price * np.exp(np.cumsum(increments))  # ignoring drift
+    return prices
