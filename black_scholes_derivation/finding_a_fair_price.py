@@ -3,7 +3,7 @@ from manim import *
 from shared_data_and_functions import simple_stock_simulation
 
 
-class FindingAFairPrice(Scene):
+class GuessingTheFuture(Scene):
     def construct(self):
         future_quote = MarkupText(f'"An option is ... '
                                   f'on a specific date <span foreground="{BLUE}">in the future</span>."',
@@ -28,7 +28,7 @@ class FindingAFairPrice(Scene):
         # HACK: manually adding in dollar signs on the left of the y-axis label numbers
         ax.y_axis.add_labels({i: fr"\${i:.0f}" for i in np.arange(*ax.y_range)})
         ax.x_axis.add_labels({0.5: "Today"})
-        ax.get_axis_labels(x_label=r"\text{Time}", y_label=r"\text{Stock Price}")
+        labels = ax.get_axis_labels(x_label=r"\text{Time}", y_label=r"\text{Stock Price}")
 
         # plot first just up to "today" (internally, t=0.5)
         simulated_path = simple_stock_simulation(start_price=300, sigma=0.15, seed=10, T=0.5)
@@ -38,7 +38,7 @@ class FindingAFairPrice(Scene):
             line_color=BLUE,
             add_vertex_dots=False
         )
-        self.play(Create(ax))
+        self.play(Create(ax), Write(labels), run_time=2.0)
         self.play(Create(graph, rate_func=linear, run_time=2.0))
         self.wait(1.0)
 
@@ -55,10 +55,19 @@ class FindingAFairPrice(Scene):
             ax.plot_line_graph(
                 x_values=np.linspace(0.5, 1.0, len(brownian_rvs[idx])),
                 y_values=brownian_rvs[idx],
-                line_color=[GREEN, YELLOW, RED][idx],
+                line_color=[GREEN, GOLD, RED][idx],
                 add_vertex_dots=False
             ) for idx in range(len(brownian_rvs))
         ]
         for g in possible_futures_graphs:
             self.play(Create(g, rate_func=linear, run_time=2.0))
+            self.wait(1.0)
         self.wait(1.0)
+
+        simulate_text = (Text("Simulate!", font_size=36, color=YELLOW)
+                         .move_to(ax.get_center() + UP * 2.0 + RIGHT * 2.0))
+        self.play(Write(simulate_text))
+        self.wait(1.0)
+
+        self.play(*[FadeOut(x)
+                    for x in [ax, labels, graph, future_quote, how_to_text, simulate_text] + possible_futures_graphs])
