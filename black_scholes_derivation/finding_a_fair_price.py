@@ -17,7 +17,7 @@ class GuessingTheFuture(Scene):
 
         # add in stock price graph
         ax = Axes(
-            x_range=[0, 1.1, 0.25],
+            x_range=[0, 1.01, 0.25],
             y_range=[225, 375.1, 25],
             x_length=8,
             y_length=4,
@@ -38,7 +38,9 @@ class GuessingTheFuture(Scene):
             line_color=BLUE,
             add_vertex_dots=False
         )
+        strike_line = DashedLine(ax.c2p(0.0, 300), ax.c2p(1.0, 300))
         self.play(Create(ax), Write(labels), run_time=2.0)
+        self.play(Create(strike_line))
         self.play(Create(graph, rate_func=linear, run_time=2.0))
         self.wait(1.0)
 
@@ -69,5 +71,82 @@ class GuessingTheFuture(Scene):
         self.play(Write(simulate_text))
         self.wait(1.0)
 
-        self.play(*[FadeOut(x)
-                    for x in [ax, labels, graph, future_quote, how_to_text, simulate_text] + possible_futures_graphs])
+        self.play(*[FadeOut(x) for x in [ax, labels, graph, future_quote, how_to_text, simulate_text, strike_line]
+                    + possible_futures_graphs])
+
+
+class DemonstrateSimulation(Scene):
+    _current_seed = 12347
+    simulation_paths = []
+    simulation_graphs = []
+    histogram_counts = [0.0] * 11
+
+    def generate_next_path(self, ax):
+        T = 0.25
+        simulated_path = simple_stock_simulation(start_price=300, sigma=0.15, T=T, seed=self._current_seed)
+        self._current_seed += 1
+
+        graph = ax.plot_line_graph(
+            x_values=np.linspace(0, T, len(simulated_path)),
+            y_values=simulated_path,
+            line_color=BLUE,
+            add_vertex_dots=False
+        )
+        self.simulation_paths.append(simulated_path)
+        self.simulation_graphs.append(graph)
+
+        bin_idx = max(0, int((simulated_path[-1] - 300) // 5))
+        bin_idx = min(len(self.histogram_counts) - 1, bin_idx)
+        self.histogram_counts[bin_idx] += 1
+
+    def construct(self):
+        # left: simulated stock prices
+        ax = Axes(
+            x_range=[0, 0.251, 0.05],
+            y_range=[250, 350.1, 25],
+            x_length=4,
+            y_length=4,
+            x_axis_config={"include_numbers": True},
+            axis_config={"include_numbers": False},
+            tips=False
+        ).to_edge(LEFT, buff=1.0)
+
+        # HACK: manually adding in dollar signs on the left of the y-axis label numbers
+        ax.y_axis.add_labels({i: Tex(fr"\${i:.0f}", font_size=30) for i in np.arange(*ax.y_range)})
+        labels = ax.get_axis_labels(x_label=Tex(r"\text{Time (years)}", font_size=30),
+                                    y_label=Tex(r"\text{Stock Price}", font_size=30))
+
+        strike_line = DashedLine(ax.c2p(0.0, 300), ax.c2p(0.25, 300))
+        self.play(Create(ax), Write(labels), run_time=2.0)
+        self.play(Create(strike_line, rate_func=linear))
+        self.wait(1.0)
+
+        self.generate_next_path(ax)
+        self.play(Create(self.simulation_graphs[-1], rate_func=linear), run_time=2.0)
+
+        # right: histogram of option profit
+        bars = BarChart(
+            values=[0.0] * len(self.histogram_counts),
+            bar_names=[fr"\${5 * i}" if i % 2 == 0 else "" for i in range(len(self.histogram_counts))],
+            y_range=[0, 1.01, 0.25],
+            bar_colors=[BLUE],
+            x_length=4,
+            y_length=4,
+            x_axis_config={"font_size": 30}
+        ).to_edge(RIGHT, buff=1.0)
+        bar_labels = bars.get_axis_labels(x_label=Tex(r"\text{Option Profit}", font_size=30),
+                                          y_label=Tex(r"\text{Frequency}", font_size=30))
+
+        self.play(Create(bars), Write(bar_labels), run_time=2.0)
+        self.wait(1.0)
+
+        self.play(bars.animate.change_bar_values([x / sum(self.histogram_counts) for x in self.histogram_counts]))
+        self.wait(1.0)
+
+        # add new paths, faster and faster
+        for run_time in [0.25 * i ** 2 for i in np.linspace(1.0, 0, 25)]:
+            # dim prior path, generate new path, update histogram
+            self.play(self.simulation_graphs[-1].animate.set_stroke(opacity=0.1), run_time=run_time)
+            self.generate_next_path(ax)
+            self.play(Create(self.simulation_graphs[-1], rate_func=linear), run_time=run_time)
+            self.play(bars.animate.change_bar_values([x / sum(self.histogram_counts) for x in self.histogram_counts]))
