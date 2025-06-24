@@ -83,7 +83,7 @@ class DemonstrateSimulation(Scene):
 
     def generate_next_path(self, ax):
         T = 0.25
-        simulated_path = simple_stock_simulation(start_price=300, sigma=0.15, T=T, seed=self._current_seed)
+        simulated_path = simple_stock_simulation(start_price=300, sigma=0.1, T=T, seed=self._current_seed)
         self._current_seed += 1
 
         graph = ax.plot_line_graph(
@@ -95,8 +95,8 @@ class DemonstrateSimulation(Scene):
         self.simulation_paths.append(simulated_path)
         self.simulation_graphs.append(graph)
 
-        bin_idx = max(0, int((simulated_path[-1] - 300) // 5))
-        bin_idx = min(len(self.histogram_counts) - 1, bin_idx)
+        rounded_profit = int(round((simulated_path[-1] - 300) / 5, 0) * 5)
+        bin_idx = min(max(0, rounded_profit // 5), len(self.histogram_counts) - 1)
         self.histogram_counts[bin_idx] += 1
 
     def construct(self):
@@ -143,10 +143,25 @@ class DemonstrateSimulation(Scene):
         self.play(bars.animate.change_bar_values([x / sum(self.histogram_counts) for x in self.histogram_counts]))
         self.wait(1.0)
 
+        # ~250 paths over 5.5 seconds, exponentially decaying
+        schedule = [(1, t) if t >= 1 / 60 else (int(np.ceil(1 / 60 / t)), 1 / 60)
+                    for t in 0.25 * np.exp(-np.linspace(0, 5, 100))]
+
         # add new paths, faster and faster
-        for run_time in [0.25 * i ** 2 for i in np.linspace(1.0, 0, 25)]:
-            # dim prior path, generate new path, update histogram
-            self.play(self.simulation_graphs[-1].animate.set_stroke(opacity=0.1), run_time=run_time)
-            self.generate_next_path(ax)
-            self.play(Create(self.simulation_graphs[-1], rate_func=linear), run_time=run_time)
-            self.play(bars.animate.change_bar_values([x / sum(self.histogram_counts) for x in self.histogram_counts]))
+        for num_paths_this_tick, run_time in schedule:
+            assert run_time >= 1 / 60
+
+            # dim prior paths, generate new paths, update histogram
+            self.play(*[self.simulation_graphs[-idx].animate.set_stroke(opacity=0.1)
+                        for idx in range(1, num_paths_this_tick + 1)], run_time=run_time)
+            for _ in range(num_paths_this_tick):
+                self.generate_next_path(ax)
+
+            self.play(*[Create(self.simulation_graphs[-idx], rate_func=linear)
+                        for idx in range(1, num_paths_this_tick + 1)],
+                      bars.animate.change_bar_values([x / sum(self.histogram_counts) for x in self.histogram_counts]),
+                      run_time=run_time)
+
+        self.wait(1.0)
+
+        # TODO: plot vertical line for average profit
