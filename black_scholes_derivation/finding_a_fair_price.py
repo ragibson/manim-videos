@@ -143,17 +143,20 @@ class DemonstrateSimulation(Scene):
         self.play(bars.animate.change_bar_values([x / sum(self.histogram_counts) for x in self.histogram_counts]))
         self.wait(1.0)
 
-        # ~250 paths over 5.5 seconds, exponentially decaying
+        # ~550 paths over 5.3 seconds, exponentially decaying
+        decay_curve = 0.25 * np.exp(-np.linspace(0, 4, 50))
         schedule = [(1, t) if t >= 1 / 60 else (int(np.ceil(1 / 60 / t)), 1 / 60)
-                    for t in 0.25 * np.exp(-np.linspace(0, 5, 100))]
+                    for t in decay_curve]
+        schedule += [schedule[-1]] * 120
 
         # add new paths, faster and faster
         for num_paths_this_tick, run_time in schedule:
             assert run_time >= 1 / 60
 
             # dim prior paths, generate new paths, update histogram
-            self.play(*[self.simulation_graphs[-idx].animate.set_stroke(opacity=0.1)
-                        for idx in range(1, num_paths_this_tick + 1)], run_time=run_time)
+            self.play(*[
+                self.simulation_graphs[-idx].animate.set_stroke(opacity=min(0.1, 1.0 / len(self.simulation_paths)))
+                for idx in range(1, num_paths_this_tick + 1)], run_time=run_time)
             for _ in range(num_paths_this_tick):
                 self.generate_next_path(ax)
 
@@ -161,6 +164,11 @@ class DemonstrateSimulation(Scene):
                         for idx in range(1, num_paths_this_tick + 1)],
                       bars.animate.change_bar_values([x / sum(self.histogram_counts) for x in self.histogram_counts]),
                       run_time=run_time)
+        else:
+            # dim final paths
+            self.play(*[
+                self.simulation_graphs[-idx].animate.set_stroke(opacity=min(0.1, 1.0 / len(self.simulation_paths)))
+                for idx in range(1, num_paths_this_tick + 1)], run_time=run_time)
 
         self.wait(1.0)
 
