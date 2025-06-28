@@ -172,4 +172,16 @@ class DemonstrateSimulation(Scene):
 
         self.wait(1.0)
 
-        # TODO: plot vertical line for average profit
+        # plot a vertical line at the average profit
+        average_profit = np.mean([max(0, sim[-1] - 300) for sim in self.simulation_paths])
+        # division by 5 in the c2p is needed to account for each bar being $5 wide
+        average_profit_line = DashedLine(bars.c2p(average_profit / 5, 0),
+                                         bars.c2p(average_profit / 5, 1.0),
+                                         color=YELLOW, z_index=2)
+        self.play(Create(average_profit_line, rate_func=linear))
+
+        profit_text = (Tex(fr"\text{{Average:}} ${{\sim}}\${average_profit:.0f}$", font_size=36, color=YELLOW)
+                       .next_to(average_profit_line.get_top(), aligned_edge=LEFT, buff=0.25)
+                       .shift(DOWN * 0.25))
+        self.play(Create(profit_text, run_time=1.0))
+        self.wait(1.0)
