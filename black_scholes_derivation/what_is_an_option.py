@@ -90,7 +90,7 @@ class StockSimulation(Scene):
         ).to_edge(DOWN)
 
         # HACK: manually adding in dollar signs on the left of the y-axis label numbers
-        ax.y_axis.add_labels({i: fr"\${i:.0f}" for i in range(*ax.y_range)})
+        ax.y_axis.add_labels({i: fr"\${i:.0f}" for i in np.arange(*ax.y_range)})
 
         labels = ax.get_axis_labels(x_label=r"\text{Time (years)}", y_label=r"\text{Stock Price}")
         self.play(Create(ax[1]), Write(labels[1]))

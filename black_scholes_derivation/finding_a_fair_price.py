@@ -125,7 +125,7 @@ class DemonstrateSimulation(Scene):
         self.play(Create(self.simulation_graphs[-1], rate_func=linear), run_time=2.0)
 
         # right: histogram of option profit
-        bars = BarChart(
+        bar_chart = BarChart(
             values=[0.0] * len(self.histogram_counts),
             bar_names=[fr"\${5 * i}" if i % 2 == 0 else "" for i in range(len(self.histogram_counts))],
             y_range=[0, 1.01, 0.25],
@@ -134,13 +134,13 @@ class DemonstrateSimulation(Scene):
             y_length=4,
             x_axis_config={"font_size": 30}
         ).to_edge(RIGHT, buff=1.0)
-        bar_labels = bars.get_axis_labels(x_label=Tex(r"\text{Option Profit}", font_size=30),
-                                          y_label=Tex(r"\text{Frequency}", font_size=30))
+        bar_labels = bar_chart.get_axis_labels(x_label=Tex(r"\text{Option Profit}", font_size=30),
+                                               y_label=Tex(r"\text{Frequency}", font_size=30))
 
-        self.play(Create(bars), Write(bar_labels), run_time=2.0)
+        self.play(Create(bar_chart), Write(bar_labels), run_time=2.0)
         self.wait(1.0)
 
-        self.play(bars.animate.change_bar_values([x / sum(self.histogram_counts) for x in self.histogram_counts]))
+        self.play(bar_chart.animate.change_bar_values([x / sum(self.histogram_counts) for x in self.histogram_counts]))
         self.wait(1.0)
 
         # ~550 paths over 5.3 seconds, exponentially decaying
@@ -160,10 +160,11 @@ class DemonstrateSimulation(Scene):
             for _ in range(num_paths_this_tick):
                 self.generate_next_path(ax)
 
-            self.play(*[Create(self.simulation_graphs[-idx], rate_func=linear)
-                        for idx in range(1, num_paths_this_tick + 1)],
-                      bars.animate.change_bar_values([x / sum(self.histogram_counts) for x in self.histogram_counts]),
-                      run_time=run_time)
+            self.play(
+                *[Create(self.simulation_graphs[-idx], rate_func=linear) for idx in range(1, num_paths_this_tick + 1)],
+                bar_chart.animate.change_bar_values([x / sum(self.histogram_counts) for x in self.histogram_counts]),
+                run_time=run_time
+            )
         else:
             # dim final paths
             self.play(*[
@@ -172,11 +173,17 @@ class DemonstrateSimulation(Scene):
 
         self.wait(1.0)
 
+        # highlight the histogram bars in a left-to-right sweep before we plot the average profit
+        # this use of Succession requires an undocumented conversion of _AnimationBuilder to Animations
+        self.play(LaggedStart(*[Succession(bar.animate.set_color(YELLOW).build(),
+                                           bar.animate.set_color(BLUE).build())
+                                for bar in bar_chart.bars], run_time=1.0, lag_ratio=0.1))
+
         # plot a vertical line at the average profit
         average_profit = np.mean([max(0, sim[-1] - 300) for sim in self.simulation_paths])
         # division by 5 in the c2p is needed to account for each bar being $5 wide
-        average_profit_line = DashedLine(bars.c2p(average_profit / 5, 0),
-                                         bars.c2p(average_profit / 5, 1.0),
+        average_profit_line = DashedLine(bar_chart.c2p(average_profit / 5, 0),
+                                         bar_chart.c2p(average_profit / 5, 1.0),
                                          color=YELLOW, z_index=2)
         self.play(Create(average_profit_line, rate_func=linear))
 
