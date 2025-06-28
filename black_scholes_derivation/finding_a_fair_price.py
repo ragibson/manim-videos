@@ -192,3 +192,6 @@ class DemonstrateSimulation(Scene):
                        .shift(DOWN * 0.25))
         self.play(Create(profit_text, run_time=1.0))
         self.wait(1.0)
+
+        self.play(*[FadeOut(x) for x in [ax, labels, strike_line] + self.simulation_graphs
+                    + [bar_chart, bar_labels, average_profit_line, profit_text]])

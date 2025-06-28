@@ -256,6 +256,9 @@ class WhatIsAnOption(Scene):
         self.play(FadeIn(option_premium_brace), FadeIn(option_premium_text))
         self.wait(3.0)
 
+        self.play(*[FadeOut(x) for x in (ax, labels, left_side, right_side,
+                                         option_premium_brace, option_premium_text, example_block)])
+
     def construct(self):
         option_definition_lines, footnote = self.written_description()
         example_block = self.written_example(option_definition_lines, footnote)
