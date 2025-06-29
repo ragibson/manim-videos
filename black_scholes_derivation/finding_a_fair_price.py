@@ -11,9 +11,11 @@ class GuessingTheFuture(Scene):
         self.play(Write(future_quote))
         self.wait(2.0)
 
-        how_to_text = (Text("How could you find a fair price for this?", font_size=36)
+        how_to_text = (MarkupText(fr'<span foreground="{YELLOW}">Exercise #1:</span> '
+                                  'How could you find a fair price for this?', font_size=36)
                        .next_to(future_quote, DOWN, buff=0.5))
         self.play(Write(how_to_text))
+        self.wait(5.0)
 
         # add in stock price graph
         ax = Axes(
