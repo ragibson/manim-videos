@@ -89,7 +89,7 @@ class BlackScholesIntroduction(Scene):
 
 class BlackScholesTraditionalDerivation(Scene):
     def construct(self):
-        title = Text("Traditional Derivation is Complicated!", font_size=40, t2c={"Complicated!": RED})
+        title = Text("Traditional Derivation is Complicated!", font_size=36, t2c={"Complicated!": RED})
         title.to_edge(UP)
         self.play(Write(title))
         self.wait(0.5)
@@ -128,9 +128,9 @@ class BlackScholesTraditionalDerivation(Scene):
 
         # going to transform selected words in title to switch to simpler derivation
         first_word = title[0:len("Traditional")]
-        new_first_word = Text("Alternate", font_size=40).next_to(first_word.get_right(), LEFT, buff=0.0)
+        new_first_word = Text("Alternate", font_size=36).next_to(first_word.get_right(), LEFT, buff=0.0)
         last_word = title[-len("Complicated!"):]
-        new_last_word = Text("Simpler!", font_size=40, t2c={"Simpler!": GREEN}).next_to(last_word.get_left(), RIGHT,
+        new_last_word = Text("Simpler!", font_size=36, t2c={"Simpler!": GREEN}).next_to(last_word.get_left(), RIGHT,
                                                                                         buff=0.0)
         self.play(
             *[Create(cross, run_time=2.0) for cross in xmarks],
@@ -147,7 +147,7 @@ class BlackScholesTraditionalDerivation(Scene):
 
 class LookingAhead(Scene):
     def construct(self):
-        title = Text('Looking Ahead: "Pricing an Option"', font_size=40, t2c={'"Pricing an Option"': BLUE})
+        title = Text('Looking Ahead: "Pricing an Option"', font_size=36, t2c={'"Pricing an Option"': BLUE})
         title.to_edge(UP)
         self.play(Write(title))
         self.wait(0.5)
