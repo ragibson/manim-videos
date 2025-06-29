@@ -18,5 +18,5 @@ def simple_stock_simulation(start_price=100, sigma=0.15, dt=1 / 252, T=1, seed=0
     n_steps = int(T / dt)
     increments = np.random.normal(0, sigma * np.sqrt(dt), n_steps)
     increments[0] = 0.0  # want t0 exactly at the start price
-    prices = start_price * np.exp(np.cumsum(increments) + (sigma ** 2) * dt * np.arange(n_steps))
+    prices = start_price * np.exp(np.cumsum(increments) - (sigma ** 2 / 2) * dt * np.arange(n_steps))
     return prices
