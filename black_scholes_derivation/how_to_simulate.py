@@ -2,7 +2,7 @@ from manim import *
 from scipy.stats import norm
 
 
-class HowToSimulate(Scene):
+class NormalAllowsNegativePrices(Scene):
     def construct(self):
         title_text = Text("How to Simulate Stock Prices?", font_size=36).to_edge(UP, buff=0.5)
         self.play(Write(title_text))
@@ -18,13 +18,37 @@ class HowToSimulate(Scene):
         ).next_to(title_text, DOWN, buff=1.0)
 
         # HACK: manually adding in dollar signs on the x-axis label numbers
-        ax.x_axis.add_labels({i: fr"\${i:.0f}" for i in np.arange(*ax.x_range)})
+        ax.x_axis.add_labels({i: fr"\${i:.0f}" if i >= 0 else fr"-\${abs(i):.0f}"
+                              for i in np.arange(*ax.x_range)})
         labels = ax.get_axis_labels(x_label=r"\text{Stock Price}", y_label=r"\text{Distribution Density}")
         self.play(Create(ax), Write(labels))
         self.wait(1.0)
 
+        # plotting out an arbitrary normal distribution of future prices
+        scale_tracker = ValueTracker(5.0)
         plot_xs = np.linspace(*ax.x_range[:2], 1000)
-        normal_dist = ax.plot_line_graph(plot_xs, norm.pdf(plot_xs, loc=25, scale=5),
+        normal_dist = ax.plot_line_graph(plot_xs, norm.pdf(plot_xs, loc=20, scale=scale_tracker.get_value()),
                                          line_color=BLUE, add_vertex_dots=False)
         self.play(Create(normal_dist, run_time=2.0))
+        self.wait(1.0)
+
+        # animate out the scale getting larger, eventually hitting negative numbers with non-negligible probability
+        normal_dist.add_updater(
+            lambda x: x.become(ax.plot_line_graph(plot_xs, norm.pdf(plot_xs, loc=20, scale=scale_tracker.get_value()),
+                                                  line_color=BLUE, add_vertex_dots=False))
+        )
+        self.play(scale_tracker.animate.set_value(10.0), run_time=2.0)
+        self.wait(1.0)
+        normal_dist.clear_updaters()
+
+        # shade the area under the curve where the stock price is negative
+        negative_area = ax.get_area(
+            ax.plot(lambda x: norm.pdf(x, loc=20, scale=scale_tracker.get_value())),
+            x_range=(-10, 0), color=RED, opacity=0.75
+        )
+        negative_text = Text("Negative Stock Prices?", font_size=36, color=RED).next_to(negative_area, DOWN, buff=0.75)
+        self.play(FadeIn(negative_area), FadeIn(negative_text), run_time=1.0)
+        self.wait(1.0)
+
+        self.play(*[FadeOut(x) for x in (title_text, ax, labels, normal_dist, negative_area, negative_text)])
         self.wait(1.0)
