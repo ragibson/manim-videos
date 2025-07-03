@@ -126,6 +126,16 @@ class StockSimulation(Scene):
         self.play(Create(graph, run_time=2.0, rate_func=linear))
         self.wait(1.0)
 
+        # add in example history for Netflix, all of these prices are publicly available (pretty much)
+        # you can own about two billionths of the company for the low price of $1300 :D
+        # I'm just plopping this over the graph, it's a bit awkward but seems alright?
+        netflix_example = ImageMobject("stock_history_examples/NFLX.png")
+        netflix_example.height = 5.0
+        self.play(FadeIn(netflix_example))
+        self.wait(4.0)
+
+        self.play(*[FadeOut(x) for x in (ax, labels, graph, netflix_example)])
+
 
 class WhatIsAnOption(Scene):
     def written_description(self):
