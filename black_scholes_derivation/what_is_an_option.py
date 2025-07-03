@@ -130,7 +130,7 @@ class StockSimulation(Scene):
         # you can own about two billionths of the company for the low price of $1300 :D
         # I'm just plopping this over the graph, it's a bit awkward but seems alright?
         netflix_example = ImageMobject("stock_history_examples/NFLX.png")
-        netflix_example.height = 5.0
+        netflix_example.height = 4.0
         self.play(FadeIn(netflix_example))
         self.wait(4.0)
 
