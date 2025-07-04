@@ -2,14 +2,11 @@ from manim import *
 from scipy.stats import norm
 
 
-class NormalAllowsNegativePrices(Scene):
-    def construct(self):
-        title_text = Text("How to Simulate Stock Prices?", font_size=36).to_edge(UP, buff=0.5)
-        self.play(Write(title_text))
-
+class DesiredSimulationQualities(Scene):
+    def normal_allows_negative_prices(self, title_text):
         ax = Axes(
             x_range=[-10, 50.1, 10],
-            y_range=[0.0, 0.1, 0.025],
+            y_range=[0.0, 0.08, 0.02],
             x_length=6,
             y_length=4,
             axis_config={"include_numbers": False},
@@ -50,5 +47,39 @@ class NormalAllowsNegativePrices(Scene):
         self.play(FadeIn(negative_area), FadeIn(negative_text), run_time=1.0)
         self.wait(1.0)
 
-        self.play(*[FadeOut(x) for x in (title_text, ax, labels, normal_dist, negative_area, negative_text)])
+        first_quality_text = (Text("#1: Prices should not go negative", font_size=32)
+                              .move_to(title_text).align_to(title_text, LEFT))
+        self.play(Transform(title_text, first_quality_text))
         self.wait(1.0)
+        self.play(*[FadeOut(x) for x in (ax, labels, normal_dist, negative_area, negative_text)])
+        self.wait(1.0)
+
+        return first_quality_text
+
+    def stock_prices_are_on_different_scales(self):
+        nvda_image = (ImageMobject("stock_history_examples/NVDA.png").scale(1.25)
+                      .to_edge(LEFT, buff=0.5).shift(DOWN * 0.5))
+        nvda_price_rectangle = Rectangle(width=1.35, height=0.4, color=YELLOW).move_to((-5.9, 0.7, 0))
+
+        self.play(FadeIn(nvda_image))
+        self.wait(1.0)
+        self.play(Create(nvda_price_rectangle))
+        self.wait(1.0)
+
+        hd_image = (ImageMobject("stock_history_examples/HD.png").scale(1.25)
+                    .to_edge(RIGHT, buff=0.5).shift(DOWN * 0.5))
+        hd_price_rectangle = Rectangle(width=1.45, height=0.4, color=YELLOW).move_to((1.1, 0.7, 0))
+        self.play(FadeIn(hd_image))
+        self.wait(1.0)
+        self.play(Create(hd_price_rectangle))
+        self.wait(1.0)
+
+        # TODO: box around the relative returns
+
+    def construct(self):
+        title_text = Text("How to Simulate Stock Prices?", font_size=36).to_edge(UP, buff=0.5)
+        self.play(Write(title_text))
+
+        first_quality_text = self.normal_allows_negative_prices(title_text)
+        self.play(first_quality_text.animate.set_color(GRAY))
+        self.stock_prices_are_on_different_scales()
