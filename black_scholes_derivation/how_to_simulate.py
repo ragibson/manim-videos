@@ -96,6 +96,36 @@ class DesiredSimulationQualities(Scene):
 
         return second_quality_text
 
+    def relative_moves_should_compound(self, second_quality_text):
+        # have to split these to get the alignment right
+        left_text = VGroup(
+            Tex(r"Starting Price:", font_size=40),
+            Tex(r"Increase 10\%:", font_size=40),
+            Tex(r"Increase 10\%:", font_size=40),
+            Tex(r"Increase 10\%:", font_size=40),
+        ).arrange(DOWN, aligned_edge=LEFT, buff=0.25).align_to(ORIGIN, RIGHT).shift(LEFT * 0.5)
+        right_math = VGroup(
+            MathTex(r"\$100", font_size=40),
+            MathTex(r"\$100 \cdot 1.10 = \$110", font_size=40),
+            MathTex(r"\$110 \cdot 1.10 = \$121", font_size=40),
+            MathTex(r"\$121 \cdot 1.10 \approx \$133", font_size=40),
+        ).arrange(DOWN, aligned_edge=LEFT, buff=0.25).next_to(left_text, RIGHT, buff=0.5)
+
+        for text, expression in zip(left_text, right_math):
+            self.play(Write(text))
+            self.play(Write(expression))
+            self.wait(0.5)
+
+        third_quality_text = (Text("#3: Relative changes should multiply", font_size=32)
+                              .next_to(second_quality_text, DOWN, buff=0.25).align_to(second_quality_text, LEFT))
+        self.play(Write(third_quality_text))
+        self.wait(1.0)
+
+        self.play(FadeOut(left_text), FadeOut(right_math))
+        self.wait(1.0)
+
+        return third_quality_text
+
     def construct(self):
         title_text = Text("How to Simulate Stock Prices?", font_size=36).to_edge(UP, buff=0.5)
         self.play(Write(title_text))
@@ -105,3 +135,6 @@ class DesiredSimulationQualities(Scene):
 
         second_quality_text = self.stock_prices_are_on_different_scales(first_quality_text)
         self.play(second_quality_text.animate.set_color(GRAY))
+
+        third_quality_text = self.relative_moves_should_compound(second_quality_text)
+        self.play(third_quality_text.animate.set_color(GRAY))
