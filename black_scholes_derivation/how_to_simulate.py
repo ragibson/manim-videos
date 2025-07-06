@@ -3,7 +3,7 @@ from scipy.stats import norm
 
 
 class DesiredSimulationQualities(Scene):
-    def normal_allows_negative_prices(self, title_text):
+    def normal_allows_negative_prices(self, title_text, first_quality_text):
         ax = Axes(
             x_range=[-10, 50.1, 10],
             y_range=[0.0, 0.08, 0.02],
@@ -47,16 +47,12 @@ class DesiredSimulationQualities(Scene):
         self.play(FadeIn(negative_area), FadeIn(negative_text), run_time=1.0)
         self.wait(1.0)
 
-        first_quality_text = (Text("#1: Prices should not go negative", font_size=32)
-                              .move_to(title_text).align_to(title_text, LEFT))
-        self.play(Transform(title_text, first_quality_text))
+        self.play(ReplacementTransform(title_text, first_quality_text))
         self.wait(1.0)
         self.play(*[FadeOut(x) for x in (ax, labels, normal_dist, negative_area, negative_text)])
         self.wait(1.0)
 
-        return first_quality_text
-
-    def stock_prices_are_on_different_scales(self, first_quality_text):
+    def stock_prices_are_on_different_scales(self, second_quality_text):
         nvda_image = (ImageMobject("stock_history_examples/NVDA.png").scale(1.25)
                       .to_edge(LEFT, buff=0.5).shift(DOWN * 0.5))
         nvda_price_rectangle = Rectangle(width=1.35, height=0.4, color=YELLOW).move_to((-5.9, 0.7, 0))
@@ -86,17 +82,13 @@ class DesiredSimulationQualities(Scene):
                   Transform(nvda_price_rectangle, nvda_return_rectangle))
         self.wait(1.0)
 
-        second_quality_text = (Text("#2: Price moves should be relative", font_size=32)
-                               .next_to(first_quality_text, DOWN, buff=0.25).align_to(first_quality_text, LEFT))
         self.play(Write(second_quality_text))
         self.wait(1.0)
         self.play(*[FadeOut(x) for x in (nvda_image, hd_image, nvda_price_rectangle,
                                          hd_price_rectangle, comparison_text)])
         self.wait(1.0)
 
-        return second_quality_text
-
-    def relative_moves_should_compound(self, second_quality_text):
+    def relative_moves_should_compound(self, third_quality_text):
         # have to split these to get the alignment right
         left_text = VGroup(
             Tex(r"Starting Price:", font_size=40),
@@ -116,25 +108,34 @@ class DesiredSimulationQualities(Scene):
             self.play(Write(expression))
             self.wait(0.5)
 
-        third_quality_text = (Text("#3: Relative changes should multiply", font_size=32)
-                              .next_to(second_quality_text, DOWN, buff=0.25).align_to(second_quality_text, LEFT))
         self.play(Write(third_quality_text))
         self.wait(1.0)
 
         self.play(FadeOut(left_text), FadeOut(right_math))
         self.wait(1.0)
 
-        return third_quality_text
-
     def construct(self):
         title_text = Text("How to Simulate Stock Prices?", font_size=36).to_edge(UP, buff=0.5)
         self.play(Write(title_text))
 
-        first_quality_text = self.normal_allows_negative_prices(title_text)
-        self.play(first_quality_text.animate.set_color(GRAY))
+        # Even though we're rendering all these lines at separate times, we need to have this as a shared paragraph
+        # because aligning text is a pain otherwise. Bounding boxes of text objects include ascenders/descenders from
+        # the taller characters, so we can't just apply a fixed offset between the lines.
+        qualities_text = Paragraph(
+            "#1: Prices should not go negative",
+            "#2: Price moves should be relative",
+            "#3: Relative changes should multiply",
+            font_size=32, alignment="left", line_spacing=0.75
+        ).move_to(title_text, aligned_edge=UP).align_to(title_text, LEFT)
 
-        second_quality_text = self.stock_prices_are_on_different_scales(first_quality_text)
-        self.play(second_quality_text.animate.set_color(GRAY))
+        # misnomer in Manim, chars is a VGroup of the three lines of text (each a VGroup)
+        first_quality, second_quality, third_quality = qualities_text.chars
 
-        third_quality_text = self.relative_moves_should_compound(second_quality_text)
-        self.play(third_quality_text.animate.set_color(GRAY))
+        self.normal_allows_negative_prices(title_text, first_quality)
+        self.play(first_quality.animate.set_color(GRAY))
+
+        self.stock_prices_are_on_different_scales(second_quality)
+        self.play(second_quality.animate.set_color(GRAY))
+
+        self.relative_moves_should_compound(third_quality)
+        self.play(third_quality.animate.set_color(GRAY))
