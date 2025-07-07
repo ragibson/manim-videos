@@ -1,5 +1,5 @@
 from manim import *
-from scipy.stats import norm
+from scipy.stats import norm, lognorm
 
 
 class DesiredSimulationQualities(Scene):
@@ -17,7 +17,8 @@ class DesiredSimulationQualities(Scene):
         # HACK: manually adding in dollar signs on the x-axis label numbers
         ax.x_axis.add_labels({i: fr"\${i:.0f}" if i >= 0 else fr"-\${abs(i):.0f}"
                               for i in np.arange(*ax.x_range)})
-        labels = ax.get_axis_labels(x_label=r"\text{Stock Price}", y_label=r"\text{Distribution Density}")
+        labels = ax.get_axis_labels(x_label=Tex(r"\text{Stock Price}", font_size=36),
+                                    y_label=Tex(r"\text{Distribution Density}", font_size=36))
         self.play(Create(ax), Write(labels))
         self.wait(1.0)
 
@@ -161,7 +162,7 @@ class DesiredSimulationQualities(Scene):
             y_axis_config={"include_numbers": False},
             tips=False
         ).to_edge(DOWN, buff=0.5).to_edge(LEFT, buff=2.0)
-        exp_labels = exp_plot.get_axis_labels(x_label=r"x", y_label=r"e^{x}")
+        exp_labels = exp_plot.get_axis_labels(x_label=Tex(r"$x$", font_size=36), y_label=Tex(r"$e^{x}$", font_size=36))
         exp_graph = exp_plot.plot_line_graph(
             x_values=np.linspace(*exp_plot.x_range[:2], 1000),
             y_values=np.exp(np.linspace(*exp_plot.x_range[:2], 1000)),
@@ -187,6 +188,77 @@ class DesiredSimulationQualities(Scene):
                                          exp_graph, exp_tex, quality_texts)],
                   consider_lognormal.animate.move_to(ORIGIN).to_edge(UP, buff=0.5))
         return consider_lognormal
+
+    def discuss_lognormal(self, lognormal_header):
+        lognormal_text = (Text('"Lognormal Distribution"', font_size=36, color=BLUE)
+                          .next_to(lognormal_header, DOWN, buff=0.5).to_edge(LEFT, buff=1.0))
+        self.play(Write(lognormal_text))
+
+        nomenclature_explanation = (Tex(r"$X \sim \exp\left(N(\mu, \sigma^2)\right) \iff "
+                                        r"\ln\left(X\right) \sim N(\mu, \sigma^2)$", font_size=46)
+                                    .next_to(lognormal_text, DOWN, buff=0.5).align_to(lognormal_text, LEFT)
+                                    .shift(RIGHT * 1.0))
+        self.play(Write(nomenclature_explanation))
+        self.wait(2.0)
+        self.play(FadeOut(lognormal_text), FadeOut(nomenclature_explanation))
+
+        # Create axes that work for both distributions
+        ax = Axes(
+            x_range=[-10, 60.1, 10],
+            y_range=[0.0, 0.05, 0.01],
+            x_length=6,
+            y_length=4,
+            axis_config={"include_numbers": False},
+            y_axis_config={"include_numbers": True},
+            tips=False
+        ).next_to(lognormal_header, DOWN, buff=1.0).align_to(ORIGIN, LEFT + RIGHT)
+
+        # HACK: manually adding in dollar signs on the x-axis label numbers
+        ax.x_axis.add_labels({i: fr"\${i:.0f}" if i >= 0 else fr"-\${abs(i):.0f}"
+                              for i in np.arange(*ax.x_range)})
+        labels = ax.get_axis_labels(x_label=Tex(r"\text{Stock Price}", font_size=36),
+                                    y_label=Tex(r"\text{Normal Distribution Density}", font_size=36))
+        self.play(Create(ax), Write(labels))
+
+        plot_xs = np.linspace(*ax.x_range[:2], 1000)
+        norm_mu, norm_sigma = 20.0, 10.0
+        normal_dist = ax.plot_line_graph(plot_xs, norm.pdf(plot_xs, loc=norm_mu, scale=norm_sigma),
+                                         line_color=BLUE, add_vertex_dots=False)
+        normal_dist_original = normal_dist.copy().set_stroke(opacity=0.5).set_color(GRAY)
+        self.play(Create(normal_dist), run_time=2.0)
+        self.wait(1.0)
+
+        # rescaling S(t)/S(0) ~ exp(N()) to S(t) ~ S(0) * exp(N())
+        specific_lognorm_pdf = lambda xs: lognorm.pdf(xs / norm_mu, loc=0.0, s=norm_sigma / norm_mu) / norm_mu
+        lognormal_dist = ax.plot_line_graph(plot_xs, specific_lognorm_pdf(plot_xs),
+                                            line_color=BLUE, add_vertex_dots=False)
+        self.add(normal_dist_original)
+        self.play(Transform(normal_dist, lognormal_dist),
+                  Transform(labels[1], Tex(r"\text{Lognormal Distribution Density}", font_size=36)
+                            .move_to(labels[1], aligned_edge=LEFT)), run_time=2.0)
+        self.wait(1.0)
+
+        # emphasize the major differences, left: no negatives, right: compounding (multiplying) returns
+        left_arrow = Arrow(
+            start=ax.c2p(-20, 0.025), end=ax.c2p(3, specific_lognorm_pdf(3)),
+            color=RED, buff=0
+        )
+        left_text = (Text("No negatives!", font_size=36, color=RED)
+                     .next_to(left_arrow.get_start(), UP, buff=0.0).shift(LEFT * 1.0))
+        right_arrow = Arrow(
+            start=ax.c2p(55, 0.025), end=ax.c2p(45, specific_lognorm_pdf(45)),
+            color=GREEN, buff=0
+        )
+        right_text = (Text("Compounding returns!", font_size=36, color=GREEN)
+                      .next_to(right_arrow.get_start(), UP, buff=0.0).shift(RIGHT * 1.0))
+
+        self.play(Create(left_arrow), Write(left_text))
+        self.wait(1.0)
+        self.play(Create(right_arrow), Write(right_text))
+        self.wait(1.0)
+
+        self.play(*[FadeOut(x) for x in (ax, labels, normal_dist, left_arrow, left_text, right_arrow, right_text,
+                                         normal_dist_original, lognormal_header)])
 
     def construct(self):
         title_text = Text("How to Simulate Stock Prices?", font_size=36).to_edge(UP, buff=0.5)
@@ -217,4 +289,4 @@ class DesiredSimulationQualities(Scene):
         self.play(*[t.animate.set_color(WHITE) for t in qualities_text])
         lognormal_header = self.set_up_exercise(qualities_text)
 
-        # TODO: discuss lognormal: naming and visual before continuing
+        self.discuss_lognormal(lognormal_header)
