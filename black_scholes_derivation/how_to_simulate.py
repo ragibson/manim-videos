@@ -114,6 +114,80 @@ class DesiredSimulationQualities(Scene):
         self.play(FadeOut(left_text), FadeOut(right_math))
         self.wait(1.0)
 
+    def set_up_exercise(self, quality_texts):
+        exercise_label = (Text("Exercise #2:", color=YELLOW, font_size=36)
+                          .next_to(quality_texts[-1], DOWN, buff=1.0).to_edge(LEFT, buff=0.5))
+        exercise_text = Tex(
+            r"\begin{flushleft}"  # a bit of a weird hack to get left-aligned multi-line latex
+            r"Let $S(t)$ be the stock price at time $t$. Can you \\"
+            r"transform a normal distribution and use it to \\"
+            r"construct $S(t)$ so that it has these three qualities?"
+            r"\end{flushleft}",
+            font_size=46  # approximately the equivalent of text font size 36
+        ).next_to(exercise_label, RIGHT, buff=0.25).align_to(exercise_label, UP)
+        self.play(Write(exercise_label))
+        self.play(Write(exercise_text))
+        self.wait(1.0)
+
+        # placeholder for hint, viewers can do the exercise without it by pausing
+        hint_label = (Text("Hint:", font_size=36).next_to(exercise_text, DOWN, buff=0.5)
+                      .align_to(exercise_label, RIGHT))
+        hint_countdown = (Text("(revealed in 5 seconds)", font_size=36).next_to(hint_label, RIGHT, buff=0.25)
+                          .align_to(hint_label, UP))
+        self.play(Write(hint_label))
+        self.play(Write(hint_countdown))
+        self.wait(5.0)
+
+        hint_text = Tex(
+            r"\begin{flushleft}"
+            r"Normal distributions ``add together.'' What kind \\"
+            r"of function turns adding into multiplying?"
+            r"\end{flushleft}",
+            font_size=46
+        ).next_to(hint_label, RIGHT, buff=0.25).align_to(hint_label, UP)
+        self.play(FadeOut(hint_countdown))
+        self.play(Write(hint_text))
+        self.wait(5.0)
+
+        self.play(*[FadeOut(x) for x in (hint_label, hint_text)])
+
+        # bottom-left: exp(x) plot
+        exp_plot = Axes(
+            x_range=[-2, 2.01, 1],
+            y_range=[0, 8.01, 2],
+            x_length=3,
+            y_length=2,
+            axis_config={"include_numbers": False},
+            y_axis_config={"include_numbers": False},
+            tips=False
+        ).to_edge(DOWN, buff=0.5).to_edge(LEFT, buff=2.0)
+        exp_labels = exp_plot.get_axis_labels(x_label=r"x", y_label=r"e^{x}")
+        exp_graph = exp_plot.plot_line_graph(
+            x_values=np.linspace(*exp_plot.x_range[:2], 1000),
+            y_values=np.exp(np.linspace(*exp_plot.x_range[:2], 1000)),
+            line_color=BLUE, add_vertex_dots=False
+        )
+        self.play(Create(exp_plot), Write(exp_labels))
+        self.play(Create(exp_graph), rate_func=linear, run_time=1.0)
+        self.wait(1.0)
+
+        # bottom-right: turning adding into multiplying
+        exp_tex = (Tex(r"$e^{x+y} = e^{x} \cdot e^{y}$", font_size=46)
+                   .next_to(exp_plot, RIGHT, buff=1.0).align_to(exp_plot, UP))
+        self.play(Write(exp_tex))
+        self.wait(1.0)
+
+        consider_lognormal = Tex(r"Consider $\dfrac{S(t)}{S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)$!",
+                                 font_size=46).next_to(exp_tex, DOWN, buff=0.5).align_to(exp_tex, LEFT)
+        self.play(Write(consider_lognormal))
+        self.wait(1.0)
+
+        # fading out everything except the lognormal text, which acts as the next slide header
+        self.play(*[FadeOut(x) for x in (exercise_text, exercise_label, exp_plot, exp_labels,
+                                         exp_graph, exp_tex, quality_texts)],
+                  consider_lognormal.animate.move_to(ORIGIN).to_edge(UP, buff=0.5))
+        return consider_lognormal
+
     def construct(self):
         title_text = Text("How to Simulate Stock Prices?", font_size=36).to_edge(UP, buff=0.5)
         self.play(Write(title_text))
@@ -124,7 +198,7 @@ class DesiredSimulationQualities(Scene):
         qualities_text = Paragraph(
             "#1: Prices should not go negative",
             "#2: Price moves should be relative",
-            "#3: Relative changes should multiply",
+            "#3: Relative changes should multiply, not add",
             font_size=32, alignment="left", line_spacing=0.75
         ).move_to(title_text, aligned_edge=UP).align_to(title_text, LEFT)
 
@@ -139,3 +213,8 @@ class DesiredSimulationQualities(Scene):
 
         self.relative_moves_should_compound(third_quality)
         self.play(third_quality.animate.set_color(GRAY))
+
+        self.play(*[t.animate.set_color(WHITE) for t in qualities_text])
+        lognormal_header = self.set_up_exercise(qualities_text)
+
+        # TODO: discuss lognormal: naming and visual before continuing
