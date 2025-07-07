@@ -222,18 +222,18 @@ class DesiredSimulationQualities(Scene):
 
         plot_xs = np.linspace(*ax.x_range[:2], 1000)
         norm_mu, norm_sigma = 20.0, 10.0
-        normal_dist = ax.plot_line_graph(plot_xs, norm.pdf(plot_xs, loc=norm_mu, scale=norm_sigma),
-                                         line_color=BLUE, add_vertex_dots=False)
-        normal_dist_original = normal_dist.copy().set_stroke(opacity=0.5).set_color(GRAY)
-        self.play(Create(normal_dist), run_time=2.0)
+        price_distribution = ax.plot_line_graph(plot_xs, norm.pdf(plot_xs, loc=norm_mu, scale=norm_sigma),
+                                                line_color=BLUE, add_vertex_dots=False, z_index=0)
+        normal_dist_original = price_distribution.copy().set_stroke(opacity=0.5).set_color(GRAY)
+        self.play(Create(price_distribution), run_time=2.0)
         self.wait(1.0)
 
         # rescaling S(t)/S(0) ~ exp(N()) to S(t) ~ S(0) * exp(N())
         specific_lognorm_pdf = lambda xs: lognorm.pdf(xs / norm_mu, loc=0.0, s=norm_sigma / norm_mu) / norm_mu
         lognormal_dist = ax.plot_line_graph(plot_xs, specific_lognorm_pdf(plot_xs),
-                                            line_color=BLUE, add_vertex_dots=False)
+                                            line_color=BLUE, add_vertex_dots=False, z_index=1)
         self.add(normal_dist_original)
-        self.play(Transform(normal_dist, lognormal_dist),
+        self.play(ReplacementTransform(price_distribution, lognormal_dist),
                   Transform(labels[1], Tex(r"\text{Lognormal Distribution Density}", font_size=36)
                             .move_to(labels[1], aligned_edge=LEFT)), run_time=2.0)
         self.wait(1.0)
@@ -257,8 +257,8 @@ class DesiredSimulationQualities(Scene):
         self.play(Create(right_arrow), Write(right_text))
         self.wait(1.0)
 
-        self.play(*[FadeOut(x) for x in (ax, labels, normal_dist, left_arrow, left_text, right_arrow, right_text,
-                                         normal_dist_original, lognormal_header)])
+        self.play(*[FadeOut(x) for x in (ax, labels, price_distribution, normal_dist_original, lognormal_dist,
+                                         lognormal_header, left_arrow, left_text, right_arrow, right_text)])
 
     def construct(self):
         title_text = Text("How to Simulate Stock Prices?", font_size=36).to_edge(UP, buff=0.5)
