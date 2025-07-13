@@ -255,9 +255,11 @@ class WhatIsAnOption(Scene):
 
         # emphasizing the part of the example corresponding to the left vs. right side while plotting
         example_profit, example_worthless = example_block[-1]
-        self.play(Create(right_side, rate_func=linear, run_time=2.0), Indicate(example_profit))
+        self.play(LaggedStart(ApplyWave(example_profit, rate_func=linear, ripples=2, amplitude=0.1),
+                              Create(right_side, rate_func=linear, run_time=2.0), lag_ratio=0.25))
         self.wait(1.0)
-        self.play(Create(left_side, rate_func=linear, run_time=2.0), Indicate(example_worthless))
+        self.play(LaggedStart(ApplyWave(example_worthless, rate_func=linear, ripples=2, amplitude=0.1),
+                              Create(left_side, rate_func=linear, run_time=2.0), lag_ratio=0.25))
         self.wait(1.0)
 
         # adding in the premium

@@ -178,8 +178,10 @@ class DesiredSimulationQualities(Scene):
         self.play(Write(exp_tex))
         self.wait(1.0)
 
-        consider_lognormal = Tex(r"Consider $\dfrac{S(t)}{S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)$!",
-                                 font_size=46).next_to(exp_tex, DOWN, buff=0.5).align_to(exp_tex, LEFT)
+        # isolating mu and sigma so we can emphasize them as the parameters we want to determine
+        consider_lognormal = MathTex(r"\text{Consider } \dfrac{S(t)}{S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)"
+                                     r"\text{!}", substrings_to_isolate=[r"\mu", r"\sigma^2"],
+                                     font_size=46).next_to(exp_tex, DOWN, buff=0.5).align_to(exp_tex, LEFT)
         self.play(Write(consider_lognormal))
         self.wait(1.0)
 
@@ -255,6 +257,11 @@ class DesiredSimulationQualities(Scene):
         self.play(Create(left_arrow), Write(left_text))
         self.wait(1.0)
         self.play(Create(right_arrow), Write(right_text))
+        self.wait(1.0)
+
+        # flagging that finding the parameters of the distribution is the next step
+        mu_substring, sigma_substring = lognormal_header[1], lognormal_header[3]
+        self.play(Circumscribe(mu_substring), Circumscribe(sigma_substring))
         self.wait(1.0)
 
         self.play(*[FadeOut(x) for x in (ax, labels, price_distribution, normal_dist_original, lognormal_dist,
