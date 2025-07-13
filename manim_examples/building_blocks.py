@@ -143,7 +143,7 @@ class RunTime(Scene):
 class Count(Animation):
     def __init__(self, number: DecimalNumber, start: float, end: float,
                  **kwargs):
-        # initialize Mobject with passed DecinalNumber
+        # initialize Mobject with passed DecimalNumber
         super().__init__(number, **kwargs)
         self.start = start
         self.end = end

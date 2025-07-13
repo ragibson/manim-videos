@@ -9,7 +9,7 @@ class ThreeDCameraIllusionRotation(ThreeDScene):
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
         self.add(circle, axes)
 
-        # rotate around polar+azimutal angles (-, \theta, \phi) so as to make the image appear 3D, hence "illusion"
+        # rotate around polar+azimuthal angles (-, \theta, \phi) so as to make the image appear 3D, hence "illusion"
         self.begin_3dillusion_camera_rotation(rate=2)
         self.wait(PI / 2 * 10)
         self.stop_3dillusion_camera_rotation()

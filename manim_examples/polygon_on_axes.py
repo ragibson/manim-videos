@@ -36,7 +36,7 @@ class PolygonOnAxes(Scene):
             polygon.set_stroke(YELLOW_B)
             return polygon
 
-        # redraw the entire mobject constructed by get_rectange every frame
+        # redraw the entire mobject constructed by get_rectangle every frame
         polygon = always_redraw(get_rectangle)
 
         dot = Dot()
