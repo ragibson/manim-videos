@@ -29,7 +29,24 @@ class DeterminingDistributionParameters(Scene):
         self.play(FadeOut(remember_label), FadeOut(remember_text))
         self.wait(1.0)
 
-        # TODO: continue with answer
+        answer_start = (Tex(r"Let $X \sim N\left(\mu, \sigma^2\right)$, $Y \sim \exp(X)$", font_size=46)
+                        .next_to(exercise_text, DOWN, buff=0.25)).to_edge(LEFT, buff=1.0)
+        # TODO: not sure I really like the layout of this
+        answer_body_left = MathTex(
+            r"f_X(x) &= \frac{\text{d}}{\text{d}x} \mathbb{P}\left[X \leq x\right]",
+            r"= \frac{\text{d}}{\text{d}x}\mathbb{P}\left[Y \leq \ln x\right]\\",
+            r"&= \frac{\text{d}}{\text{d}x}\Phi\left(\frac{\ln x - \mu}{\sigma}\right)\\",
+            r"&= f_Y(\ln x) \cdot \frac{1}{\sigma x}\\",
+            r"&= \frac{1}{x\sigma\cdot\sqrt{2\pi}} \exp\left(-\frac{\left(\ln x - \mu\right)^2}{2\sigma^2}\right)",
+            font_size=46
+        ).next_to(answer_start, DOWN, buff=0.25).align_to(answer_start, LEFT)
+        self.play(Write(answer_start))
+        self.wait(1.0)
+        for line in list(answer_body_left):
+            self.play(Write(line))
+            self.wait(1.0)  # TODO: may need to be specific to each line
+
+        self.play(*[FadeOut(x) for x in (exercise_label, exercise_text, answer_start, answer_body_left)])
 
     def construct(self):
         self.calculate_lognormal_pdf()

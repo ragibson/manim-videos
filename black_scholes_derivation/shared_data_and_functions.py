@@ -12,6 +12,10 @@ OCC_options_ADV = {1973: 6470, 1974: 22462, 1975: 71553, 1976: 127960, 1977: 157
                    2018: 20466938, 2019: 19440621, 2020: 29513935, 2021: 39167335, 2022: 41117424, 2023: 44207806,
                    2024: 48508840, 2025: 58971333}
 
+# TODO: apply this across all scenes for consistency, with some exceptions
+MAIN_FONT_SIZE = 36
+MAIN_TEX_SIZE = 46
+
 
 def simple_stock_simulation(start_price=100, sigma=0.15, dt=1 / 252, T=1, seed=0):
     np.random.seed(seed)
