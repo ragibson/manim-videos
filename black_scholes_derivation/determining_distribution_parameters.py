@@ -1,5 +1,6 @@
 from manim import *
 
+from how_to_simulate import create_normal_lognormal_comparison
 from shared_data_and_functions import *
 
 
@@ -52,6 +53,7 @@ class DeterminingDistributionParameters(Scene):
         self.play(*[FadeOut(x) for x in (exercise_label, exercise_text, answer_start, answer_body_left)])
 
     def consider_S1(self):
+        # TODO: text header for this section?
         header_with_t = MathTex(r"\dfrac{S(t)}{S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)",
                                 substrings_to_isolate=[r"\mu", r"\sigma^2"],
                                 font_size=MATH_SIZE_MEDIUM).to_edge(UP, buff=0.5)
@@ -74,7 +76,31 @@ class DeterminingDistributionParameters(Scene):
         self.play(Indicate(mu_substring), mu_substring.animate.set_color(YELLOW))
         self.wait(1.0)
 
-        # TODO: show the normal vs. lognormal transformation from earlier
+        # show the normal vs. lognormal transformation from earlier
+        ax = Axes(
+            x_range=[-10, 60.1, 10],
+            y_range=[0.0, 0.05, 0.01],
+            x_length=6,
+            y_length=4,
+            axis_config={"include_numbers": False},
+            y_axis_config={"include_numbers": True},
+            tips=False
+        ).next_to(header_with_t, DOWN, buff=1.0).align_to(ORIGIN, LEFT + RIGHT)
+
+        (labels, price_distribution, normal_dist_original, specific_lognorm_pdf, lognormal_dist,
+         left_arrow, left_text, right_arrow, right_text) = create_normal_lognormal_comparison(ax)
+        self.play(*[FadeIn(x) for x in (ax, labels, price_distribution)])  # original normal distribution
+        self.wait(1.0)
+
+        # transform to lognormal with original normal distribution in grey
+        self.add(normal_dist_original)
+        self.play(ReplacementTransform(price_distribution, lognormal_dist),
+                  Transform(labels[1], Tex(r"\text{Lognormal Distribution Density}", font_size=TEXT_SIZE_MEDIUM)
+                            .move_to(labels[1], aligned_edge=LEFT)), run_time=2.0)
+        self.wait(5.0)
+
+        self.play(*[FadeOut(x) for x in (ax, labels, price_distribution, normal_dist_original, lognormal_dist)])
+        self.wait(1.0)
 
     def construct(self):
         self.calculate_lognormal_pdf()

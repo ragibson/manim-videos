@@ -4,6 +4,43 @@ from scipy.stats import norm, lognorm
 from shared_data_and_functions import *
 
 
+def create_normal_lognormal_comparison(ax):
+    """Create a series of objects for a normal -> lognormal transformation plot."""
+    # HACK: manually adding in dollar signs on the x-axis label numbers
+    ax.x_axis.add_labels({i: fr"\${i:.0f}" if i >= 0 else fr"-\${abs(i):.0f}"
+                          for i in np.arange(*ax.x_range)})
+    labels = ax.get_axis_labels(x_label=Tex(r"\text{Stock Price}", font_size=TEXT_SIZE_MEDIUM),
+                                y_label=Tex(r"\text{Normal Distribution Density}", font_size=TEXT_SIZE_MEDIUM))
+
+    plot_xs = np.linspace(*ax.x_range[:2], 1000)
+    norm_mu, norm_sigma = 20.0, 10.0
+    price_distribution = ax.plot_line_graph(plot_xs, norm.pdf(plot_xs, loc=norm_mu, scale=norm_sigma),
+                                            line_color=BLUE, add_vertex_dots=False, z_index=0)
+    normal_dist_original = price_distribution.copy().set_stroke(opacity=0.5).set_color(GRAY)
+
+    # rescaling S(t)/S(0) ~ exp(N()) to S(t) ~ S(0) * exp(N())
+    specific_lognorm_pdf = lambda xs: lognorm.pdf(xs / norm_mu, loc=0.0, s=norm_sigma / norm_mu) / norm_mu
+    lognormal_dist = ax.plot_line_graph(plot_xs, specific_lognorm_pdf(plot_xs),
+                                        line_color=BLUE, add_vertex_dots=False, z_index=1)
+
+    # emphasize the major differences, left: no negatives, right: compounding (multiplying) returns
+    left_arrow = Arrow(
+        start=ax.c2p(-20, 0.025), end=ax.c2p(3, specific_lognorm_pdf(3)),
+        color=RED, buff=0
+    )
+    left_text = (Text("No negatives!", font_size=TEXT_SIZE_MEDIUM, color=RED)
+                 .next_to(left_arrow.get_start(), UP, buff=0.0).shift(LEFT * 1.0))
+    right_arrow = Arrow(
+        start=ax.c2p(55, 0.025), end=ax.c2p(45, specific_lognorm_pdf(45)),
+        color=GREEN, buff=0
+    )
+    right_text = (Text("Compounding returns!", font_size=TEXT_SIZE_MEDIUM, color=GREEN)
+                  .next_to(right_arrow.get_start(), UP, buff=0.0).shift(RIGHT * 1.0))
+
+    return (labels, price_distribution, normal_dist_original, specific_lognorm_pdf, lognormal_dist,
+            left_arrow, left_text, right_arrow, right_text)
+
+
 class DesiredSimulationQualities(Scene):
     def normal_allows_negative_prices(self, title_text, first_quality_text):
         ax = Axes(
@@ -220,44 +257,19 @@ class DesiredSimulationQualities(Scene):
             tips=False
         ).next_to(lognormal_header, DOWN, buff=1.0).align_to(ORIGIN, LEFT + RIGHT)
 
-        # HACK: manually adding in dollar signs on the x-axis label numbers
-        ax.x_axis.add_labels({i: fr"\${i:.0f}" if i >= 0 else fr"-\${abs(i):.0f}"
-                              for i in np.arange(*ax.x_range)})
-        labels = ax.get_axis_labels(x_label=Tex(r"\text{Stock Price}", font_size=TEXT_SIZE_MEDIUM),
-                                    y_label=Tex(r"\text{Normal Distribution Density}", font_size=TEXT_SIZE_MEDIUM))
+        (labels, price_distribution, normal_dist_original, specific_lognorm_pdf, lognormal_dist,
+         left_arrow, left_text, right_arrow, right_text) = create_normal_lognormal_comparison(ax)
+
         self.play(Create(ax), Write(labels))
 
-        plot_xs = np.linspace(*ax.x_range[:2], 1000)
-        norm_mu, norm_sigma = 20.0, 10.0
-        price_distribution = ax.plot_line_graph(plot_xs, norm.pdf(plot_xs, loc=norm_mu, scale=norm_sigma),
-                                                line_color=BLUE, add_vertex_dots=False, z_index=0)
-        normal_dist_original = price_distribution.copy().set_stroke(opacity=0.5).set_color(GRAY)
         self.play(Create(price_distribution), run_time=2.0)
         self.wait(1.0)
 
-        # rescaling S(t)/S(0) ~ exp(N()) to S(t) ~ S(0) * exp(N())
-        specific_lognorm_pdf = lambda xs: lognorm.pdf(xs / norm_mu, loc=0.0, s=norm_sigma / norm_mu) / norm_mu
-        lognormal_dist = ax.plot_line_graph(plot_xs, specific_lognorm_pdf(plot_xs),
-                                            line_color=BLUE, add_vertex_dots=False, z_index=1)
         self.add(normal_dist_original)
         self.play(ReplacementTransform(price_distribution, lognormal_dist),
                   Transform(labels[1], Tex(r"\text{Lognormal Distribution Density}", font_size=TEXT_SIZE_MEDIUM)
                             .move_to(labels[1], aligned_edge=LEFT)), run_time=2.0)
         self.wait(1.0)
-
-        # emphasize the major differences, left: no negatives, right: compounding (multiplying) returns
-        left_arrow = Arrow(
-            start=ax.c2p(-20, 0.025), end=ax.c2p(3, specific_lognorm_pdf(3)),
-            color=RED, buff=0
-        )
-        left_text = (Text("No negatives!", font_size=TEXT_SIZE_MEDIUM, color=RED)
-                     .next_to(left_arrow.get_start(), UP, buff=0.0).shift(LEFT * 1.0))
-        right_arrow = Arrow(
-            start=ax.c2p(55, 0.025), end=ax.c2p(45, specific_lognorm_pdf(45)),
-            color=GREEN, buff=0
-        )
-        right_text = (Text("Compounding returns!", font_size=TEXT_SIZE_MEDIUM, color=GREEN)
-                      .next_to(right_arrow.get_start(), UP, buff=0.0).shift(RIGHT * 1.0))
 
         self.play(Create(left_arrow), Write(left_text))
         self.wait(1.0)
