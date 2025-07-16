@@ -52,7 +52,31 @@ class DeterminingDistributionParameters(Scene):
         self.play(*[FadeOut(x) for x in (exercise_label, exercise_text, answer_start, answer_body_left)])
 
     def consider_S1(self):
-        pass
+        header_with_t = MathTex(r"\dfrac{S(t)}{S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)",
+                                substrings_to_isolate=[r"\mu", r"\sigma^2"],
+                                font_size=MATH_SIZE_MEDIUM).to_edge(UP, buff=0.5)
+
+        # doesn't seem to be a better way to get this to render properly when swapping out t -> 1
+        header_with_1 = MathTex(r"\dfrac{S(1)}{S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)",
+                                substrings_to_isolate=[r"\mu", r"\sigma^2"],
+                                font_size=MATH_SIZE_MEDIUM).to_edge(UP, buff=0.5)
+
+        self.play(Write(header_with_t))
+        self.wait(1.0)
+
+        mu_substring, sigma_substring = header_with_t[1], header_with_t[3]
+        self.play(Circumscribe(mu_substring), Circumscribe(sigma_substring))
+        self.wait(1.0)
+
+        self.play(ReplacementTransform(header_with_t, header_with_1))
+        self.wait(1.0)
+
+        self.play(Indicate(mu_substring), mu_substring.animate.set_color(YELLOW))
+        self.wait(1.0)
+
+        # TODO: show the normal vs. lognormal transformation from earlier
 
     def construct(self):
         self.calculate_lognormal_pdf()
+
+        self.consider_S1()
