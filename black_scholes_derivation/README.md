@@ -1,7 +1,7 @@
 # black_scholes_derivation
 
 TODO: also want "title card" style animation at the beginning
-TODO: create frozen requirements.txt for final package versions
+TODO: create frozen requirements.txt for final package versions used in the render
 
 The sequence of scenes here is:
 
@@ -11,3 +11,7 @@ The sequence of scenes here is:
   what an option is. The option introduction includes an explicit example and the (call) payoff diagram.
 * [finding_a_fair_price.py](finding_a_fair_price.py): Mention the difficulty of pricing an asset that depends on
   (unknown) future stock prices, and how a simulation could address this.
+* [how_to_simulate.py](how_to_simulate.py): Explain qualities of a simulation that we would like to have, and the
+  corresponding distribution that gives us these qualities is the lognormal distribution.
+* [determining_distribution_parameters.py](determining_distribution_parameters.py): Derive the PDF of a lognormal
+  distribution and the parameters for a particular stock (mu, sigma).

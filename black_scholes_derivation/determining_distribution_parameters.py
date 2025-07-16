@@ -35,7 +35,7 @@ class DeterminingDistributionParameters(Scene):
         answer_body_left = MathTex(
             r"f_X(x) &= \frac{\text{d}}{\text{d}x} \mathbb{P}\left[X \leq x\right]",
             r"= \frac{\text{d}}{\text{d}x}\mathbb{P}\left[Y \leq \ln x\right]",
-            r"= \frac{\text{d}}{\text{d}x}F_Y(\ln x)\\"
+            r"= \frac{\text{d}}{\text{d}x}F_Y(\ln x)\\",
             r"&= f_Y(\ln x) \cdot \frac{1}{x}\\",
             r"&= \frac{1}{x\sigma\cdot\sqrt{2\pi}} \exp\left(-\frac{\left(\ln x - \mu\right)^2}{2\sigma^2}\right)",
             font_size=46
@@ -47,6 +47,9 @@ class DeterminingDistributionParameters(Scene):
             self.wait(1.0)  # TODO: may need to be specific to each line
 
         self.play(*[FadeOut(x) for x in (exercise_label, exercise_text, answer_start, answer_body_left)])
+
+    def consider_S1(self):
+        pass
 
     def construct(self):
         self.calculate_lognormal_pdf()
