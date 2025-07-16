@@ -1,18 +1,18 @@
 from manim import *
 
-from shared_data_and_functions import simple_stock_simulation
+from shared_data_and_functions import *
 
 
 class GuessingTheFuture(Scene):
     def construct(self):
         future_quote = MarkupText(f'"An option is ... '
                                   f'on a specific date <span foreground="{BLUE}">in the future</span>."',
-                                  font_size=36).to_edge(UP, buff=0.5)
+                                  font_size=TEXT_SIZE_MEDIUM).to_edge(UP, buff=0.5)
         self.play(Write(future_quote))
         self.wait(2.0)
 
         how_to_text = (MarkupText(fr'<span foreground="{YELLOW}">Exercise #1:</span> '
-                                  'How could you find a fair price for this?', font_size=36)
+                                  'How could you find a fair price for this?', font_size=TEXT_SIZE_MEDIUM)
                        .next_to(future_quote, DOWN, buff=0.5))
         self.play(Write(how_to_text))
         self.wait(5.0)
@@ -68,7 +68,7 @@ class GuessingTheFuture(Scene):
             self.wait(1.0)
         self.wait(1.0)
 
-        simulate_text = (Text("Simulate!", font_size=36, color=YELLOW)
+        simulate_text = (Text("Simulate!", font_size=TEXT_SIZE_MEDIUM, color=YELLOW)
                          .move_to(ax.get_center() + UP * 2.0 + RIGHT * 2.0))
         self.play(Write(simulate_text))
         self.wait(1.0)
@@ -114,9 +114,9 @@ class DemonstrateSimulation(Scene):
         ).to_edge(LEFT, buff=1.0)
 
         # HACK: manually adding in dollar signs on the left of the y-axis label numbers
-        ax.y_axis.add_labels({i: Tex(fr"\${i:.0f}", font_size=30) for i in np.arange(*ax.y_range)})
-        labels = ax.get_axis_labels(x_label=Tex(r"\text{Time (years)}", font_size=30),
-                                    y_label=Tex(r"\text{Stock Price}", font_size=30))
+        ax.y_axis.add_labels({i: Tex(fr"\${i:.0f}", font_size=TEXT_SIZE_XSMALL) for i in np.arange(*ax.y_range)})
+        labels = ax.get_axis_labels(x_label=Tex(r"\text{Time (years)}", font_size=TEXT_SIZE_XSMALL),
+                                    y_label=Tex(r"\text{Stock Price}", font_size=TEXT_SIZE_XSMALL))
 
         strike_line = DashedLine(ax.c2p(0.0, 300), ax.c2p(0.25, 300))
         self.play(Create(ax), Write(labels), run_time=2.0)
@@ -136,8 +136,8 @@ class DemonstrateSimulation(Scene):
             y_length=4,
             x_axis_config={"font_size": 30}
         ).to_edge(RIGHT, buff=1.0)
-        bar_labels = bar_chart.get_axis_labels(x_label=Tex(r"\text{Option Profit}", font_size=30),
-                                               y_label=Tex(r"\text{Frequency}", font_size=30))
+        bar_labels = bar_chart.get_axis_labels(x_label=Tex(r"\text{Option Profit}", font_size=TEXT_SIZE_XSMALL),
+                                               y_label=Tex(r"\text{Frequency}", font_size=TEXT_SIZE_XSMALL))
 
         self.play(Create(bar_chart), Write(bar_labels), run_time=2.0)
         self.wait(1.0)
@@ -189,9 +189,10 @@ class DemonstrateSimulation(Scene):
                                          color=YELLOW, z_index=2)
         self.play(Create(average_profit_line, rate_func=linear))
 
-        profit_text = (Tex(fr"\text{{Average:}} ${{\sim}}\${average_profit:.0f}$", font_size=36, color=YELLOW)
-                       .next_to(average_profit_line.get_top(), aligned_edge=LEFT, buff=0.25)
-                       .shift(DOWN * 0.25))
+        profit_text = (
+            Tex(fr"\text{{Average:}} ${{\sim}}\${average_profit:.0f}$", font_size=TEXT_SIZE_MEDIUM, color=YELLOW)
+            .next_to(average_profit_line.get_top(), aligned_edge=LEFT, buff=0.25)
+            .shift(DOWN * 0.25))
         self.play(Create(profit_text, run_time=1.0))
         self.wait(1.0)
 

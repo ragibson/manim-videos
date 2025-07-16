@@ -12,9 +12,18 @@ OCC_options_ADV = {1973: 6470, 1974: 22462, 1975: 71553, 1976: 127960, 1977: 157
                    2018: 20466938, 2019: 19440621, 2020: 29513935, 2021: 39167335, 2022: 41117424, 2023: 44207806,
                    2024: 48508840, 2025: 58971333}
 
-# TODO: apply this across all scenes for consistency, with some exceptions
-MAIN_FONT_SIZE = 36
-MAIN_TEX_SIZE = 46
+# I thought this would be helpful for text size consistency across the scripts but frankly there are enough exceptions
+# that it wasn't particularly useful. TEXT_SIZE_MEDIUM is a similar size to math mode MATH_SIZE_MEDIUM.
+TEXT_SIZE_TINY = 24
+TEXT_SIZE_XSMALL = 28
+TEXT_SIZE_SMALL = 32
+TEXT_SIZE_MEDIUM_SMALL = 34
+TEXT_SIZE_MEDIUM = 36
+TEXT_SIZE_LARGE = 40
+
+MATH_SIZE_TINY = 32
+MATH_SIZE_XSMALL = 36
+MATH_SIZE_MEDIUM = 46
 
 
 def simple_stock_simulation(start_price=100, sigma=0.15, dt=1 / 252, T=1, seed=0):

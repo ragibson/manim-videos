@@ -1,6 +1,8 @@
 from manim import *
 from scipy.stats import norm, lognorm
 
+from shared_data_and_functions import *
+
 
 class DesiredSimulationQualities(Scene):
     def normal_allows_negative_prices(self, title_text, first_quality_text):
@@ -17,8 +19,8 @@ class DesiredSimulationQualities(Scene):
         # HACK: manually adding in dollar signs on the x-axis label numbers
         ax.x_axis.add_labels({i: fr"\${i:.0f}" if i >= 0 else fr"-\${abs(i):.0f}"
                               for i in np.arange(*ax.x_range)})
-        labels = ax.get_axis_labels(x_label=Tex(r"\text{Stock Price}", font_size=36),
-                                    y_label=Tex(r"\text{Distribution Density}", font_size=36))
+        labels = ax.get_axis_labels(x_label=Tex(r"\text{Stock Price}", font_size=TEXT_SIZE_MEDIUM),
+                                    y_label=Tex(r"\text{Distribution Density}", font_size=TEXT_SIZE_MEDIUM))
         self.play(Create(ax), Write(labels))
         self.wait(1.0)
 
@@ -44,7 +46,8 @@ class DesiredSimulationQualities(Scene):
             ax.plot(lambda x: norm.pdf(x, loc=20, scale=scale_tracker.get_value())),
             x_range=(-10, 0), color=RED, opacity=0.75
         )
-        negative_text = Text("Negative Stock Prices?", font_size=36, color=RED).next_to(negative_area, DOWN, buff=0.75)
+        negative_text = (Text("Negative Stock Prices?", font_size=TEXT_SIZE_MEDIUM, color=RED)
+                         .next_to(negative_area, DOWN, buff=0.75))
         self.play(FadeIn(negative_area), FadeIn(negative_text), run_time=1.0)
         self.wait(1.0)
 
@@ -73,7 +76,7 @@ class DesiredSimulationQualities(Scene):
         self.play(Create(hd_price_rectangle))
         self.wait(1.0)
 
-        comparison_text = (Text("Stock prices cannot be compared directly!", font_size=36, color=RED)
+        comparison_text = (Text("Stock prices cannot be compared directly!", font_size=TEXT_SIZE_MEDIUM, color=RED)
                            .align_to(ORIGIN, ORIGIN).shift(DOWN * 3.25))
         self.play(Create(comparison_text))
         self.wait(1.0)
@@ -92,16 +95,16 @@ class DesiredSimulationQualities(Scene):
     def relative_moves_should_compound(self, third_quality_text):
         # have to split these to get the alignment right
         left_text = VGroup(
-            Tex(r"Starting Price:", font_size=40),
-            Tex(r"Increase 10\%:", font_size=40),
-            Tex(r"Increase 10\%:", font_size=40),
-            Tex(r"Increase 10\%:", font_size=40),
+            Tex(r"Starting Price:", font_size=TEXT_SIZE_MEDIUM),
+            Tex(r"Increase 10\%:", font_size=TEXT_SIZE_MEDIUM),
+            Tex(r"Increase 10\%:", font_size=TEXT_SIZE_MEDIUM),
+            Tex(r"Increase 10\%:", font_size=TEXT_SIZE_MEDIUM),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.25).align_to(ORIGIN, RIGHT).shift(LEFT * 0.5)
         right_math = VGroup(
-            MathTex(r"\$100", font_size=40),
-            MathTex(r"\$100 \cdot 1.10 = \$110", font_size=40),
-            MathTex(r"\$110 \cdot 1.10 = \$121", font_size=40),
-            MathTex(r"\$121 \cdot 1.10 \approx \$133", font_size=40),
+            MathTex(r"\$100", font_size=TEXT_SIZE_MEDIUM),
+            MathTex(r"\$100 \cdot 1.10 = \$110", font_size=TEXT_SIZE_MEDIUM),
+            MathTex(r"\$110 \cdot 1.10 = \$121", font_size=TEXT_SIZE_MEDIUM),
+            MathTex(r"\$121 \cdot 1.10 \approx \$133", font_size=TEXT_SIZE_MEDIUM),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.25).next_to(left_text, RIGHT, buff=0.5)
 
         for text, expression in zip(left_text, right_math):
@@ -116,7 +119,7 @@ class DesiredSimulationQualities(Scene):
         self.wait(1.0)
 
     def set_up_exercise(self, quality_texts):
-        exercise_label = (Text("Exercise #2:", color=YELLOW, font_size=36)
+        exercise_label = (Text("Exercise #2:", color=YELLOW, font_size=TEXT_SIZE_MEDIUM)
                           .next_to(quality_texts[-1], DOWN, buff=1.0).to_edge(LEFT, buff=0.5))
         exercise_text = Tex(
             r"\begin{flushleft}"  # a bit of a weird hack to get left-aligned multi-line latex
@@ -124,17 +127,17 @@ class DesiredSimulationQualities(Scene):
             r"transform a normal distribution and use it to \\"
             r"construct $S(t)$ so that it has these three qualities?"
             r"\end{flushleft}",
-            font_size=46  # approximately the equivalent of text font size 36
+            font_size=MATH_SIZE_MEDIUM
         ).next_to(exercise_label, RIGHT, buff=0.25).align_to(exercise_label, UP)
         self.play(Write(exercise_label))
         self.play(Write(exercise_text))
         self.wait(1.0)
 
         # placeholder for hint, viewers can do the exercise without it by pausing
-        hint_label = (Text("Hint:", font_size=36).next_to(exercise_text, DOWN, buff=0.5)
+        hint_label = (Text("Hint:", font_size=TEXT_SIZE_MEDIUM).next_to(exercise_text, DOWN, buff=0.5)
                       .align_to(exercise_label, RIGHT))
-        hint_countdown = (Text("(revealed in 5 seconds)", font_size=36).next_to(hint_label, RIGHT, buff=0.25)
-                          .align_to(hint_label, UP))
+        hint_countdown = (Text("(revealed in 5 seconds)", font_size=TEXT_SIZE_MEDIUM)
+                          .next_to(hint_label, RIGHT, buff=0.25).align_to(hint_label, UP))
         self.play(Write(hint_label))
         self.play(Write(hint_countdown))
         self.wait(5.0)
@@ -144,7 +147,7 @@ class DesiredSimulationQualities(Scene):
             r"Normal distributions ``add together.'' What kind \\"
             r"of function turns adding into multiplying?"
             r"\end{flushleft}",
-            font_size=46
+            font_size=MATH_SIZE_MEDIUM
         ).next_to(hint_label, RIGHT, buff=0.25).align_to(hint_label, UP)
         self.play(FadeOut(hint_countdown))
         self.play(Write(hint_text))
@@ -162,7 +165,8 @@ class DesiredSimulationQualities(Scene):
             y_axis_config={"include_numbers": False},
             tips=False
         ).to_edge(DOWN, buff=0.5).to_edge(LEFT, buff=2.0)
-        exp_labels = exp_plot.get_axis_labels(x_label=Tex(r"$x$", font_size=36), y_label=Tex(r"$e^{x}$", font_size=36))
+        exp_labels = exp_plot.get_axis_labels(x_label=Tex(r"$x$", font_size=MATH_SIZE_XSMALL),
+                                              y_label=Tex(r"$e^{x}$", font_size=MATH_SIZE_XSMALL))
         exp_graph = exp_plot.plot_line_graph(
             x_values=np.linspace(*exp_plot.x_range[:2], 1000),
             y_values=np.exp(np.linspace(*exp_plot.x_range[:2], 1000)),
@@ -173,15 +177,16 @@ class DesiredSimulationQualities(Scene):
         self.wait(1.0)
 
         # bottom-right: turning adding into multiplying
-        exp_tex = (Tex(r"$e^{x+y} = e^{x} \cdot e^{y}$", font_size=46)
+        exp_tex = (Tex(r"$e^{x+y} = e^{x} \cdot e^{y}$", font_size=MATH_SIZE_MEDIUM)
                    .next_to(exp_plot, RIGHT, buff=1.0).align_to(exp_plot, UP))
         self.play(Write(exp_tex))
         self.wait(1.0)
 
         # isolating mu and sigma so we can emphasize them as the parameters we want to determine
-        consider_lognormal = MathTex(r"\text{Consider } \dfrac{S(t)}{S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)"
-                                     r"\text{!}", substrings_to_isolate=[r"\mu", r"\sigma^2"],
-                                     font_size=46).next_to(exp_tex, DOWN, buff=0.5).align_to(exp_tex, LEFT)
+        consider_lognormal = (MathTex(r"\text{Consider } \dfrac{S(t)}{S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)"
+                                      r"\text{!}", substrings_to_isolate=[r"\mu", r"\sigma^2"],
+                                      font_size=MATH_SIZE_MEDIUM)
+                              .next_to(exp_tex, DOWN, buff=0.5).align_to(exp_tex, LEFT))
         self.play(Write(consider_lognormal))
         self.wait(1.0)
 
@@ -192,12 +197,12 @@ class DesiredSimulationQualities(Scene):
         return consider_lognormal
 
     def discuss_lognormal(self, lognormal_header):
-        lognormal_text = (Text('"Lognormal Distribution"', font_size=36, color=BLUE)
+        lognormal_text = (Text('"Lognormal Distribution"', font_size=TEXT_SIZE_MEDIUM, color=BLUE)
                           .next_to(lognormal_header, DOWN, buff=0.5).to_edge(LEFT, buff=1.0))
         self.play(Write(lognormal_text))
 
         nomenclature_explanation = (Tex(r"$X \sim \exp\left(N(\mu, \sigma^2)\right) \iff "
-                                        r"\ln\left(X\right) \sim N(\mu, \sigma^2)$", font_size=46)
+                                        r"\ln\left(X\right) \sim N(\mu, \sigma^2)$", font_size=MATH_SIZE_MEDIUM)
                                     .next_to(lognormal_text, DOWN, buff=0.5).align_to(lognormal_text, LEFT)
                                     .shift(RIGHT * 1.0))
         self.play(Write(nomenclature_explanation))
@@ -218,8 +223,8 @@ class DesiredSimulationQualities(Scene):
         # HACK: manually adding in dollar signs on the x-axis label numbers
         ax.x_axis.add_labels({i: fr"\${i:.0f}" if i >= 0 else fr"-\${abs(i):.0f}"
                               for i in np.arange(*ax.x_range)})
-        labels = ax.get_axis_labels(x_label=Tex(r"\text{Stock Price}", font_size=36),
-                                    y_label=Tex(r"\text{Normal Distribution Density}", font_size=36))
+        labels = ax.get_axis_labels(x_label=Tex(r"\text{Stock Price}", font_size=TEXT_SIZE_MEDIUM),
+                                    y_label=Tex(r"\text{Normal Distribution Density}", font_size=TEXT_SIZE_MEDIUM))
         self.play(Create(ax), Write(labels))
 
         plot_xs = np.linspace(*ax.x_range[:2], 1000)
@@ -236,7 +241,7 @@ class DesiredSimulationQualities(Scene):
                                             line_color=BLUE, add_vertex_dots=False, z_index=1)
         self.add(normal_dist_original)
         self.play(ReplacementTransform(price_distribution, lognormal_dist),
-                  Transform(labels[1], Tex(r"\text{Lognormal Distribution Density}", font_size=36)
+                  Transform(labels[1], Tex(r"\text{Lognormal Distribution Density}", font_size=TEXT_SIZE_MEDIUM)
                             .move_to(labels[1], aligned_edge=LEFT)), run_time=2.0)
         self.wait(1.0)
 
@@ -245,13 +250,13 @@ class DesiredSimulationQualities(Scene):
             start=ax.c2p(-20, 0.025), end=ax.c2p(3, specific_lognorm_pdf(3)),
             color=RED, buff=0
         )
-        left_text = (Text("No negatives!", font_size=36, color=RED)
+        left_text = (Text("No negatives!", font_size=TEXT_SIZE_MEDIUM, color=RED)
                      .next_to(left_arrow.get_start(), UP, buff=0.0).shift(LEFT * 1.0))
         right_arrow = Arrow(
             start=ax.c2p(55, 0.025), end=ax.c2p(45, specific_lognorm_pdf(45)),
             color=GREEN, buff=0
         )
-        right_text = (Text("Compounding returns!", font_size=36, color=GREEN)
+        right_text = (Text("Compounding returns!", font_size=TEXT_SIZE_MEDIUM, color=GREEN)
                       .next_to(right_arrow.get_start(), UP, buff=0.0).shift(RIGHT * 1.0))
 
         self.play(Create(left_arrow), Write(left_text))
@@ -268,7 +273,7 @@ class DesiredSimulationQualities(Scene):
                                          lognormal_header, left_arrow, left_text, right_arrow, right_text)])
 
     def construct(self):
-        title_text = Text("How to Simulate Stock Prices?", font_size=36).to_edge(UP, buff=0.5)
+        title_text = Text("How to Simulate Stock Prices?", font_size=TEXT_SIZE_MEDIUM).to_edge(UP, buff=0.5)
         self.play(Write(title_text))
 
         # Even though we're rendering all these lines at separate times, we need to have this as a shared paragraph
@@ -278,7 +283,7 @@ class DesiredSimulationQualities(Scene):
             "#1: Prices should not go negative",
             "#2: Price moves should be relative",
             "#3: Relative changes should multiply, not add",
-            font_size=32, alignment="left", line_spacing=0.75
+            font_size=TEXT_SIZE_SMALL, alignment="left", line_spacing=0.75
         ).move_to(title_text, aligned_edge=UP).align_to(title_text, LEFT)
 
         # misnomer in Manim, chars is a VGroup of the three lines of text (each a VGroup)

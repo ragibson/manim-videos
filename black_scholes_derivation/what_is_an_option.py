@@ -1,6 +1,6 @@
 from manim import *
 
-from shared_data_and_functions import simple_stock_simulation
+from shared_data_and_functions import *
 
 
 class WhatIsAStock(Scene):
@@ -11,7 +11,7 @@ class WhatIsAStock(Scene):
             for i in range(3) for j in range(4)
         ])
         company_blocks.move_to(ORIGIN)
-        company_label = Text("Company", font_size=36).next_to(company_blocks, DOWN, buff=0.3)
+        company_label = Text("Company", font_size=TEXT_SIZE_MEDIUM).next_to(company_blocks, DOWN, buff=0.3)
 
         # company's product shown above the company
         company_product = Triangle(radius=0.3, color=ORANGE, fill_opacity=0.7)
@@ -23,7 +23,7 @@ class WhatIsAStock(Scene):
         # breaking off one of the shares of the company, moving to left
         share_block = company_blocks[0].copy()
         share_block.set_color(RED)
-        share_label = Text("Share (Stock)", font_size=36)
+        share_label = Text("Share (Stock)", font_size=TEXT_SIZE_MEDIUM)
 
         self.play(
             share_block.animate.move_to(LEFT * 4).align_to(company_blocks, DOWN),
@@ -37,11 +37,11 @@ class WhatIsAStock(Scene):
         customer = Circle(radius=0.5, color=GREEN, fill_opacity=0.7)
         customer.shift(RIGHT * 4)
         customer.align_to(company_blocks, DOWN)
-        customer_label = Text("Customer", font_size=36).next_to(customer, DOWN, buff=0.3)
+        customer_label = Text("Customer", font_size=TEXT_SIZE_MEDIUM).next_to(customer, DOWN, buff=0.3)
         customer_label.align_to(company_label, DOWN)
 
         customer_money = VGroup([
-            Text("$", font_size=32, color=YELLOW).move_to(customer.get_center() + RIGHT * (i - 1) * 0.2)
+            Text("$", font_size=TEXT_SIZE_SMALL, color=YELLOW).move_to(customer.get_center() + RIGHT * (i - 1) * 0.2)
             for i in range(3)
         ])
         self.play(FadeIn(company_product))
@@ -57,7 +57,7 @@ class WhatIsAStock(Scene):
         self.wait(1.0)
 
         # moving a tiny amount of the profit to the share on the left
-        profit_money = Text("$", font_size=28, color=YELLOW)
+        profit_money = Text("$", font_size=TEXT_SIZE_XSMALL, color=YELLOW)
         profit_money.move_to(customer_money[0].get_center())
         self.play(
             Transform(customer_money[0], profit_money),
@@ -146,11 +146,11 @@ class WhatIsAnOption(Scene):
             f'• on a <span foreground="{BLUE}">specific date</span> in the future.<sup>*</sup>'
         ]
 
-        option_definition_lines = (VGroup(*[MarkupText(line, font_size=36) for line in lines])
+        option_definition_lines = (VGroup(*[MarkupText(line, font_size=TEXT_SIZE_MEDIUM) for line in lines])
                                    .arrange(DOWN, aligned_edge=LEFT, buff=0.25)
                                    .to_edge(UP))
         footnote = Tex(r"$^*$Technically, this specific type is called a ``European call option''.",
-                       font_size=24)
+                       font_size=TEXT_SIZE_TINY)
         footnote.to_edge(DOWN, buff=0.25).align_to(option_definition_lines, LEFT)
 
         for line in option_definition_lines[:-1]:
@@ -163,7 +163,7 @@ class WhatIsAnOption(Scene):
         # briefly mention standard financial-ese here on the right but not the obligation
         alternate_line2 = MarkupText(
             f'• gives you the <span foreground="{YELLOW}">right, but not the obligation,</span> to buy a stock',
-            font_size=34
+            font_size=TEXT_SIZE_MEDIUM_SMALL
         )
         alternate_line2.move_to(option_definition_lines[1].get_left(), aligned_edge=LEFT)
         original_line2 = option_definition_lines[1].copy()
@@ -176,14 +176,14 @@ class WhatIsAnOption(Scene):
 
     def written_example(self, option_definition_lines, footnote):
         # example to make things a bit more concrete
-        example_text = (MarkupText("Example: ", font_size=32)
+        example_text = (MarkupText("Example: ", font_size=TEXT_SIZE_SMALL)
                         .next_to(option_definition_lines.get_bottom(), DOWN, buff=1.0)
                         .to_edge(LEFT, buff=0.5))
         example_body = MarkupText(
             f'You buy an <span foreground="{YELLOW}">option to buy 1 share</span> of Apple\'s stock\n'
             f'<span foreground="{GREEN}">for $300</span> in '
             f'<span foreground="{BLUE}">3 months</span>.',
-            font_size=32
+            font_size=TEXT_SIZE_SMALL
         ).next_to(example_text, RIGHT, buff=0.25).align_to(example_text, UP)
         self.play(Write(example_text), run_time=0.25)
         self.play(FadeOut(footnote), Write(example_body))
@@ -193,7 +193,7 @@ class WhatIsAnOption(Scene):
             f'• If Apple\'s stock increases to $325, you make $25!',
             f'• If Apple\'s stock falls to $275, you make nothing.',
         ]
-        example_lines = (VGroup(*[MarkupText(line, font_size=32) for line in lines])
+        example_lines = (VGroup(*[MarkupText(line, font_size=TEXT_SIZE_SMALL) for line in lines])
                          .arrange(DOWN, aligned_edge=LEFT, buff=0.25)
                          .next_to(example_body, DOWN, buff=0.25)
                          .align_to(option_definition_lines, LEFT))
@@ -240,14 +240,14 @@ class WhatIsAnOption(Scene):
         option_premium_brace = (BraceBetweenPoints(ax.c2p(275, -9 / 0.5), ax.c2p(275, -0.5),
                                                    direction=LEFT, z_index=3)
                                 .scale(0.5).move_to(ax.c2p(275, -0.5), aligned_edge=UP))
-        option_premium_text = Tex(r"\text{Option Price (``Premium'')}", font_size=36)
+        option_premium_text = Tex(r"\text{Option Price (``Premium'')}", font_size=TEXT_SIZE_MEDIUM)
         option_premium_text.next_to(option_premium_brace, LEFT, buff=0.1)
 
         # (manually) centering y-axis at $300 instead of $0
         # probably there was a better way to do this
         ax.get_axes()[1].shift(ax.c2p(300, 0) - ax.c2p(ax.x_range[0], 0))
-        labels = ax.get_axis_labels(x_label=Tex(r"\text{Final Stock Price}", font_size=36, z_index=4),
-                                    y_label=Tex(r"\text{Option Profit}", font_size=36, z_index=4))
+        labels = ax.get_axis_labels(x_label=Tex(r"\text{Final Stock Price}", font_size=TEXT_SIZE_MEDIUM, z_index=4),
+                                    y_label=Tex(r"\text{Option Profit}", font_size=TEXT_SIZE_MEDIUM, z_index=4))
         labels.shift(DOWN * 0.25)
 
         self.play(Create(ax), Create(labels))

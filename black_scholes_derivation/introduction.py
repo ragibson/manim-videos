@@ -1,11 +1,12 @@
 from manim import *
 
-from shared_data_and_functions import OCC_options_ADV  # noqa
+from shared_data_and_functions import *
 
 
 class BlackScholesIntroduction(Scene):
     def play_BSM_title(self):
-        title = Text("1973: Black-Scholes-Merton Formula for Pricing Options", font_size=36, t2c={"1973": YELLOW})
+        title = Text("1973: Black-Scholes-Merton Formula for Pricing Options", font_size=TEXT_SIZE_MEDIUM,
+                     t2c={"1973": YELLOW})
         title.to_edge(UP, buff=0.5)
 
         self.play(Write(title))
@@ -25,9 +26,9 @@ class BlackScholesIntroduction(Scene):
 
         # names beneath the images
         labels = VGroup(
-            Text("Fischer Black", font_size=40),
-            Text("Myron Scholes", font_size=40),
-            Text("Robert Merton", font_size=40)
+            Text("Fischer Black", font_size=TEXT_SIZE_LARGE),
+            Text("Myron Scholes", font_size=TEXT_SIZE_LARGE),
+            Text("Robert Merton", font_size=TEXT_SIZE_LARGE)
         )
         for i, label in enumerate(labels):
             label.next_to(images[i], DOWN, buff=0.3)
@@ -89,17 +90,17 @@ class BlackScholesIntroduction(Scene):
 
 class BlackScholesTraditionalDerivation(Scene):
     def construct(self):
-        title = Text("Traditional Derivation is Complicated!", font_size=36, t2c={"Complicated!": RED})
+        title = Text("Traditional Derivation is Complicated!", font_size=TEXT_SIZE_MEDIUM, t2c={"Complicated!": RED})
         title.to_edge(UP)
         self.play(Write(title))
         self.wait(0.5)
 
         # bullet points of topics
         topics = VGroup(  # probably could've used BulletedList here
-            Text("• Basic Probability & Statistics", font_size=32),
-            Text("• Portfolio Hedging", font_size=32),
-            Text("• Stochastic Calculus", font_size=32),
-            Text("• Partial Differential Equations", font_size=32),
+            Text("• Basic Probability & Statistics", font_size=TEXT_SIZE_SMALL),
+            Text("• Portfolio Hedging", font_size=TEXT_SIZE_SMALL),
+            Text("• Stochastic Calculus", font_size=TEXT_SIZE_SMALL),
+            Text("• Partial Differential Equations", font_size=TEXT_SIZE_SMALL),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.75)
         topics.to_edge(LEFT, buff=0.5)
         topics.shift(DOWN * 0.5)
@@ -107,11 +108,11 @@ class BlackScholesTraditionalDerivation(Scene):
         # "complicated looking" math on the right side
         math_exprs = VGroup(
             MathTex(r"\mathbb{E}[X], \quad N\left(\mu, \sigma^2\right), \quad "
-                    r"F(x) = \int_{-\infty}^x f(x)\, \text{d}x", font_size=32),
-            MathTex(r"\Pi = \Delta S - V", font_size=32),
-            MathTex(r"dS = \mu S dt + \sigma S dW_t", font_size=32),
+                    r"F(x) = \int_{-\infty}^x f(x)\, \text{d}x", font_size=MATH_SIZE_TINY),
+            MathTex(r"\Pi = \Delta S - V", font_size=MATH_SIZE_TINY),
+            MathTex(r"dS = \mu S dt + \sigma S dW_t", font_size=MATH_SIZE_TINY),
             MathTex(r"\frac{\partial V}{\partial t} + \frac{1}{2} \sigma^2 S^2 \frac{\partial^2 V}{\partial S^2} "
-                    r"+ r S \frac{\partial V}{\partial S} - rV = 0", font_size=32)
+                    r"+ r S \frac{\partial V}{\partial S} - rV = 0", font_size=MATH_SIZE_TINY)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.75)
         math_exprs.next_to(topics, RIGHT, buff=1.0)
         math_exprs.to_edge(RIGHT, buff=0.5)
@@ -128,10 +129,11 @@ class BlackScholesTraditionalDerivation(Scene):
 
         # going to transform selected words in title to switch to simpler derivation
         first_word = title[0:len("Traditional")]
-        new_first_word = Text("Alternate", font_size=36).next_to(first_word.get_right(), LEFT, buff=0.0)
+        new_first_word = Text("Alternate", font_size=TEXT_SIZE_MEDIUM).next_to(first_word.get_right(), LEFT, buff=0.0)
         last_word = title[-len("Complicated!"):]
-        new_last_word = Text("Simpler!", font_size=36, t2c={"Simpler!": GREEN}).next_to(last_word.get_left(), RIGHT,
-                                                                                        buff=0.0)
+        new_last_word = Text("Simpler!", font_size=TEXT_SIZE_MEDIUM, t2c={"Simpler!": GREEN}).next_to(
+            last_word.get_left(), RIGHT,
+            buff=0.0)
         self.play(
             *[Create(cross, run_time=2.0) for cross in xmarks],
             topics[0].animate(run_time=0.5).set_color(GREEN),
@@ -147,16 +149,18 @@ class BlackScholesTraditionalDerivation(Scene):
 
 class LookingAhead(Scene):
     def construct(self):
-        title = Text('Looking Ahead: "Pricing an Option"', font_size=36, t2c={'"Pricing an Option"': BLUE})
+        title = Text('Looking Ahead: "Pricing an Option"', font_size=TEXT_SIZE_MEDIUM,
+                     t2c={'"Pricing an Option"': BLUE})
         title.to_edge(UP)
         self.play(Write(title))
         self.wait(0.5)
 
         # bullet points of topics
         topics = VGroup(  # probably could've used BulletedList here
-            Text("• What is a stock? What is an option?", font_size=36, t2c={"option": YELLOW}),
-            Text("• How would you assign a fair price for an option?", font_size=36, t2c={"fair price": YELLOW}),
-            Text("• Making things fully analytical", font_size=36, t2c={"analytical": YELLOW})
+            Text("• What is a stock? What is an option?", font_size=TEXT_SIZE_MEDIUM, t2c={"option": YELLOW}),
+            Text("• How would you assign a fair price for an option?", font_size=TEXT_SIZE_MEDIUM,
+                 t2c={"fair price": YELLOW}),
+            Text("• Making things fully analytical", font_size=TEXT_SIZE_MEDIUM, t2c={"analytical": YELLOW})
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.75)
         topics.to_edge(LEFT, buff=1.0)
 
