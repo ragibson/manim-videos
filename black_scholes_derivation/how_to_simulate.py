@@ -95,16 +95,16 @@ class DesiredSimulationQualities(Scene):
     def relative_moves_should_compound(self, third_quality_text):
         # have to split these to get the alignment right
         left_text = VGroup(
-            Tex(r"Starting Price:", font_size=TEXT_SIZE_MEDIUM),
-            Tex(r"Increase 10\%:", font_size=TEXT_SIZE_MEDIUM),
-            Tex(r"Increase 10\%:", font_size=TEXT_SIZE_MEDIUM),
-            Tex(r"Increase 10\%:", font_size=TEXT_SIZE_MEDIUM),
+            Tex(r"Starting Price:", font_size=MATH_SIZE_MEDIUM),
+            Tex(r"Increase 10\%:", font_size=MATH_SIZE_MEDIUM),
+            Tex(r"Increase 10\%:", font_size=MATH_SIZE_MEDIUM),
+            Tex(r"Increase 10\%:", font_size=MATH_SIZE_MEDIUM),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.25).align_to(ORIGIN, RIGHT).shift(LEFT * 0.5)
         right_math = VGroup(
-            MathTex(r"\$100", font_size=TEXT_SIZE_MEDIUM),
-            MathTex(r"\$100 \cdot 1.10 = \$110", font_size=TEXT_SIZE_MEDIUM),
-            MathTex(r"\$110 \cdot 1.10 = \$121", font_size=TEXT_SIZE_MEDIUM),
-            MathTex(r"\$121 \cdot 1.10 \approx \$133", font_size=TEXT_SIZE_MEDIUM),
+            MathTex(r"\$100", font_size=MATH_SIZE_MEDIUM),
+            MathTex(r"\$100 \cdot 1.10 = \$110", font_size=MATH_SIZE_MEDIUM),
+            MathTex(r"\$110 \cdot 1.10 = \$121", font_size=MATH_SIZE_MEDIUM),
+            MathTex(r"\$121 \cdot 1.10 \approx \$133", font_size=MATH_SIZE_MEDIUM),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.25).next_to(left_text, RIGHT, buff=0.5)
 
         for text, expression in zip(left_text, right_math):
@@ -165,8 +165,8 @@ class DesiredSimulationQualities(Scene):
             y_axis_config={"include_numbers": False},
             tips=False
         ).to_edge(DOWN, buff=0.5).to_edge(LEFT, buff=2.0)
-        exp_labels = exp_plot.get_axis_labels(x_label=Tex(r"$x$", font_size=MATH_SIZE_XSMALL),
-                                              y_label=Tex(r"$e^{x}$", font_size=MATH_SIZE_XSMALL))
+        exp_labels = exp_plot.get_axis_labels(x_label=Tex(r"$x$", font_size=MATH_SIZE_MEDIUM),
+                                              y_label=Tex(r"$e^{x}$", font_size=MATH_SIZE_MEDIUM))
         exp_graph = exp_plot.plot_line_graph(
             x_values=np.linspace(*exp_plot.x_range[:2], 1000),
             y_values=np.exp(np.linspace(*exp_plot.x_range[:2], 1000)),

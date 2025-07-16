@@ -63,7 +63,9 @@ class BlackScholesIntroduction(Scene):
             }
         )
         axes.next_to(title, DOWN, buff=1.0)
-        x_label, y_label = axes.get_axis_labels(x_label=r"\text{Year}", y_label=r"\text{Average Daily Trading Volume}")
+        x_label, y_label = axes.get_axis_labels(x_label=Tex(r"\text{Year}", font_size=MATH_SIZE_MEDIUM),
+                                                y_label=Tex(r"\text{Average Daily Trading Volume}",
+                                                            font_size=MATH_SIZE_MEDIUM))
 
         graph = axes.plot_line_graph(
             x_values=list(OCC_options_ADV.keys()),
