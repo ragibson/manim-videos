@@ -54,23 +54,20 @@ class DeterminingDistributionParameters(Scene):
 
     def consider_S1(self):
         # TODO: text header for this section?
-        header_with_t = MathTex(r"\dfrac{S(t)}{S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)",
-                                substrings_to_isolate=[r"\mu", r"\sigma^2"],
-                                font_size=MATH_SIZE_MEDIUM).to_edge(UP, buff=0.5)
+        math_header = MathTex(r"{S(t ) \over S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)",
+                              substrings_to_isolate=["t ", r"\mu", r"\sigma^2"],
+                              font_size=MATH_SIZE_MEDIUM).to_edge(UP, buff=0.5)
+        t = math_header[1]
+        one = MathTex("1", font_size=MATH_SIZE_MEDIUM, color=BLUE).move_to(t.get_center())
 
-        # doesn't seem to be a better way to get this to render properly when swapping out t -> 1
-        header_with_1 = MathTex(r"\dfrac{S(1)}{S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)",
-                                substrings_to_isolate=[r"\mu", r"\sigma^2"],
-                                font_size=MATH_SIZE_MEDIUM).to_edge(UP, buff=0.5)
-
-        self.play(Write(header_with_t))
+        self.play(Write(math_header))
         self.wait(1.0)
 
-        mu_substring, sigma_substring = header_with_t[1], header_with_t[3]
+        mu_substring, sigma_substring = math_header[3], math_header[5]
         self.play(Circumscribe(mu_substring), Circumscribe(sigma_substring))
         self.wait(1.0)
 
-        self.play(ReplacementTransform(header_with_t, header_with_1))
+        self.play(ReplacementTransform(t, one))
         self.wait(1.0)
 
         self.play(Indicate(mu_substring), mu_substring.animate.set_color(YELLOW))
@@ -85,7 +82,7 @@ class DeterminingDistributionParameters(Scene):
             axis_config={"include_numbers": False},
             y_axis_config={"include_numbers": True},
             tips=False
-        ).next_to(header_with_t, DOWN, buff=1.0).align_to(ORIGIN, LEFT + RIGHT)
+        ).next_to(math_header, DOWN, buff=1.0).align_to(ORIGIN, LEFT + RIGHT)
 
         (labels, price_distribution, normal_dist_original, specific_lognorm_pdf, lognormal_dist,
          left_arrow, left_text, right_arrow, right_text) = create_normal_lognormal_comparison(ax)
