@@ -1,4 +1,5 @@
 from manim import *
+from scipy.optimize import bisect
 
 from how_to_simulate import create_normal_lognormal_comparison
 from shared_data_and_functions import *
@@ -84,7 +85,7 @@ class DeterminingDistributionParameters(Scene):
             tips=False
         ).next_to(math_header, DOWN, buff=1.0).align_to(ORIGIN, LEFT + RIGHT)
 
-        (labels, price_distribution, normal_dist_original, specific_lognorm_pdf, lognormal_dist,
+        (labels, price_distribution, specific_norm_pdf, normal_dist_original, specific_lognorm_pdf, lognormal_dist,
          left_arrow, left_text, right_arrow, right_text) = create_normal_lognormal_comparison(ax)
         self.play(*[FadeIn(x) for x in (ax, labels, price_distribution)])  # original normal distribution
         self.wait(1.0)
@@ -94,7 +95,30 @@ class DeterminingDistributionParameters(Scene):
         self.play(ReplacementTransform(price_distribution, lognormal_dist),
                   Transform(labels[1], Tex(r"\text{Lognormal Distribution Density}", font_size=TEXT_SIZE_MEDIUM)
                             .move_to(labels[1], aligned_edge=LEFT)), run_time=2.0)
-        self.wait(5.0)
+        self.wait(2.0)
+
+        # highlight the areas where the PDF has changed drastically
+        # there's a small hack here that we use get_area() on graphs we don't actually plot because that function
+        # doesn't actually work on the output from the plot_line_graph() function we were using earlier
+        left_pdf_intersection = bisect(lambda x: (specific_norm_pdf(x) - specific_lognorm_pdf(x)), 0, 15, xtol=1e-8)
+        right_pdf_intersection = bisect(lambda x: (specific_norm_pdf(x) - specific_lognorm_pdf(x)), 30, 50, xtol=1e-8)
+        lognorm_graph = ax.plot(specific_lognorm_pdf, x_range=ax.x_range[:2])
+        norm_graph = ax.plot(specific_norm_pdf, x_range=ax.x_range[:2])
+        left_area = ax.get_area(lognorm_graph, x_range=(ax.x_range[0], left_pdf_intersection),
+                                bounded_graph=norm_graph, color=YELLOW)
+        right_area = ax.get_area(lognorm_graph, x_range=(right_pdf_intersection, ax.x_range[1]),
+                                 bounded_graph=norm_graph, color=YELLOW)
+
+        # actually render out the bounded areas
+        # TODO: better way to display this area? sweeping left-to-right?
+        self.play(DrawBorderThenFill(left_area), rate_func=linear)
+        self.wait(1.0)
+        self.play(FadeOut(left_area))
+        self.wait(1.0)
+        self.play(DrawBorderThenFill(right_area), rate_func=linear)
+        self.wait(1.0)
+        self.play(FadeOut(right_area))
+        self.wait(1.0)
 
         self.play(*[FadeOut(x) for x in (ax, labels, price_distribution, normal_dist_original, lognormal_dist)])
         self.wait(1.0)

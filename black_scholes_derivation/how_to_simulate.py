@@ -14,7 +14,8 @@ def create_normal_lognormal_comparison(ax):
 
     plot_xs = np.linspace(*ax.x_range[:2], 1000)
     norm_mu, norm_sigma = 20.0, 10.0
-    price_distribution = ax.plot_line_graph(plot_xs, norm.pdf(plot_xs, loc=norm_mu, scale=norm_sigma),
+    specific_norm_pdf = lambda xs: norm.pdf(xs, loc=norm_mu, scale=norm_sigma)
+    price_distribution = ax.plot_line_graph(plot_xs, specific_norm_pdf(plot_xs),
                                             line_color=BLUE, add_vertex_dots=False, z_index=0)
     normal_dist_original = price_distribution.copy().set_stroke(opacity=0.5).set_color(GRAY)
 
@@ -37,7 +38,7 @@ def create_normal_lognormal_comparison(ax):
     right_text = (Text("Compounding returns!", font_size=TEXT_SIZE_MEDIUM, color=GREEN)
                   .next_to(right_arrow.get_start(), UP, buff=0.0).shift(RIGHT * 1.0))
 
-    return (labels, price_distribution, normal_dist_original, specific_lognorm_pdf, lognormal_dist,
+    return (labels, price_distribution, specific_norm_pdf, normal_dist_original, specific_lognorm_pdf, lognormal_dist,
             left_arrow, left_text, right_arrow, right_text)
 
 
@@ -257,7 +258,7 @@ class DesiredSimulationQualities(Scene):
             tips=False
         ).next_to(lognormal_header, DOWN, buff=1.0).align_to(ORIGIN, LEFT + RIGHT)
 
-        (labels, price_distribution, normal_dist_original, specific_lognorm_pdf, lognormal_dist,
+        (labels, price_distribution, _, normal_dist_original, specific_lognorm_pdf, lognormal_dist,
          left_arrow, left_text, right_arrow, right_text) = create_normal_lognormal_comparison(ax)
 
         self.play(Create(ax), Write(labels))
