@@ -168,7 +168,7 @@ class DesiredSimulationQualities(Scene):
             font_size=MATH_SIZE_MEDIUM
         ).next_to(exercise_label, RIGHT, buff=0.25).align_to(exercise_label, UP)
         self.play(Write(exercise_label))
-        self.play(Write(exercise_text))
+        self.play(Write(exercise_text), run_time=3.0)
         self.wait(1.0)
 
         # placeholder for hint, viewers can do the exercise without it by pausing

@@ -17,7 +17,7 @@ class DeterminingDistributionParameters(Scene):
             font_size=MATH_SIZE_MEDIUM
         ).next_to(exercise_label, RIGHT, buff=0.25).align_to(exercise_label, UP)
         self.play(Write(exercise_label))
-        self.play(Write(exercise_text))
+        self.play(Write(exercise_text), run_time=3.0)
         self.wait(1.0)
 
         remember_label = (Text("Remember:", font_size=TEXT_SIZE_MEDIUM).next_to(exercise_text, DOWN, buff=1.0)
@@ -122,8 +122,39 @@ class DeterminingDistributionParameters(Scene):
 
         self.play(*[FadeOut(x) for x in (ax, labels, price_distribution, normal_dist_original, lognormal_dist)])
         self.wait(1.0)
+        return math_header
+
+    def exercise_mu(self, S1_header):
+        exercise_label = (Text("Exercise #4:", color=YELLOW, font_size=TEXT_SIZE_MEDIUM)
+                          .next_to(S1_header, DOWN, buff=0.5).to_edge(LEFT, buff=1.0))
+        exercise_text = Tex(
+            r"\begin{flushleft}"  # a bit of a weird hack to get left-aligned multi-line latex
+            r"Given $\sigma$, find the value of $\mu$ that keeps the stock \\"
+            r"price flat, on average. That is, $\mathbb{E}\left[S(1)\right] = S(0)$."
+            r"\end{flushleft}",
+            font_size=MATH_SIZE_MEDIUM
+        ).next_to(exercise_label, RIGHT, buff=0.25).align_to(exercise_label, UP)
+        self.play(Write(exercise_label))
+        self.play(Write(exercise_text), run_time=3.0)
+        self.wait(1.0)
+
+        # placeholder for hint, viewers can do the exercise without it by pausing
+        hint_label = (Text("Hint:", font_size=TEXT_SIZE_MEDIUM).next_to(exercise_text, DOWN, buff=0.5)
+                      .align_to(exercise_label, RIGHT))
+        hint_countdown = (Text("(revealed in 5 seconds)", font_size=TEXT_SIZE_MEDIUM)
+                          .next_to(hint_label, RIGHT, buff=0.25).align_to(hint_label, UP))
+        self.play(Write(hint_label))
+        self.play(Write(hint_countdown))
+        self.wait(5.0)
+
+        hint_text = (Tex(r"What happens if $\mu = 0$?", font_size=MATH_SIZE_MEDIUM)
+                     .next_to(hint_label, RIGHT, buff=0.25).align_to(hint_label, UP))
+        self.play(FadeOut(hint_countdown))
+        self.play(Write(hint_text))
+        self.wait(5.0)
 
     def construct(self):
         self.calculate_lognormal_pdf()
 
-        self.consider_S1()
+        S1_header = self.consider_S1()
+        self.exercise_mu(S1_header)
