@@ -139,22 +139,39 @@ class DeterminingDistributionParameters(Scene):
         self.wait(1.0)
 
         # placeholder for hint, viewers can do the exercise without it by pausing
-        hint_label = (Text("Hint:", font_size=TEXT_SIZE_MEDIUM).next_to(exercise_text, DOWN, buff=0.5)
-                      .align_to(exercise_label, RIGHT))
-        hint_countdown = (Text("(revealed in 5 seconds)", font_size=TEXT_SIZE_MEDIUM)
-                          .next_to(hint_label, RIGHT, buff=0.25).align_to(hint_label, UP))
-        self.play(Write(hint_label))
-        self.play(Write(hint_countdown))
+        hint1_label = (Text("Hint #1:", font_size=TEXT_SIZE_MEDIUM).next_to(exercise_text, DOWN, buff=0.5)
+                       .align_to(exercise_label, RIGHT))
+        hint1_countdown = (Text("(revealed in 5 seconds)", font_size=TEXT_SIZE_MEDIUM)
+                           .next_to(hint1_label, RIGHT, buff=0.25).align_to(hint1_label, UP))
+        hint2_label = (Text("Hint #2:", font_size=TEXT_SIZE_MEDIUM).next_to(hint1_label, DOWN, buff=0.5)
+                       .align_to(exercise_label, RIGHT))
+        hint2_countdown = (Text("(revealed in 10 seconds)", font_size=TEXT_SIZE_MEDIUM)
+                           .next_to(hint2_label, RIGHT, buff=0.25).align_to(hint2_label, UP))
+        self.play(Write(hint1_label), Write(hint2_label))
+        self.play(Write(hint1_countdown), Write(hint2_countdown))
         self.wait(5.0)
 
-        hint_text = (Tex(r"What happens if $\mu = 0$?", font_size=MATH_SIZE_MEDIUM)
-                     .next_to(hint_label, RIGHT, buff=0.25).align_to(hint_label, UP))
-        self.play(FadeOut(hint_countdown))
-        self.play(Write(hint_text))
+        hint1_text = (Tex(r"What happens if $\mu = 0$?", font_size=MATH_SIZE_MEDIUM)
+                      .next_to(hint1_label, RIGHT, buff=0.25).align_to(hint1_label, UP))
+        self.play(FadeOut(hint1_countdown))
+        self.play(Write(hint1_text))
+        self.wait(5.0)
+
+        hint2_text = Tex(
+            r"\begin{flushleft}"  # a bit of a weird hack to get left-aligned multi-line latex
+            r"The integral for $\mathbb{E}\left[S(1)\right]$ can be transformed so \\"
+            r"that you're integrating a normal PDF. Then, \\"
+            r"no integration calculations are needed."
+            r"\end{flushleft}",
+            font_size=MATH_SIZE_MEDIUM
+        ).next_to(hint1_label, RIGHT, buff=0.25).align_to(hint2_label, UP)
+        self.play(FadeOut(hint2_countdown))
+        self.play(Write(hint2_text), run_time=3.0)
         self.wait(5.0)
 
         # proceeding onto answer
-        self.play(FadeOut(hint_label), FadeOut(hint_text))
+        self.play(FadeOut(hint1_label), FadeOut(hint1_text))
+        self.play(FadeOut(hint2_label), FadeOut(hint2_text))
         return exercise_label, exercise_text
 
     def exercise_mu_answer(self, S1_header, exercise_label, exercise_text):
