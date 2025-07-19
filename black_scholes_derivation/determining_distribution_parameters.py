@@ -109,13 +109,13 @@ class DeterminingDistributionParameters(Scene):
         right_area = ax.get_area(lognorm_graph, x_range=(right_pdf_intersection, ax.x_range[1]),
                                  bounded_graph=norm_graph, color=YELLOW)
 
-        # actually render out the bounded areas
-        # TODO: better way to display this area? sweeping left-to-right?
-        self.play(DrawBorderThenFill(left_area), rate_func=linear)
+        # actually render out the bounded areas, fading in/out like before
+        # decided not to use DrawBorderThenFill() since it wasn't akin to the sweep I originally thought of
+        self.play(FadeIn(left_area), rate_func=linear)
         self.wait(1.0)
         self.play(FadeOut(left_area))
         self.wait(1.0)
-        self.play(DrawBorderThenFill(right_area), rate_func=linear)
+        self.play(FadeIn(right_area), rate_func=linear)
         self.wait(1.0)
         self.play(FadeOut(right_area))
         self.wait(1.0)
