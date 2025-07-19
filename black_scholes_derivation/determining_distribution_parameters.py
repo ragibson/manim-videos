@@ -203,12 +203,62 @@ class DeterminingDistributionParameters(Scene):
             r"\mathbb{E}\left[\exp\left(N\left(0, \sigma^2\right)\right)\right] &= "
             r"\int_0^{\infty} x \cdot f_{\exp\left(N\left(0, \sigma^2\right)\right)}(x) \text{ d}x \\",
             r"&= \int_0^{\infty} x \cdot \frac{1}{x} \cdot \frac{1}{\sigma\cdot\sqrt{2\pi}} "
-            r"\exp\left(-\frac{\left(\ln x\right)^2}{2\sigma^2}\right) \text{ d}x",
-            font_size=MATH_SIZE_MEDIUM
+            r"\exp\left(-\frac{\left(\ln x\right)^2}{2\sigma^2}\right) \text{ d}x \\",
+            r"&= \int_{-\infty}^{\infty} \frac{1}{\sigma\cdot\sqrt{2\pi}} "
+            r"\exp\left(-\frac{u^2}{2\sigma^2}\right) \cdot \exp(u) \text{ d}u\\",
+            r"&= \int_{-\infty}^{\infty} \frac{1}{\sigma\cdot\sqrt{2\pi}} "
+            r"\exp\left(-\frac{u^2}{2\sigma^2} + u\right) \text{ d}u",
+            font_size=MATH_SIZE_SMALL
         ).to_edge(UP, buff=0.5).to_edge(LEFT, buff=1.0)
-        for line in expectation_body:
+        for line in expectation_body[:2]:
             self.play(Write(line))
             self.wait(1.0)  # TODO: may need to be specific to each line
+
+        line2_replacement = MathTex(
+            r"&= \int_0^{\infty} \frac{1}{\sigma\cdot\sqrt{2\pi}} "
+            r"\exp\left(-\frac{\left(\ln x\right)^2}{2\sigma^2}\right) \text{ d}x",
+            font_size=MATH_SIZE_SMALL
+        ).move_to(expectation_body[1].get_left(), LEFT)
+        self.play(FadeOut(expectation_body[1], shift=LEFT), FadeIn(line2_replacement, shift=LEFT))
+        self.wait(1.0)
+
+        # note about choice of u-substitution
+        u_substitution = MathTex(
+            r"\text{Let } u &= \ln x, \text{ so } \exp(u) = x\\",
+            r"\text{d}u &= \frac{1}{x} \text{ d}x\\",
+            r"\exp(u) \text{ d}u &= \text{d}x",
+            font_size=MATH_SIZE_SMALL, color=BLUE_B
+        ).next_to(expectation_body[1], DOWN, buff=2.0).shift(LEFT * 2.0)
+        for line in u_substitution:
+            self.play(Write(line))
+            self.wait(1.0)
+
+        # continuing on with main body with the u-substitution
+        self.play(Write(expectation_body[2]))
+        self.wait(1.0)
+        self.play(Indicate(expectation_body[2][3:5], scale_factor=1.1))  # change of lower bound: 0 -> {-\infty}
+        self.wait(1.0)
+        self.play(FadeOut(u_substitution))
+        self.wait(1.0)
+
+        # next line with (-u^2/2\sigma^2 + u) in the exp() expression
+        self.play(Write(expectation_body[3]))
+        self.wait(1.0)
+
+        normal_goal = MathTex(
+            r"\text{We want this integrand to look like } \exp\left(-\frac{\left(u-\mu\right)^2}{2\sigma^2}\right)",
+            font_size=MATH_SIZE_SMALL, color=BLUE_B
+        ).next_to(expectation_body[2], DOWN, buff=2.0).shift(LEFT * 2.0)
+        self.play(Write(normal_goal))
+        self.wait(1.0)
+
+        # fade out everything and shift our current line of the derivation up to the top so we have more space
+        self.play(*[FadeOut(x) for x in (
+            expectation_body[0][15:],  # first line beyond equal sign
+            line2_replacement,  # probably should've had expectation_body[1] become() this?
+            expectation_body[2]
+        )], expectation_body[3].animate.align_to(expectation_body[0], UP))
+        self.wait(1.0)
 
     def construct(self):
         self.calculate_lognormal_pdf()
