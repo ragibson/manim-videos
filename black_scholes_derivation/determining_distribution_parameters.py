@@ -37,7 +37,7 @@ class DeterminingDistributionParameters(Scene):
         answer_start = (Tex(r"Let $Y \sim N\left(\mu, \sigma^2\right)$, $X \sim \exp(Y)$", font_size=MATH_SIZE_MEDIUM)
                         .next_to(exercise_text, DOWN, buff=0.5)).to_edge(LEFT, buff=1.0)
         # TODO: not sure I really like the layout of this
-        answer_body_left = MathTex(
+        answer_body = MathTex(
             r"f_X(x) &= \frac{\text{d}}{\text{d}x} \mathbb{P}\left[X \leq x\right]",
             r"= \frac{\text{d}}{\text{d}x}\mathbb{P}\left[Y \leq \ln x\right]",
             r"= \frac{\text{d}}{\text{d}x}F_Y(\ln x)\\",
@@ -47,11 +47,11 @@ class DeterminingDistributionParameters(Scene):
         ).next_to(answer_start, DOWN, buff=0.5).align_to(answer_start, LEFT)
         self.play(Write(answer_start))
         self.wait(1.0)
-        for line in list(answer_body_left):
+        for line in list(answer_body):
             self.play(Write(line))
             self.wait(1.0)  # TODO: may need to be specific to each line
 
-        self.play(*[FadeOut(x) for x in (exercise_label, exercise_text, answer_start, answer_body_left)])
+        self.play(*[FadeOut(x) for x in (exercise_label, exercise_text, answer_start, answer_body)])
 
     def consider_S1(self):
         # TODO: text header for this section?
@@ -153,8 +153,49 @@ class DeterminingDistributionParameters(Scene):
         self.play(Write(hint_text))
         self.wait(5.0)
 
+        # proceeding onto answer
+        self.play(FadeOut(hint_label), FadeOut(hint_text))
+        return exercise_label, exercise_text
+
+    def exercise_mu_answer(self, S1_header, exercise_label, exercise_text):
+        self.wait(1.0)
+
+        answer_start = (Tex(r"Take $\mu = 0$. Then,", font_size=MATH_SIZE_MEDIUM)
+                        .next_to(exercise_text, DOWN, buff=0.5)).to_edge(LEFT, buff=1.0)
+        answer_body = MathTex(
+            r"\mathbb{E}\left[S(1)\right] &= \mathbb{E}\left[S(0) \cdot "
+            r"\exp\left(N\left(0, \sigma^2\right)\right)\right] \\",
+            r"&= S(0) \cdot \mathbb{E}\left[\exp\left(N\left(0, \sigma^2\right)\right)\right]",
+            font_size=MATH_SIZE_MEDIUM
+        ).next_to(answer_start, DOWN, buff=0.5).align_to(answer_start, LEFT)
+
+        self.play(Write(answer_start))
+        self.wait(1.0)
+        for line in list(answer_body):
+            self.play(Write(line))
+            self.wait(1.0)  # TODO: may need to be specific to each line
+
+        distribution_expectation = answer_body[-1][6:]  # everything after S(0) \cdot
+        self.play(Indicate(distribution_expectation, scale_factor=1.1))
+
+        # fading everything out for more space
+        self.play(*[FadeOut(x) for x in (S1_header, exercise_label, exercise_text, answer_start, answer_body)])
+
+        # focusing on the expectation of zero-mu lognormal
+        expectation_body = MathTex(
+            r"\mathbb{E}\left[\exp\left(N\left(0, \sigma^2\right)\right)\right] &= "
+            r"\int_0^{\infty} x \cdot f_{\exp\left(N\left(0, \sigma^2\right)\right)}(x) \text{ d}x \\",
+            r"&= \int_0^{\infty} x \cdot \frac{1}{x} \cdot \frac{1}{\sigma\cdot\sqrt{2\pi}} "
+            r"\exp\left(-\frac{\left(\ln x\right)^2}{2\sigma^2}\right) \text{ d}x",
+            font_size=MATH_SIZE_MEDIUM
+        ).to_edge(UP, buff=0.5).to_edge(LEFT, buff=1.0)
+        for line in expectation_body:
+            self.play(Write(line))
+            self.wait(1.0)  # TODO: may need to be specific to each line
+
     def construct(self):
         self.calculate_lognormal_pdf()
 
         S1_header = self.consider_S1()
-        self.exercise_mu(S1_header)
+        exercise_label, exercise_text = self.exercise_mu(S1_header)
+        self.exercise_mu_answer(S1_header, exercise_label, exercise_text)
