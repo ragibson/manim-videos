@@ -5,7 +5,7 @@ from how_to_simulate import create_normal_lognormal_comparison
 from shared_data_and_functions import *
 
 
-class DeterminingDistributionParameters(Scene):
+class DeterminingDistributionMu(Scene):
     def calculate_lognormal_pdf(self):
         exercise_label = (Text("Exercise #3:", color=YELLOW, font_size=TEXT_SIZE_MEDIUM)
                           .to_edge(UP, buff=0.5).to_edge(LEFT, buff=1.0))
@@ -182,21 +182,22 @@ class DeterminingDistributionParameters(Scene):
         answer_body = MathTex(
             r"\mathbb{E}\left[S(1)\right] &= \mathbb{E}\left[S(0) \cdot "
             r"\exp\left(N\left(0, \sigma^2\right)\right)\right] \\",
-            r"&= S(0) \cdot \mathbb{E}\left[\exp\left(N\left(0, \sigma^2\right)\right)\right]",
+            r"&= S(0) \cdot \mathbb{E}\left[\exp\left(N\left(0, \sigma^2\right)\right)\right] \\",
+            r"&= S(0) \cdot \exp\left(\frac{\sigma^2}{2}\right)",  # won't be displayed until after the derivation
             font_size=MATH_SIZE_MEDIUM
         ).next_to(answer_start, DOWN, buff=0.5).align_to(answer_start, LEFT)
 
         self.play(Write(answer_start))
         self.wait(1.0)
-        for line in list(answer_body):
+        for line in list(answer_body[:-1]):
             self.play(Write(line))
             self.wait(1.0)  # TODO: may need to be specific to each line
 
-        distribution_expectation = answer_body[-1][6:]  # everything after S(0) \cdot
+        distribution_expectation = answer_body[1][6:]  # everything after S(0) \cdot
         self.play(Indicate(distribution_expectation, scale_factor=1.1))
 
         # fading everything out for more space
-        self.play(*[FadeOut(x) for x in (S1_header, exercise_label, exercise_text, answer_start, answer_body)])
+        self.play(*[FadeOut(x) for x in (S1_header, exercise_label, exercise_text, answer_start, answer_body[:-1])])
 
         # focusing on the expectation of zero-mu lognormal
         expectation_body = MathTex(
@@ -209,7 +210,7 @@ class DeterminingDistributionParameters(Scene):
             r"&= \int_{-\infty}^{\infty} \frac{1}{\sigma\cdot\sqrt{2\pi}} "
             r"\exp\left(-\frac{u^2}{2\sigma^2} + u\right) \text{ d}u",
             font_size=MATH_SIZE_SMALL
-        ).to_edge(UP, buff=0.5).to_edge(LEFT, buff=1.0)
+        ).to_edge(UP, buff=0.5).to_edge(LEFT, buff=0.5)
         for line in expectation_body[:2]:
             self.play(Write(line))
             self.wait(1.0)  # TODO: may need to be specific to each line
@@ -253,11 +254,74 @@ class DeterminingDistributionParameters(Scene):
         self.wait(1.0)
 
         # fade out everything and shift our current line of the derivation up to the top so we have more space
-        self.play(*[FadeOut(x) for x in (
-            expectation_body[0][15:],  # first line beyond equal sign
-            line2_replacement,  # probably should've had expectation_body[1] become() this?
-            expectation_body[2]
-        )], expectation_body[3].animate.align_to(expectation_body[0], UP))
+        self.play(expectation_body[3].animate.align_to(expectation_body[0].get_top() + UP * 0.025, UP),
+                  normal_goal.animate.shift(UP * 1.0),
+                  *[FadeOut(x) for x in (
+                      expectation_body[0][15:],  # first line beyond equal sign
+                      line2_replacement,  # probably should've had expectation_body[1] become() this?
+                      expectation_body[2]
+                  )])
+
+        # going to replace the shifted line with a new object that's easier to work with
+        new_expectation_body = MathTex(
+            r"&= \int_{-\infty}^{\infty} \frac{1}{\sigma\cdot\sqrt{2\pi}} "
+            r"\exp\left(-\frac{u^2}{2\sigma^2} + u\right) \text{ d}u \\",
+            r"&= \int_{-\infty}^{\infty} \frac{1}{\sigma\cdot\sqrt{2\pi}} "
+            r"\exp\left(-\frac{u^2 - 2\sigma^2 \cdot u}{2\sigma^2}\right) \text{ d}u\\",
+            r"&= \int_{-\infty}^{\infty} \frac{1}{\sigma\cdot\sqrt{2\pi}} "
+            r"\exp\left(-\frac{\left(u - \sigma^2\right)^2}{2\sigma^2} + \frac{\sigma^4}{2\sigma^2}\right) \text{ d}u"
+            r"\\",
+            r"&= \int_{-\infty}^{\infty} \frac{1}{\sigma\cdot\sqrt{2\pi}} "
+            r"\exp\left(-\frac{\left(u - \sigma^2\right)^2}{2\sigma^2}\right) \cdot \exp\left(\frac{\sigma^2}{2}\right) "
+            r"\text{ d}u \\",
+            r"&= \exp\left(\frac{\sigma^2}{2}\right) \cdot \int_{-\infty}^{\infty} \frac{1}{\sigma\cdot\sqrt{2\pi}} "
+            r"\exp\left(-\frac{\left(u - \sigma^2\right)^2}{2\sigma^2}\right) \text{ d}u",
+            font_size=MATH_SIZE_SMALL
+        ).move_to(expectation_body[3].get_left(), LEFT).align_to(expectation_body[3], UP)
+        self.remove(expectation_body[3])
+        self.add(new_expectation_body[0])
+        self.wait(1.0)
+
+        self.play(Write(new_expectation_body[1]))
+        self.wait(1.0)
+
+        completing_the_square = MathTex(
+            r"\left(u - \mu\right)^2 = u^2 - 2\mu \cdot u + \mu^2",
+            font_size=MATH_SIZE_SMALL, color=BLUE_B
+        ).next_to(normal_goal, DOWN, buff=0.25)
+        self.play(Write(completing_the_square))
+        self.wait(1.0)
+
+        self.play(Write(new_expectation_body[2]))
+        self.wait(1.0)
+
+        self.play(FadeOut(normal_goal), FadeOut(completing_the_square))
+        self.wait(1.0)
+
+        line3_replacement = MathTex(
+            r"&= \int_{-\infty}^{\infty} \frac{1}{\sigma\cdot\sqrt{2\pi}} "
+            r"\exp\left(-\frac{\left(u - \sigma^2\right)^2}{2\sigma^2} + \frac{\sigma^2}{2}\right) \text{ d}u",
+            font_size=MATH_SIZE_SMALL
+        ).move_to(new_expectation_body[2].get_left(), LEFT)
+        self.play(FadeOut(new_expectation_body[2], shift=LEFT), FadeIn(line3_replacement, shift=LEFT))
+        self.wait(1.0)
+
+        self.play(Write(new_expectation_body[3]))
+        self.wait(1.0)
+        self.play(Write(new_expectation_body[4]))
+        self.wait(1.0)
+
+        self.play(FadeOut(new_expectation_body[4][10:]))  # the whole integral is just 1
+        self.wait(1.0)
+
+        self.play(FadeIn(S1_header), FadeIn(answer_body[:-1]), FadeIn(exercise_label), FadeIn(exercise_text),
+                  *[FadeOut(x) for x in
+                    (expectation_body[0][:15],  # first line up to the equal sign
+                     line3_replacement) + tuple(new_expectation_body[i] for i in (0, 1, 3))
+                    + (new_expectation_body[4][:10],)  # last line up to the integral
+                    ])
+        self.wait(1.0)
+        self.play(Write(answer_body[-1]))
         self.wait(1.0)
 
     def construct(self):
