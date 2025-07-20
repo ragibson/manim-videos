@@ -324,9 +324,25 @@ class DeterminingDistributionMu(Scene):
         self.play(Write(answer_body[-1]))
         self.wait(1.0)
 
+        new_header = MathTex(r"{S({{1}} ) \over S(0)} \sim "
+                             r"\exp\left(N\left(-\frac{\sigma^2}{2}, {{\sigma}}^2\right)\right)",
+                             font_size=MATH_SIZE_MEDIUM).to_edge(UP, buff=0.5).move_to(S1_header, aligned_edge=LEFT)
+        new_header.set_color_by_tex(r"1", BLUE)
+        self.play(FadeOut(S1_header, shift=LEFT), FadeIn(new_header, shift=LEFT))
+        self.wait(1.0)
+
+        self.play(*[FadeOut(x) for x in (exercise_label, exercise_text, answer_body)])
+        return new_header
+
+    def discuss_sigma(self, S1_header):
+        self.wait(1.0)
+        self.play(S1_header[-2].animate.set_color(YELLOW))  # highlighting sigma
+        self.wait(1.0)
+
     def construct(self):
         self.calculate_lognormal_pdf()
 
         S1_header = self.consider_S1()
         exercise_label, exercise_text = self.exercise_mu(S1_header)
-        self.exercise_mu_answer(S1_header, exercise_label, exercise_text)
+        S1_header = self.exercise_mu_answer(S1_header, exercise_label, exercise_text)
+        self.discuss_sigma(S1_header)
