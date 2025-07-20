@@ -1,4 +1,4 @@
-import numpy as np
+from manim import *
 
 # just hardcoding this data here, as of May 10, 2025
 # from https://www.theocc.com/market-data/market-data-reports/volume-and-open-interest/historical-volume-statistics
@@ -35,3 +35,33 @@ def simple_stock_simulation(start_price=100, sigma=0.15, dt=1 / 252, T=1, seed=0
     increments[0] = 0.0  # want t0 exactly at the start price
     prices = start_price * np.exp(np.cumsum(increments) - (sigma ** 2 / 2) * dt * np.arange(n_steps))
     return prices
+
+
+def stock_price_to_today(header_object):
+    """Plot stock price graph up to today, leaving the second half of the graph empty."""
+    # add in stock price graph
+    ax = Axes(
+        x_range=[0, 1.01, 0.25],
+        y_range=[225, 375.1, 25],
+        x_length=8,
+        y_length=4,
+        axis_config={"include_numbers": False},
+        tips=False
+    ).next_to(header_object, DOWN, buff=1.0)
+
+    # HACK: manually adding in dollar signs on the left of the y-axis label numbers
+    ax.y_axis.add_labels({i: fr"\${i:.0f}" for i in np.arange(*ax.y_range)})
+    ax.x_axis.add_labels({0.5: "Today"})
+    labels = ax.get_axis_labels(x_label=r"\text{Time}", y_label=r"\text{Stock Price}")
+
+    # plot first just up to "today" (internally, t=0.5)
+    simulated_path = simple_stock_simulation(start_price=300, sigma=0.15, seed=10, T=0.5)
+    graph = ax.plot_line_graph(
+        x_values=np.linspace(0, 0.5, len(simulated_path)),
+        y_values=simulated_path,
+        line_color=BLUE,
+        add_vertex_dots=False
+    )
+    strike_line = DashedLine(ax.c2p(0.0, 300), ax.c2p(1.0, 300))
+
+    return ax, labels, simulated_path, graph, strike_line

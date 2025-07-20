@@ -1,4 +1,3 @@
-from manim import *
 from scipy.optimize import bisect
 
 from how_to_simulate import create_normal_lognormal_comparison
@@ -338,6 +337,14 @@ class DeterminingDistributionMu(Scene):
         self.wait(1.0)
         self.play(S1_header[-2].animate.set_color(YELLOW))  # highlighting sigma
         self.wait(1.0)
+
+        ax, labels, simulated_path, graph, strike_line = stock_price_to_today(S1_header)
+        self.play(Create(ax), Write(labels), run_time=2.0)
+        self.play(Create(strike_line))
+        self.play(Create(graph, rate_func=linear, run_time=2.0))
+        self.wait(1.0)
+
+        # TODO: animate sigma and discuss that you basically choose the appropriate value for the specific stock
 
     def construct(self):
         self.calculate_lognormal_pdf()

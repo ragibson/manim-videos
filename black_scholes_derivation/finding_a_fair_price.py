@@ -1,5 +1,3 @@
-from manim import *
-
 from shared_data_and_functions import *
 
 
@@ -17,30 +15,7 @@ class GuessingTheFuture(Scene):
         self.play(Write(how_to_text))
         self.wait(5.0)
 
-        # add in stock price graph
-        ax = Axes(
-            x_range=[0, 1.01, 0.25],
-            y_range=[225, 375.1, 25],
-            x_length=8,
-            y_length=4,
-            axis_config={"include_numbers": False},
-            tips=False
-        ).next_to(how_to_text, DOWN, buff=1.0)
-
-        # HACK: manually adding in dollar signs on the left of the y-axis label numbers
-        ax.y_axis.add_labels({i: fr"\${i:.0f}" for i in np.arange(*ax.y_range)})
-        ax.x_axis.add_labels({0.5: "Today"})
-        labels = ax.get_axis_labels(x_label=r"\text{Time}", y_label=r"\text{Stock Price}")
-
-        # plot first just up to "today" (internally, t=0.5)
-        simulated_path = simple_stock_simulation(start_price=300, sigma=0.15, seed=10, T=0.5)
-        graph = ax.plot_line_graph(
-            x_values=np.linspace(0, 0.5, len(simulated_path)),
-            y_values=simulated_path,
-            line_color=BLUE,
-            add_vertex_dots=False
-        )
-        strike_line = DashedLine(ax.c2p(0.0, 300), ax.c2p(1.0, 300))
+        ax, labels, simulated_path, graph, strike_line = stock_price_to_today(how_to_text)
         self.play(Create(ax), Write(labels), run_time=2.0)
         self.play(Create(strike_line))
         self.play(Create(graph, rate_func=linear, run_time=2.0))
