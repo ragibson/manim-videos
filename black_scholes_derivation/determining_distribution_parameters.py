@@ -350,16 +350,42 @@ class DeterminingDistributionSigma(Scene):
         self.play(S1_header[-2].animate.set_color(YELLOW))  # highlighting sigma
         self.wait(1.0)
 
-        ax, labels, simulated_path, graph, strike_line = stock_price_to_today(S1_header)
+        ax, labels, simulated_path, past_graph, _ = stock_price_to_today(S1_header, sigma=0.2)
         self.play(Create(ax), Write(labels), run_time=2.0)
-        self.play(Create(strike_line))
-        self.play(Create(graph, rate_func=linear, run_time=2.0))
+        self.play(Create(past_graph, rate_func=linear, run_time=2.0))
         self.wait(1.0)
 
-        # TODO: animate sigma and discuss that you basically choose the appropriate value for the specific stock
+        def create_future_graph_and_text(sigma):
+            graph = ax.plot_line_graph(
+                x_values=np.linspace(0.5, 1.0, len(simulated_path)),
+                y_values=simple_stock_simulation(start_price=simulated_path[-1], sigma=sigma, seed=1, T=0.5),
+                line_color=GREEN,
+                add_vertex_dots=False
+            )
+            text = MathTex(rf"\sigma = {future_sigma.get_value() * 100:.1f}\%", font_size=MATH_SIZE_MEDIUM)
+            return graph, text.move_to(ax.get_center() + UP * 2.0 + RIGHT * 2.0)
+
+        future_sigma = ValueTracker(0.1)
+        sigma_text, future_graph = create_future_graph_and_text(future_sigma.get_value())
+        self.play(FadeIn(sigma_text), Create(future_graph, rate_func=linear), run_time=1.0)
+        self.wait(1.0)
+
+        future_graph.add_updater(
+            lambda g: g.become(create_future_graph_and_text(future_sigma.get_value())[0])
+        )
+        sigma_text.add_updater(
+            lambda t: t.become(create_future_graph_and_text(future_sigma.get_value())[1])
+        )
+        self.play(future_sigma.animate.set_value(0.3), run_time=2.0)
+        self.wait(1.0)
+        self.play(future_sigma.animate.set_value(0.2), run_time=2.0)
+        self.wait(1.0)
+
+        future_graph.clear_updaters()
+        sigma_text.clear_updaters()
+        self.play(*[FadeOut(x) for x in (ax, labels, past_graph, sigma_text, future_graph, S1_header)])
 
     def construct(self):
         S1_header = DeterminingDistributionMu().final_header()
         self.add(S1_header)
         self.discuss_sigma(S1_header)
-        pass

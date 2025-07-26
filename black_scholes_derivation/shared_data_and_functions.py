@@ -37,7 +37,7 @@ def simple_stock_simulation(start_price=100, sigma=0.15, dt=1 / 252, T=1, seed=0
     return prices
 
 
-def stock_price_to_today(header_object):
+def stock_price_to_today(header_object, sigma=0.15):
     """Plot stock price graph up to today, leaving the second half of the graph empty."""
     # add in stock price graph
     ax = Axes(
@@ -55,7 +55,7 @@ def stock_price_to_today(header_object):
     labels = ax.get_axis_labels(x_label=r"\text{Time}", y_label=r"\text{Stock Price}")
 
     # plot first just up to "today" (internally, t=0.5)
-    simulated_path = simple_stock_simulation(start_price=300, sigma=0.15, seed=10, T=0.5)
+    simulated_path = simple_stock_simulation(start_price=300, sigma=sigma, seed=10, T=0.5)
     graph = ax.plot_line_graph(
         x_values=np.linspace(0, 0.5, len(simulated_path)),
         y_values=simulated_path,
