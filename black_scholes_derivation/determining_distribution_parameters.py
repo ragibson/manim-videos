@@ -344,7 +344,7 @@ class DeterminingDistributionMu(Scene):
         self.exercise_mu_answer(S1_header, exercise_label, exercise_text)
 
 
-class DeterminingDistributionSigma(Scene):
+class DeterminingDistributionSigmaAndSt(Scene):
     def discuss_sigma(self, S1_header):
         self.wait(1.0)
         self.play(S1_header[-2].animate.set_color(YELLOW))  # highlighting sigma
@@ -383,9 +383,43 @@ class DeterminingDistributionSigma(Scene):
 
         future_graph.clear_updaters()
         sigma_text.clear_updaters()
-        self.play(*[FadeOut(x) for x in (ax, labels, past_graph, sigma_text, future_graph, S1_header)])
+        self.play(*[FadeOut(x) for x in (ax, labels, past_graph, sigma_text, future_graph)])
+
+    def discuss_St(self):
+        header_text = Tex(r"What does $S(t)$ look like?", font_size=MATH_SIZE_MEDIUM).to_edge(UP, buff=0.25)
+        self.play(Write(header_text))
+        self.wait(1.0)
+
+        math_lines = MathTex(
+            r"S(1) &\sim S(0) \cdot \exp\left(N\left(-\frac{\sigma^2}{2}, \sigma^2\right)\right) \\\\",
+            r"S(2) &\sim S(1) \cdot \exp\left(N\left(-\frac{\sigma^2}{2}, \sigma^2\right)\right) \\",
+            r"S(2) &\sim S(0) \cdot \exp\left(N\left(-\frac{\sigma^2}{2}, \sigma^2\right)\right) "
+            r"\cdot \exp\left(N\left(-\frac{\sigma^2}{2}, \sigma^2\right)\right) \\",
+            r"S(2) &\sim S(0) \cdot \exp\left(N\left(-\frac{\sigma^2}{2}, \sigma^2\right) "
+            r"+ N\left(-\frac{\sigma^2}{2}, \sigma^2\right)\right) \\",
+            r"S(2) &\sim S(0) \cdot \exp\left(N\left(-\frac{\sigma^2}{2} \cdot 2, "
+            r"\sigma^2 \cdot 2\right)\right)",
+            font_size=MATH_SIZE_SMALL
+        ).next_to(header_text, DOWN, buff=0.25)
+
+        for line in math_lines:
+            self.play(Write(line))
+            self.wait(1.0)
+
+        self.play(*[FadeOut(x) for x in math_lines[:-1]], math_lines[-1].animate.move_to(ORIGIN))
+        self.wait(1.0)
+
+        # convert all the t=2 to t=3 and then t
+        for new_tex in ["3", "t"]:
+            self.play(*[Transform(x, MathTex(new_tex, font_size=MATH_SIZE_SMALL).move_to(x))
+                        # gross hack but keeps easy line boundaries in MathTex above
+                        for x in [math_lines[-1][i] for i in (2, 22, 27)]])
+            self.wait(1.0)
+
+        self.play(*[FadeOut(x) for x in (header_text, math_lines[-1])])
 
     def construct(self):
         S1_header = DeterminingDistributionMu().final_header()
         self.add(S1_header)
         self.discuss_sigma(S1_header)
+        self.discuss_St()
