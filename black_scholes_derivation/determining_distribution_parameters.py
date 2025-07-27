@@ -383,7 +383,7 @@ class DeterminingDistributionSigmaAndSt(Scene):
 
         future_graph.clear_updaters()
         sigma_text.clear_updaters()
-        self.play(*[FadeOut(x) for x in (ax, labels, past_graph, sigma_text, future_graph)])
+        self.play(*[FadeOut(x) for x in (ax, labels, past_graph, sigma_text, future_graph, S1_header)])
 
     def discuss_St(self):
         header_text = Tex(r"What does $S(t)$ look like?", font_size=MATH_SIZE_MEDIUM).to_edge(UP, buff=0.25)

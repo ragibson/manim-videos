@@ -65,3 +65,25 @@ def stock_price_to_today(header_object, sigma=0.15):
     strike_line = DashedLine(ax.c2p(0.0, 300), ax.c2p(1.0, 300))
 
     return ax, labels, simulated_path, graph, strike_line
+
+
+def stock_price_simulation_graph(shift_amt=0.0 * DOWN):
+    """Create a graph for showing many simulated stock prices on the left side of the screen."""
+    ax = Axes(
+        x_range=[0, 0.251, 0.05],
+        y_range=[250, 350.1, 25],
+        x_length=4,
+        y_length=4,
+        x_axis_config={"include_numbers": True},
+        axis_config={"include_numbers": False},
+        tips=False
+    ).to_edge(LEFT, buff=1.0).shift(shift_amt)
+
+    # HACK: manually adding in dollar signs on the left of the y-axis label numbers
+    ax.y_axis.add_labels({i: Tex(fr"\${i:.0f}", font_size=TEXT_SIZE_XSMALL) for i in np.arange(*ax.y_range)})
+    labels = ax.get_axis_labels(x_label=Tex(r"\text{Time (years)}", font_size=TEXT_SIZE_XSMALL),
+                                y_label=Tex(r"\text{Stock Price}", font_size=TEXT_SIZE_XSMALL))
+
+    strike_line = DashedLine(ax.c2p(0.0, 300), ax.c2p(0.25, 300))
+
+    return ax, labels, strike_line
