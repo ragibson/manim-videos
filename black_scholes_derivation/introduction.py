@@ -1,5 +1,3 @@
-from manim import *
-
 from shared_data_and_functions import *
 
 
@@ -163,6 +161,7 @@ class LookingAhead(Scene):
             Text("• How would you assign a fair price for an option?", font_size=TEXT_SIZE_MEDIUM,
                  t2c={"fair price": YELLOW}),
             Text("• Making things fully analytical", font_size=TEXT_SIZE_MEDIUM, t2c={"analytical": YELLOW})
+            # TODO: visualization?
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.75)
         topics.to_edge(LEFT, buff=1.0)
 

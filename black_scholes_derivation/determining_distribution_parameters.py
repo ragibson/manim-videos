@@ -35,7 +35,6 @@ class DeterminingDistributionMu(Scene):
 
         answer_start = (Tex(r"Let $Y \sim N\left(\mu, \sigma^2\right)$, $X \sim \exp(Y)$", font_size=MATH_SIZE_MEDIUM)
                         .next_to(exercise_text, DOWN, buff=0.5)).to_edge(LEFT, buff=1.0)
-        # TODO: not sure I really like the layout of this
         answer_body = MathTex(
             r"f_X(x) &= \frac{\text{d}}{\text{d}x} \mathbb{P}\left[X \leq x\right]",
             r"= \frac{\text{d}}{\text{d}x}\mathbb{P}\left[Y \leq \ln x\right]",
@@ -190,7 +189,7 @@ class DeterminingDistributionMu(Scene):
         self.wait(1.0)
         for line in list(answer_body[:-1]):
             self.play(Write(line))
-            self.wait(1.0)  # TODO: may need to be specific to each line
+            self.wait(1.0)
 
         distribution_expectation = answer_body[1][6:]  # everything after S(0) \cdot
         self.play(Indicate(distribution_expectation, scale_factor=1.1))
@@ -212,7 +211,7 @@ class DeterminingDistributionMu(Scene):
         ).to_edge(UP, buff=0.5).to_edge(LEFT, buff=0.5)
         for line in expectation_body[:2]:
             self.play(Write(line))
-            self.wait(1.0)  # TODO: may need to be specific to each line
+            self.wait(1.0)
 
         line2_replacement = MathTex(
             r"&= \int_0^{\infty} \frac{1}{\sigma\cdot\sqrt{2\pi}} "

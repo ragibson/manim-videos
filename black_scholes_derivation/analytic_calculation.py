@@ -115,24 +115,24 @@ class AnalyticCalculation(Scene):
         self.wait(1.0)
 
         # placeholder for hint, viewers can do the exercise without it by pausing
-        hint1_label = (Text("Hint:", font_size=TEXT_SIZE_MEDIUM).next_to(exercise_text, DOWN, buff=0.5)
-                       .align_to(exercise_label, RIGHT))
-        hint1_countdown = (Text("(revealed in 5 seconds)", font_size=TEXT_SIZE_MEDIUM)
-                           .next_to(hint1_label, RIGHT, buff=0.25).align_to(hint1_label, UP))
-        self.play(Write(hint1_label))
-        self.play(Write(hint1_countdown))
+        hint_label = (Text("Hint:", font_size=TEXT_SIZE_MEDIUM).next_to(exercise_text, DOWN, buff=0.5)
+                      .align_to(exercise_label, RIGHT))
+        hint_countdown = (Text("(revealed in 5 seconds)", font_size=TEXT_SIZE_MEDIUM)
+                          .next_to(hint_label, RIGHT, buff=0.25).align_to(hint_label, UP))
+        self.play(Write(hint_label))
+        self.play(Write(hint_countdown))
         self.wait(5.0)
 
-        hint1_text = Tex(r"\begin{flushleft}"  # a bit of a weird hack to get left-aligned multi-line latex
-                         r"Transform $S(t)$ so that you can use \\"
-                         r"the standard normal CDF."
-                         r"\end{flushleft}",
-                         font_size=MATH_SIZE_MEDIUM).next_to(hint1_label, RIGHT, buff=0.25).align_to(hint1_label, UP)
-        self.play(FadeOut(hint1_countdown))
-        self.play(Write(hint1_text))
+        hint_text = Tex(r"\begin{flushleft}"  # a bit of a weird hack to get left-aligned multi-line latex
+                        r"Transform $S(t)$ so that you can use \\"
+                        r"the standard normal CDF."
+                        r"\end{flushleft}",
+                        font_size=MATH_SIZE_MEDIUM).next_to(hint_label, RIGHT, buff=0.25).align_to(hint_label, UP)
+        self.play(FadeOut(hint_countdown))
+        self.play(Write(hint_text))
         self.wait(3.0)
 
-        self.play(FadeOut(hint1_label), FadeOut(hint1_text))
+        self.play(FadeOut(hint_label), FadeOut(hint_text))
 
         answer_body = MathTex(
             r"\mathbb{P}\left[S(t) > K\right] &= \mathbb{P}\left[\ln\left(\frac{S(t)}{S(0)}\right) "
@@ -164,7 +164,51 @@ class AnalyticCalculation(Scene):
 
         self.play(*[FadeOut(x) for x in (exercise_label, exercise_text, answer_body[0][:9], answer_body[-2:])])
 
+    def calculate_expectation_term(self, distribution_header):
+        exercise_label = (Text("Exercise #6:", color=YELLOW, font_size=TEXT_SIZE_MEDIUM)
+                          .next_to(distribution_header, DOWN, buff=0.3).to_edge(LEFT, buff=0.5))
+        exercise_text = Tex(r"Calculate $\mathbb{E}\left[S(t) \mid S(t) > K\right]$", font_size=MATH_SIZE_MEDIUM
+                            ).next_to(exercise_label, RIGHT, buff=0.25).align_to(exercise_label, UP)
+        self.play(Write(exercise_label))
+        self.play(Write(exercise_text), run_time=1.0)
+        self.wait(1.0)
+
+        # placeholder for hint, viewers can do the exercise without it by pausing
+        hint_label = (Text("Hint:", font_size=TEXT_SIZE_MEDIUM).next_to(exercise_text, DOWN, buff=0.5)
+                      .align_to(exercise_label, RIGHT))
+        hint_countdown = (Text("(revealed in 5 seconds)", font_size=TEXT_SIZE_MEDIUM)
+                          .next_to(hint_label, RIGHT, buff=0.25).align_to(hint_label, UP))
+        self.play(Write(hint_label))
+        self.play(Write(hint_countdown))
+        self.wait(5.0)
+
+        hint_text = Text(r"This is very similar to Exercise #4",
+                         font_size=TEXT_SIZE_MEDIUM).next_to(hint_label, RIGHT, buff=0.25).align_to(hint_label, UP)
+        self.play(FadeOut(hint_countdown))
+        self.play(Write(hint_text))
+        self.wait(3.0)
+
+        self.play(FadeOut(hint_label), FadeOut(hint_text))
+
+        answer_start = (Tex(r"First, let's focus on the $\exp\left(N(\dots)\right)$ term.", font_size=MATH_SIZE_MEDIUM)
+                        .next_to(exercise_text, DOWN, buff=0.5)).to_edge(LEFT, buff=0.5)
+        self.play(Write(answer_start))
+        self.wait(1.0)
+
+        answer_body = MathTex(
+            r"\mathbb{E}\left[\frac{S(t)}{S(0)} \,\middle\vert\, S(t) > K\right] &= \int_K^{\infty} x \cdot "
+            r"f_{\exp\left[N\left(-\frac{\sigma^2}{2} \cdot t, \sigma^2 \cdot t\right)\right]}(x) \text{ d}x \\",
+            r"&= \int_K^{\infty} \frac{1}{\sigma\sqrt{T}\cdot\sqrt{2\pi}} \exp\left(-\frac{\left(\ln(x) "
+            r"+ \frac{\sigma^2}{2}\cdot T\right)^2}{2\sigma^2\cdot T}\right)\text{ d}x",
+            font_size=MATH_SIZE_SMALL
+        ).next_to(answer_start, DOWN, buff=0.5).align_to(answer_start, LEFT)
+
+        for line in answer_body:
+            self.play(Write(line))
+            self.wait(1.0)
+
     def construct(self):
         distribution_header, distribution_plot_group = self.plot_distribution()
         self.display_option_price_formula(distribution_plot_group)
         self.calculate_probability_term(distribution_header)
+        self.calculate_expectation_term(distribution_header)
