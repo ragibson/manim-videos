@@ -90,7 +90,81 @@ class AnalyticCalculation(Scene):
         )
         self.play(*[FadeOut(x) for x in [ax, labels, strike_line_left, analytical_note, *simulation_graphs]],
                   distribution_group.animate.to_edge(LEFT, buff=0.5), run_time=1.0)
-        return distribution_group
+        return distribution_form, distribution_group
+
+    def display_option_price_formula(self, distribution_group):
+        math_lines = MathTex(
+            r"{{\widetilde{C} &=}} \mathbb{E}\left[S(t)-K \mid S(t) > K\right]\\",
+            r"&= \mathbb{E}\left[S(t) \mid S(t) > K\right] {{- K \cdot \mathbb{P}\left[S(t) > K\right]}}",
+            font_size=MATH_SIZE_SMALL
+        ).next_to(distribution_group, RIGHT, buff=-1.0).align_to(distribution_group, UP)
+
+        for line in math_lines:
+            self.play(Write(line))
+            self.wait(1.0)
+
+        self.play(*[FadeOut(x) for x in (distribution_group, math_lines)])
+
+    def calculate_probability_term(self, distribution_header):
+        exercise_label = (Text("Exercise #5:", color=YELLOW, font_size=TEXT_SIZE_MEDIUM)
+                          .next_to(distribution_header, DOWN, buff=0.3).to_edge(LEFT, buff=1.0))
+        exercise_text = Tex(r"Calculate $\mathbb{P}\left[S(t) > K\right]$", font_size=MATH_SIZE_MEDIUM
+                            ).next_to(exercise_label, RIGHT, buff=0.25).align_to(exercise_label, UP)
+        self.play(Write(exercise_label))
+        self.play(Write(exercise_text), run_time=1.0)
+        self.wait(1.0)
+
+        # placeholder for hint, viewers can do the exercise without it by pausing
+        hint1_label = (Text("Hint:", font_size=TEXT_SIZE_MEDIUM).next_to(exercise_text, DOWN, buff=0.5)
+                       .align_to(exercise_label, RIGHT))
+        hint1_countdown = (Text("(revealed in 5 seconds)", font_size=TEXT_SIZE_MEDIUM)
+                           .next_to(hint1_label, RIGHT, buff=0.25).align_to(hint1_label, UP))
+        self.play(Write(hint1_label))
+        self.play(Write(hint1_countdown))
+        self.wait(5.0)
+
+        hint1_text = Tex(r"\begin{flushleft}"  # a bit of a weird hack to get left-aligned multi-line latex
+                         r"Transform $S(t)$ so that you can use \\"
+                         r"the standard normal CDF."
+                         r"\end{flushleft}",
+                         font_size=MATH_SIZE_MEDIUM).next_to(hint1_label, RIGHT, buff=0.25).align_to(hint1_label, UP)
+        self.play(FadeOut(hint1_countdown))
+        self.play(Write(hint1_text))
+        self.wait(3.0)
+
+        self.play(FadeOut(hint1_label), FadeOut(hint1_text))
+
+        answer_body = MathTex(
+            r"\mathbb{P}\left[S(t) > K\right] &= \mathbb{P}\left[\ln\left(\frac{S(t)}{S(0)}\right) "
+            r"> \ln\left(\frac{K}{S(0)}\right)\right] \\",
+            r"&= \mathbb{P}\left[N\left(-\frac{\sigma^2}{2} \cdot t, "
+            r"\sigma^2 \cdot t\right) > \ln\left(\frac{K}{S(0)}\right)\right] \\",
+            r"&= \mathbb{P}\left[N\left(0, "
+            r"\sigma^2 \cdot t\right) > \ln\left(\frac{K}{S(0)}\right) + \frac{\sigma^2}{2} \cdot t\right] \\",
+            r"&= \mathbb{P}\left[N\left(0, 1\right) > "
+            r"\frac{\ln\left(\frac{K}{S(0)}\right) + \frac{\sigma^2}{2} \cdot t}{\sigma \cdot \sqrt{t}}\right] \\",
+            r"&= 1-\Phi\left(\frac{\ln\left(\frac{K}{S(0)}\right) + "
+            r"\frac{\sigma^2}{2} \cdot T}{\sigma \cdot \sqrt{T}}\right)",
+            font_size=MATH_SIZE_SMALL
+        ).next_to(exercise_text, DOWN, buff=0.3).to_edge(LEFT, buff=1.0)
+
+        for line in answer_body[:-1]:
+            self.play(Write(line))
+            self.wait(1.0)
+
+        self.play(*[FadeOut(x) for x in (answer_body[0][9:], answer_body[1:-2])],
+                  answer_body[0][:9].animate.shift(DOWN * 0.5),
+                  # manual alignment of equal sign
+                  answer_body[-2].animate.shift(UP * 3.525))
+        answer_body[-1].shift(UP * 3.525)
+        self.wait(1.0)
+
+        self.play(Write(answer_body[-1]))
+        self.wait(1.0)
+
+        self.play(*[FadeOut(x) for x in (exercise_label, exercise_text, answer_body[0][:9], answer_body[-2:])])
 
     def construct(self):
-        self.plot_distribution()
+        distribution_header, distribution_plot_group = self.plot_distribution()
+        self.display_option_price_formula(distribution_plot_group)
+        self.calculate_probability_term(distribution_header)
