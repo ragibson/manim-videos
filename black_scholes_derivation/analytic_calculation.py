@@ -144,7 +144,7 @@ class AnalyticCalculation(Scene):
             r"&= \mathbb{P}\left[N\left(0, 1\right) > "
             r"\frac{\ln\left(\frac{K}{S(0)}\right) + \frac{\sigma^2}{2} \cdot t}{\sigma \cdot \sqrt{t}}\right] \\",
             r"&= 1-\Phi\left(\frac{\ln\left(\frac{K}{S(0)}\right) + "
-            r"\frac{\sigma^2}{2} \cdot T}{\sigma \cdot \sqrt{T}}\right)",
+            r"\frac{\sigma^2}{2} \cdot t}{\sigma \cdot \sqrt{t}}\right)",
             font_size=MATH_SIZE_SMALL
         ).next_to(exercise_text, DOWN, buff=0.3).to_edge(LEFT, buff=1.0)
 
@@ -190,22 +190,27 @@ class AnalyticCalculation(Scene):
 
         self.play(FadeOut(hint_label), FadeOut(hint_text))
 
-        answer_start = (Tex(r"First, let's focus on the $\exp\left(N(\dots)\right)$ term.", font_size=MATH_SIZE_MEDIUM)
+        answer_start = (Tex(r"Note that $S(t) \sim \exp\left(N\left(\ln S(0) - \frac{\sigma^2}{2} \cdot t, "
+                            r"\sigma^2 \cdot t\right)\right)$. Then,", font_size=MATH_SIZE_MEDIUM)
                         .next_to(exercise_text, DOWN, buff=0.5)).to_edge(LEFT, buff=0.5)
         self.play(Write(answer_start))
         self.wait(1.0)
 
         answer_body = MathTex(
-            r"\mathbb{E}\left[\frac{S(t)}{S(0)} \,\middle\vert\, S(t) > K\right] &= \int_K^{\infty} x \cdot "
-            r"f_{\exp\left[N\left(-\frac{\sigma^2}{2} \cdot t, \sigma^2 \cdot t\right)\right]}(x) \text{ d}x \\",
-            r"&= \int_K^{\infty} \frac{1}{\sigma\sqrt{T}\cdot\sqrt{2\pi}} \exp\left(-\frac{\left(\ln(x) "
-            r"+ \frac{\sigma^2}{2}\cdot T\right)^2}{2\sigma^2\cdot T}\right)\text{ d}x",
+            r"&\mathbb{E}\left[S(t) \mid S(t) > K\right]\\"
+            r"&= \int_K^{\infty} x \cdot f_{\exp\left[N\left(\ln S(0)-\frac{\sigma^2}{2} \cdot t, "
+            r"\sigma^2\cdot t\right)\right]}(x) \text{ d}x \\",
+            r"&= \int_K^{\infty} \frac{1}{\sigma\sqrt{t}\cdot\sqrt{2\pi}} \exp\left(-\frac{\left(\ln(x) "
+            r"+ \ln S(0) + \frac{\sigma^2}{2}\cdot t\right)^2}{2\sigma^2\cdot t}\right)\text{ d}x",
             font_size=MATH_SIZE_SMALL
-        ).next_to(answer_start, DOWN, buff=0.5).align_to(answer_start, LEFT)
+        ).next_to(answer_start, DOWN, buff=0.5).align_to(answer_start, LEFT).shift(RIGHT * 1.0)
 
         for line in answer_body:
             self.play(Write(line))
             self.wait(1.0)
+
+        self.play(*[FadeOut(x) for x in (answer_start, exercise_label, exercise_text, distribution_header)],
+                  answer_body.animate.to_edge(UP, buff=0.5))
 
     def construct(self):
         distribution_header, distribution_plot_group = self.plot_distribution()
