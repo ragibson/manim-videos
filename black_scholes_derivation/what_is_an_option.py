@@ -140,10 +140,10 @@ class StockSimulation(Scene):
 class WhatIsAnOption(Scene):
     def written_description(self):
         lines = [
-            f'An option is a contract that:',
+            f'An option<sup>*</sup> is a contract that:',
             f'• gives you the <span foreground="{YELLOW}">option</span> to buy a stock',
             f'• at a <span foreground="{GREEN}">predetermined price</span> (the "strike price")',
-            f'• on a <span foreground="{BLUE}">specific date</span> in the future.<sup>*</sup>'
+            f'• on a <span foreground="{BLUE}">specific date</span> in the future.'
         ]
 
         option_definition_lines = (VGroup(*[MarkupText(line, font_size=TEXT_SIZE_MEDIUM) for line in lines])

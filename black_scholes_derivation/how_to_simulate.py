@@ -295,7 +295,7 @@ class DesiredSimulationQualities(Scene):
         qualities_text = Paragraph(
             "#1: Prices should not go negative",
             "#2: Price moves should be relative",
-            "#3: Relative changes should multiply, not add",
+            "#3: Relative changes should compound",
             font_size=TEXT_SIZE_SMALL, alignment="left", line_spacing=0.75
         ).move_to(title_text, aligned_edge=UP).align_to(title_text, LEFT)
 
