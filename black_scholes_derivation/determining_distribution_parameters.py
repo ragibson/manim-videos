@@ -168,8 +168,7 @@ class DeterminingDistributionMu(Scene):
         self.wait(5.0)
 
         # proceeding onto answer
-        self.play(FadeOut(hint1_label), FadeOut(hint1_text))
-        self.play(FadeOut(hint2_label), FadeOut(hint2_text))
+        self.play(FadeOut(hint1_label), FadeOut(hint1_text), FadeOut(hint2_label), FadeOut(hint2_text))
         return exercise_label, exercise_text
 
     def exercise_mu_answer(self, S1_header, exercise_label, exercise_text):

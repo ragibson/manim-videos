@@ -197,11 +197,11 @@ class AnalyticCalculation(Scene):
         self.wait(1.0)
 
         answer_body = MathTex(
-            r"&\mathbb{E}\left[S(t) \mid S(t) > K\right]\\"
+            r"&\mathbb{E}\left[S(t) \mid S(t) > K\right]\\",
             r"&= \int_K^{\infty} x \cdot f_{\exp\left[N\left(\ln S(0)-\frac{\sigma^2}{2} \cdot t, "
             r"\sigma^2\cdot t\right)\right]}(x) \text{ d}x \\",
             r"&= \int_K^{\infty} \frac{1}{\sigma\sqrt{t}\cdot\sqrt{2\pi}} \exp\left(-\frac{\left(\ln(x) "
-            r"+ \ln S(0) + \frac{\sigma^2}{2}\cdot t\right)^2}{2\sigma^2\cdot t}\right)\text{ d}x",
+            r"- \ln S(0) + \frac{\sigma^2}{2}\cdot t\right)^2}{2\sigma^2\cdot t}\right)\text{ d}x",
             font_size=MATH_SIZE_SMALL
         ).next_to(answer_start, DOWN, buff=0.5).align_to(answer_start, LEFT).shift(RIGHT * 1.0)
 
@@ -212,8 +212,20 @@ class AnalyticCalculation(Scene):
         self.play(*[FadeOut(x) for x in (answer_start, exercise_label, exercise_text, distribution_header)],
                   answer_body.animate.to_edge(UP, buff=0.5))
 
+        # substituting to get as close to a standard normal as possible, doing two columns here due to space constraints
+        u_substitution = MathTex(
+            r"\text{Let } u &= \frac{\ln x - \ln S(0) + \frac{\sigma^2}{2}\cdot t}{\sigma \sqrt{t}},&",
+            r"\text{ so } \text{d}u &= \frac{1}{x \cdot \sigma \sqrt{t}} \text{ d}x\\",
+            r"x &= S(0)\cdot\exp\left(u \cdot \sigma\sqrt{t} - \frac{\sigma^2}{2}\cdot t\right),&",
+            r"x \cdot \sigma\sqrt{t} \text{ d}u &= \text{d}x",
+            font_size=MATH_SIZE_SMALL, color=BLUE_B
+        ).next_to(answer_body[2], DOWN, buff=1.0).to_edge(LEFT, buff=0.5)
+        for line in u_substitution:
+            self.play(Write(line))
+            self.wait(1.0)
+
     def construct(self):
         distribution_header, distribution_plot_group = self.plot_distribution()
         self.display_option_price_formula(distribution_plot_group)
-        self.calculate_probability_term(distribution_header)
+        # self.calculate_probability_term(distribution_header)
         self.calculate_expectation_term(distribution_header)
