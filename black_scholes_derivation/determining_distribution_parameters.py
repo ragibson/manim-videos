@@ -379,9 +379,17 @@ class DeterminingDistributionSigmaAndSt(Scene):
         self.play(future_sigma.animate.set_value(0.2), run_time=2.0)
         self.wait(1.0)
 
+        # forcing text mode to avoid automatically inserted newlines
+        footnote = Tex(r"$^*$\text{This really tells us how volatile the stock \emph{used to be}. In practice, you'd "
+                       r"use slightly more complicated techniques to estimate \emph{future} volatility.}",
+                       font_size=TEXT_SIZE_TINY).scale(0.9)
+        footnote.to_edge(DOWN, buff=0.25).to_edge(LEFT, buff=0.25)
+        self.play(FadeIn(footnote))
+        self.wait(1.0)
+
         future_graph.clear_updaters()
         sigma_text.clear_updaters()
-        self.play(*[FadeOut(x) for x in (ax, labels, past_graph, sigma_text, future_graph, S1_header)])
+        self.play(*[FadeOut(x) for x in (ax, labels, past_graph, sigma_text, future_graph, S1_header, footnote)])
 
     def discuss_St(self):
         header_text = Tex(r"What does $S(t)$ look like?", font_size=MATH_SIZE_MEDIUM).to_edge(UP, buff=0.25)
@@ -420,4 +428,4 @@ class DeterminingDistributionSigmaAndSt(Scene):
         S1_header = DeterminingDistributionMu().final_header()
         self.add(S1_header)
         self.discuss_sigma(S1_header)
-        self.discuss_St()
+        # self.discuss_St()
