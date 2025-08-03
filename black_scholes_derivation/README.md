@@ -1,6 +1,5 @@
 # black_scholes_derivation
 
-TODO: also want "title card" style animation at the beginning
 TODO: create frozen requirements.txt for final package versions used in the render
 
 The sequence of scenes here is:

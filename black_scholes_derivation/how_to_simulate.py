@@ -1,4 +1,3 @@
-from manim import *
 from scipy.stats import norm, lognorm
 
 from shared_data_and_functions import *

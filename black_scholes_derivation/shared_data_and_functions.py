@@ -27,6 +27,23 @@ MATH_SIZE_XSMALL = 36
 MATH_SIZE_SMALL = 42
 MATH_SIZE_MEDIUM = 46
 
+# used for extremely simple section breaks
+TITLES, TITLE_HIGHLIGHTS = [
+    "What is a stock? What is an option?",
+    "How would you assign a fair price for an option?",
+    "Making things fully analytical",
+    "Visualizing our pricing formula"
+], ["option", "fair price", "analytical", "Visualizing"]
+
+
+def display_section_title(scene, section_shorthand):
+    idx = [i for i, s in enumerate(TITLES) if section_shorthand in s][0]
+    title = (Text(TITLES[idx], font_size=TEXT_SIZE_LARGE, t2c={TITLE_HIGHLIGHTS[idx]: YELLOW})
+             .move_to(ORIGIN))
+    scene.play(FadeIn(title))
+    scene.wait(2.0)
+    scene.play(FadeOut(title))
+
 
 def simple_stock_simulation(start_price=100, sigma=0.15, dt=1 / 252, T=1, seed=0):
     np.random.seed(seed)

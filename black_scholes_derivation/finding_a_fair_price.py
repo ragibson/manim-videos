@@ -3,6 +3,8 @@ from shared_data_and_functions import *
 
 class GuessingTheFuture(Scene):
     def construct(self):
+        display_section_title(self, "fair price for an option?")
+
         future_quote = MarkupText(f'"An option is ... '
                                   f'on a specific date <span foreground="{BLUE}">in the future</span>."',
                                   font_size=TEXT_SIZE_MEDIUM).to_edge(UP, buff=0.5)

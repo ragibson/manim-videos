@@ -1,10 +1,10 @@
-from manim import *
-
 from shared_data_and_functions import *
 
 
 class WhatIsAStock(Scene):
     def construct(self):
+        display_section_title(self, "What is a stock?")
+
         # company visualized as grid of blocks (to represent shares)
         company_blocks = VGroup([
             Square(side_length=0.4, color=BLUE, fill_opacity=0.7).shift(RIGHT * j * 0.4 + UP * i * 0.4)

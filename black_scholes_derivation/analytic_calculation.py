@@ -298,6 +298,8 @@ class AnalyticCalculation(Scene):
         return shorthand
 
     def construct(self):
+        display_section_title(self, "fully analytical")
+
         distribution_header, distribution_plot_group = self.plot_distribution()
         self.display_option_price_formula(distribution_plot_group)
         self.calculate_probability_term(distribution_header)
