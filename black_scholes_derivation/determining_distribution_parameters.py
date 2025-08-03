@@ -428,4 +428,4 @@ class DeterminingDistributionSigmaAndSt(Scene):
         S1_header = DeterminingDistributionMu().final_header()
         self.add(S1_header)
         self.discuss_sigma(S1_header)
-        # self.discuss_St()
+        self.discuss_St()

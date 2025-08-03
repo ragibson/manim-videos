@@ -205,27 +205,60 @@ class AnalyticCalculation(Scene):
             font_size=MATH_SIZE_SMALL
         ).next_to(answer_start, DOWN, buff=0.5).align_to(answer_start, LEFT).shift(RIGHT * 1.0)
 
-        for line in answer_body:
-            self.play(Write(line))
-            self.wait(1.0)
-
-        self.play(*[FadeOut(x) for x in (answer_start, exercise_label, exercise_text, distribution_header)],
-                  answer_body.animate.to_edge(UP, buff=0.5))
+        # moving up last line to replace the first equality, fading out everything else
+        self.play(*[FadeOut(x) for x in (answer_start, exercise_label, exercise_text,
+                                         distribution_header, answer_body[1])],
+                  answer_body[0].animate.to_edge(UP, buff=0.5), answer_body[2].animate.to_edge(UP, buff=1.0))
+        self.wait(1.0)
 
         # substituting to get as close to a standard normal as possible, doing two columns here due to space constraints
         u_substitution = MathTex(
-            r"\text{Let } u &= \frac{\ln x - \ln S(0) + \frac{\sigma^2}{2}\cdot t}{\sigma \sqrt{t}},&",
+            r"\text{Let } u &= \frac{\ln x - \ln S(0) + \frac{\sigma^2}{2}\cdot t}{\sigma \sqrt{t}}&",
             r"\text{ so } \text{d}u &= \frac{1}{x \cdot \sigma \sqrt{t}} \text{ d}x\\",
-            r"x &= S(0)\cdot\exp\left(u \cdot \sigma\sqrt{t} - \frac{\sigma^2}{2}\cdot t\right),&",
+            r"x &= S(0)\cdot\exp\left(u \cdot \sigma\sqrt{t} - \frac{\sigma^2}{2}\cdot t\right)&",
             r"x \cdot \sigma\sqrt{t} \text{ d}u &= \text{d}x",
             font_size=MATH_SIZE_SMALL, color=BLUE_B
-        ).next_to(answer_body[2], DOWN, buff=1.0).to_edge(LEFT, buff=0.5)
-        for line in u_substitution:
+        ).next_to(answer_body[2], DOWN, buff=2.0).to_edge(LEFT, buff=0.5)
+        for line in (u_substitution[idx] for idx in (0, 1, 3, 2)):
             self.play(Write(line))
             self.wait(1.0)
+
+        # continuing with the main calculation
+        answer_body_end = MathTex(
+            r"&= \int_{\frac{\ln K - \ln S(0) + \frac{\sigma^2}{2}\cdot t}{\sigma \sqrt{t}}}^{\infty} "
+            r"\frac{S(0)}{\sqrt{2\pi}} \exp\left(-\frac{u^2}{2}"
+            r"+ u \cdot \sigma\sqrt{t} - \frac{\sigma^2}{2}\cdot t\right) \text{ d}u\\",
+            r"&= S(0) \cdot \int_{\frac{\ln K - \ln S(0) + \frac{\sigma^2}{2}\cdot t}{\sigma \sqrt{t}}}^{\infty} "
+            r"\frac{1}{\sqrt{2\pi}} \exp\left(-\frac{\left(u-\sigma\sqrt{t}\right)^2}{2}\right) \text{ d}u\\",
+            r"&= S(0) \cdot \left[1 - \Phi\left(\frac{\ln K - \ln S(0) + \frac{\sigma^2}{2}\cdot t}{\sigma \sqrt{t}}"
+            r"- \sigma\sqrt{t}\right)\right]\\",
+            r"&= S(0) \cdot \left[1 - \Phi\left(\frac{\ln\left(\frac{K}{S(0)}\right) "
+            r"- \frac{\sigma^2}{2}\cdot t}{\sigma \sqrt{t}}\right)\right]",
+            font_size=MATH_SIZE_SMALL
+        ).next_to(answer_body[2], DOWN, buff=0.3).align_to(answer_body[2], LEFT)
+
+        self.play(Write(answer_body_end[0]))
+        self.wait(1.0)
+        self.play(FadeOut(u_substitution))
+        self.wait(1.0)
+
+        for line in answer_body_end[1:-1]:
+            self.play(Write(line))
+            self.wait(1.0)
+
+        # still need a bit more space
+        previous_y = answer_body_end[0].get_y()
+        self.play(FadeOut(answer_body[2]),
+                  answer_body_end[:-1].animate.to_edge(UP, buff=1.25))
+
+        answer_body_end[-1].shift(UP * (answer_body_end[0].get_y() - previous_y))
+        self.play(Write(answer_body_end[-1]))
+        self.wait(1.0)
+
+        self.play(*[FadeOut(x) for x in (answer_body[0], answer_body_end)])
 
     def construct(self):
         distribution_header, distribution_plot_group = self.plot_distribution()
         self.display_option_price_formula(distribution_plot_group)
-        # self.calculate_probability_term(distribution_header)
+        self.calculate_probability_term(distribution_header)
         self.calculate_expectation_term(distribution_header)
