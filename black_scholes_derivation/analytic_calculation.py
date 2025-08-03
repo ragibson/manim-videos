@@ -257,8 +257,50 @@ class AnalyticCalculation(Scene):
 
         self.play(*[FadeOut(x) for x in (answer_body[0], answer_body_end)])
 
+    def combining_together(self):
+        math_lines = MathTex(
+            r"\widetilde{C} &= \mathbb{E}\left[S(t)-K \mid S(t) > K\right]\\",
+            r"&= \mathbb{E}\left[S(t) \mid S(t) > K\right] - K \cdot \mathbb{P}\left[S(t) > K\right]\\",
+            r"&= S(0) \cdot \left[1 - \Phi\left(\frac{\ln\left(\frac{K}{S(0)}\right) "
+            r"- \frac{\sigma^2}{2}\cdot t}{\sigma \sqrt{t}}\right)\right]"
+            r"- K \cdot \left[1-\Phi\left(\frac{\ln\left(\frac{K}{S(0)}\right) + "
+            r"\frac{\sigma^2}{2} \cdot t}{\sigma \cdot \sqrt{t}}\right)\right]\\",
+            r"&= S(0) \cdot \Phi\left(-\frac{\ln\left(\frac{K}{S(0)}\right) "
+            r"- \frac{\sigma^2}{2}\cdot t}{\sigma \sqrt{t}}\right)"
+            r"- K \cdot \Phi\left(-\frac{\ln\left(\frac{K}{S(0)}\right) + "
+            r"\frac{\sigma^2}{2} \cdot t}{\sigma \cdot \sqrt{t}}\right)\\",
+            r"&= S(0) \cdot \Phi\left(\frac{\ln\left(\frac{S(0)}{K}\right) "
+            r"+ \frac{\sigma^2}{2}\cdot t}{\sigma \sqrt{t}}\right)"
+            r"- K \cdot \Phi\left(\frac{\ln\left(\frac{S(0)}{K}\right) - "
+            r"\frac{\sigma^2}{2} \cdot t}{\sigma \cdot \sqrt{t}}\right)\\",
+            r"&= S(0) \cdot \Phi(d_+) - K \cdot \Phi(d_-)",
+            font_size=MATH_SIZE_SMALL
+        ).scale(0.9).to_edge(UP, buff=0.5).to_edge(LEFT, buff=0.5)
+        self.play(FadeIn(math_lines[:2]))
+
+        for line in math_lines[2:]:
+            self.play(Write(line))
+            self.wait(1.0)
+
+        # moving short version to top and fading out the rest
+        self.play(*[FadeOut(x) for x in (math_lines[1:-1], math_lines[0][2:])],
+                  math_lines[-1].animate.align_to(math_lines[0], DOWN))
+
+        shorthand = MathTex(
+            r"\text{where } d_+ = "
+            r"\frac{\ln\left(\frac{S(0)}{K}\right) - \frac{\sigma^2}{2} \cdot t}{\sigma \cdot \sqrt{t}}, \hspace{0.5em}"
+            r"d_- = d_+ - \sigma \cdot \sqrt{t}",
+            font_size=MATH_SIZE_SMALL
+        ).next_to(math_lines[-1], DOWN, buff=0.5).align_to(math_lines[0], LEFT)
+        self.play(Write(shorthand))
+        self.wait(1.0)
+
+        return shorthand
+
     def construct(self):
         distribution_header, distribution_plot_group = self.plot_distribution()
         self.display_option_price_formula(distribution_plot_group)
         self.calculate_probability_term(distribution_header)
         self.calculate_expectation_term(distribution_header)
+
+        combined_formula_footer = self.combining_together()
