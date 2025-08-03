@@ -295,7 +295,83 @@ class AnalyticCalculation(Scene):
         self.play(Write(shorthand))
         self.wait(1.0)
 
-        return shorthand
+        return VGroup(math_lines[0][:2], math_lines[-1]), shorthand
+
+    def discuss_discounting(self, previous_formula, previous_footer):
+        exp_plot = Axes(
+            x_range=[0, 10, 2],
+            y_range=[1.00, 1.51, 0.1],
+            x_length=4,
+            y_length=3,
+            axis_config={"include_numbers": True},
+            y_axis_config={"include_numbers": False},
+            tips=False
+        ).next_to(previous_footer, DOWN, buff=1.0)
+
+        # HACK: manually adding in dollar signs on the left of the x-axis label numbers
+        # including cents this time around
+        exp_plot.y_axis.add_labels({i: Tex(fr"\${i:.2f}", font_size=TEXT_SIZE_XSMALL)
+                                    for i in np.arange(*exp_plot.y_range)})
+        exp_labels = exp_plot.get_axis_labels(x_label=Tex(r"\text{Time (years)}", font_size=MATH_SIZE_MEDIUM),
+                                              y_label=Tex(r"\text{Future Value of Money}", font_size=MATH_SIZE_MEDIUM))
+
+        r = 0.04  # generally reasonable risk-free rate over the long-term
+        exp_graph = exp_plot.plot_line_graph(
+            x_values=np.linspace(*exp_plot.x_range[:2], 1000),
+            y_values=np.exp(r * np.linspace(*exp_plot.x_range[:2], 1000)),
+            line_color=BLUE, add_vertex_dots=False
+        )
+        self.play(Create(exp_plot), Write(exp_labels))
+        self.play(Create(exp_graph), rate_func=linear, run_time=1.0)
+        self.wait(1.0)
+
+        discounting_math = MathTex(
+            r"\text{Cash}(t) &= e^{rt} \cdot \text{Cash}(0)\\",
+            r"\text{Cash}(0) &= e^{-rt} \cdot \text{Cash(t)}",
+            font_size=MATH_SIZE_MEDIUM
+        ).next_to(exp_plot, RIGHT, buff=1.0).shift(UP * 1.0)
+        for line in discounting_math:
+            self.play(Write(line))
+            self.wait(1.0)
+
+        footer_extension = MathTex(
+            previous_footer.tex_string + r", \hspace{0.5em} D = e^{-rt}",
+            font_size=MATH_SIZE_SMALL
+        ).move_to(previous_footer, LEFT).align_to(previous_footer, DOWN)[-6:]  # I just want that last discounting part
+        self.play(FadeIn(footer_extension))
+
+        self.play(*[FadeOut(x) for x in (exp_plot, exp_labels, exp_graph, discounting_math)])
+
+        bullet_points = (
+            VGroup(  # TODO: colors here?
+                MathTex(r"\text{Need to:}", font_size=MATH_SIZE_MEDIUM),
+                MathTex(r"\text{• Convert the future option price } \widetilde{C} "
+                        r"\text{ to current value } D \cdot \widetilde{C}", font_size=MATH_SIZE_MEDIUM),
+                MathTex(r"\text{• Convert the current price } S(0) \text{ to future value } \frac{S(0)}{D}",
+                        font_size=MATH_SIZE_MEDIUM)
+            ).arrange(DOWN, aligned_edge=LEFT, buff=0.4).next_to(previous_footer, DOWN, buff=0.5)
+            .align_to(previous_footer, LEFT)
+        )
+        for line in bullet_points:
+            self.play(Write(line))
+            self.wait(1.0)
+
+        final_formula = MathTex(
+            r"C &= D \cdot \left[\frac{S(0)}{D} \cdot \Phi(d_+) - K \cdot \Phi(d_-)\right]",
+            font_size=MATH_SIZE_MEDIUM
+        ).next_to(bullet_points, DOWN, buff=0.3)
+        self.play(Write(final_formula))
+        self.wait(1.0)
+        self.play(Circumscribe(final_formula))
+        self.wait(1.0)
+
+        title = (Text("Black-Scholes-Merton Formula for Pricing Options", font_size=TEXT_SIZE_LARGE, color=YELLOW)
+                 .move_to(ORIGIN + UP * 2.0))
+        self.play(*[FadeOut(x) for x in (bullet_points, previous_formula)],
+                  FadeIn(title),
+                  final_formula.animate.move_to(ORIGIN + 0.75 * UP),
+                  VGroup(previous_footer, footer_extension).animate.move_to(ORIGIN + DOWN))
+        self.wait(1.0)
 
     def construct(self):
         display_section_title(self, "fully analytical")
@@ -305,4 +381,5 @@ class AnalyticCalculation(Scene):
         self.calculate_probability_term(distribution_header)
         self.calculate_expectation_term(distribution_header)
 
-        combined_formula_footer = self.combining_together()
+        non_discounted_formula, combined_formula_footer = self.combining_together()
+        self.discuss_discounting(non_discounted_formula, combined_formula_footer)
