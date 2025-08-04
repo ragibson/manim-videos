@@ -325,12 +325,16 @@ class AnalyticCalculation(Scene):
         self.play(Create(exp_graph), rate_func=linear, run_time=1.0)
         self.wait(1.0)
 
-        discounting_math = MathTex(
-            r"\text{Cash}(t) &= e^{rt} \cdot \text{Cash}(0)\\",
-            r"\text{Cash}(0) &= e^{-rt} \cdot \text{Cash(t)}",
-            font_size=MATH_SIZE_MEDIUM
-        ).next_to(exp_plot, RIGHT, buff=1.0).shift(UP * 1.0)
-        for line in discounting_math:
+        discounting_math = (
+            MathTex(
+                r"\text{Cash}(t) &= e^{rt} \cdot \text{Cash}(0)\\",
+                r"\text{Cash}(0) &= e^{-rt} \cdot \text{Cash}(t)",
+                font_size=MATH_SIZE_MEDIUM,
+                substrings_to_isolate=[r"\text{Cash}(t)", r"\text{Cash}(0)"]
+            ).set_color_by_tex(r"\text{Cash}(t)", BLUE).set_color_by_tex(r"\text{Cash}(0)", YELLOW)
+            .next_to(exp_plot, RIGHT, buff=1.0).shift(UP * 1.0)
+        )
+        for line in (discounting_math[:3], discounting_math[3:]):
             self.play(Write(line))
             self.wait(1.0)
 
@@ -343,12 +347,16 @@ class AnalyticCalculation(Scene):
         self.play(*[FadeOut(x) for x in (exp_plot, exp_labels, exp_graph, discounting_math)])
 
         bullet_points = (
-            VGroup(  # TODO: colors here?
+            VGroup(  # some gross latex structure here needed to get the colors to render correctly
                 MathTex(r"\text{Need to:}", font_size=MATH_SIZE_MEDIUM),
-                MathTex(r"\text{• Convert the future option price } \widetilde{C} "
-                        r"\text{ to current value } D \cdot \widetilde{C}", font_size=MATH_SIZE_MEDIUM),
-                MathTex(r"\text{• Convert the current price } S(0) \text{ to future value } \frac{S(0)}{D}",
-                        font_size=MATH_SIZE_MEDIUM)
+                MathTex(r"\text{• Convert the }\text{future option price } \widetilde{C} "
+                        r"\text{ to }\text{current value } D \cdot \widetilde{C}", font_size=MATH_SIZE_MEDIUM,
+                        substrings_to_isolate=[r"\text{future option price }", r"\text{current value }"])
+                .set_color_by_tex("future option price", BLUE).set_color_by_tex("current value", YELLOW),
+                MathTex(r"\text{• Convert the }\text{current price } S(0) \text{ to }\text{future value } "
+                        r"\frac{S(0)}{D}", font_size=MATH_SIZE_MEDIUM,
+                        substrings_to_isolate=[r"\text{current price }", r"\text{future value }"])
+                .set_color_by_tex("current price", YELLOW).set_color_by_tex("future value", BLUE)
             ).arrange(DOWN, aligned_edge=LEFT, buff=0.4).next_to(previous_footer, DOWN, buff=0.5)
             .align_to(previous_footer, LEFT)
         )
