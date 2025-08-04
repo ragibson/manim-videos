@@ -1,6 +1,7 @@
 # black_scholes_derivation
 
 TODO: create frozen requirements.txt for final package versions used in the render
+TODO: more comments throughout the scripts?
 
 The sequence of scenes here is:
 
@@ -14,3 +15,6 @@ The sequence of scenes here is:
   corresponding distribution that gives us these qualities is the lognormal distribution.
 * [determining_distribution_parameters.py](determining_distribution_parameters.py): Derive the PDF of a lognormal
   distribution and the parameters for a particular stock (mu, sigma).
+* [analytic_calculation.py](analytic_calculation.py): Finally derive the Black-Scholes formula by splitting the
+  calculation into an expectation and a probability calculation. A discounting step is introduced at the very end to
+  complete the derivation.
