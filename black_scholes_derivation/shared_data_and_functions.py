@@ -14,7 +14,6 @@ OCC_options_ADV = {1973: 6470, 1974: 22462, 1975: 71553, 1976: 127960, 1977: 157
 
 # I thought this would be helpful for text size consistency across the scripts but frankly there are enough exceptions
 # that it wasn't particularly useful. TEXT_SIZE_MEDIUM is a similar size to math mode MATH_SIZE_MEDIUM.
-# TODO: potentially consolidate into fewer sizes?
 TEXT_SIZE_TINY = 24
 TEXT_SIZE_XSMALL = 28
 TEXT_SIZE_SMALL = 32

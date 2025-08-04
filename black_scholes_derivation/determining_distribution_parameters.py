@@ -47,12 +47,11 @@ class DeterminingDistributionMu(Scene):
         self.wait(1.0)
         for line in list(answer_body):
             self.play(Write(line))
-            self.wait(1.0)  # TODO: may need to be specific to each line
+            self.wait(1.0)
 
         self.play(*[FadeOut(x) for x in (exercise_label, exercise_text, answer_start, answer_body)])
 
     def consider_S1(self):
-        # TODO: text header for this section?
         math_header = MathTex(r"{S(t ) \over S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)",
                               substrings_to_isolate=["t ", r"\mu", r"\sigma^2"],
                               font_size=MATH_SIZE_MEDIUM).to_edge(UP, buff=0.5)
