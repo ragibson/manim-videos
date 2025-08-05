@@ -288,9 +288,10 @@ class AnalyticCalculation(Scene):
 
         shorthand = MathTex(
             r"\text{where } d_+ = "
-            r"\frac{\ln\left(\frac{S(0)}{K}\right) - \frac{\sigma^2}{2} \cdot t}{\sigma \cdot \sqrt{t}}, \hspace{0.5em}"
-            r"d_- = d_+ - \sigma \cdot \sqrt{t}",
-            font_size=MATH_SIZE_SMALL
+            r"{ \ln\left(S(0) \over K\right) - {\sigma^2 \over 2} \cdot t \over \sigma \cdot \sqrt{t} }, "
+            r"\hspace{0.5em}"
+            r"d_- = d_+ - \sigma \cdot \sqrt{t}", font_size=MATH_SIZE_SMALL,
+            substrings_to_isolate=["K"]
         ).next_to(math_lines[-1], DOWN, buff=0.5).align_to(math_lines[0], LEFT)
         self.play(Write(shorthand))
         self.wait(1.0)
@@ -370,6 +371,9 @@ class AnalyticCalculation(Scene):
         ).next_to(bullet_points, DOWN, buff=0.3)
         self.play(Write(final_formula))
         self.wait(1.0)
+
+        # TODO: we actually need to add the D factor into the d_+ term as well
+
         self.play(Circumscribe(final_formula))
         self.wait(1.0)
 
