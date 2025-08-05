@@ -1,7 +1,7 @@
 from manim import *
 from scipy.stats import lognorm
 
-from shared_data_and_functions import TEXT_SIZE_MEDIUM, MATH_SIZE_MEDIUM
+from shared_data_and_functions import TEXT_SIZE_MEDIUM, MATH_SIZE_MEDIUM, black_scholes_price
 
 
 class BlackScholesVisualization(Scene):
@@ -98,7 +98,21 @@ class BlackScholesVisualization(Scene):
         )
         intrinsic_price = DashedVMobject(intrinsic_price['line_graph'], num_dashes=50)
 
-        return intrinsic_price
+        def option_price_fn(x):
+            return black_scholes_price(
+                S0=x, K=self.K.get_value(), sigma=self.sigma.get_value(), t=self.t.get_value(), r=self.r.get_value()
+            )
+
+        option_price_dot = Dot(
+            self.payoff_ax.c2p(self.S0.get_value(), option_price_fn(self.S0.get_value())),
+            color=WHITE, radius=0.1
+        )
+        option_price_plot = self.payoff_ax.plot_line_graph(
+            x_values=plot_xs,
+            y_values=[option_price_fn(x) for x in plot_xs],
+            line_color=BLUE, add_vertex_dots=False, z_index=1
+        )
+        return intrinsic_price, option_price_dot, option_price_plot
 
     def construct(self):
         variables = self.create_text()
@@ -114,6 +128,7 @@ class BlackScholesVisualization(Scene):
         self.play(FadeIn(area_above_strike))
         self.wait(1.0)
 
+        # updaters for price distribution plot (left)
         price_pdf_plot.add_updater(lambda m: m.become(self.create_price_distribution()[0]))
         strike_line.add_updater(lambda m: m.become(self.create_price_distribution()[1]))
         area_above_strike.add_updater(lambda m: m.become(self.create_price_distribution()[2]))
@@ -130,6 +145,50 @@ class BlackScholesVisualization(Scene):
                 self.play(variable.animate.set_value(v), run_time=2.0)
                 self.wait(1.0)
 
-        intrinsic_price = self.create_payoff_diagram()
+        intrinsic_price, option_price_dot, option_price_plot = self.create_payoff_diagram()
         self.play(Create(self.payoff_ax), Write(self.payoff_labels), run_time=2.0)
         self.play(Create(intrinsic_price), rate_func=linear)
+        self.wait(1.0)
+
+        self.play(FadeIn(option_price_dot))
+        self.wait(1.0)
+
+        # updaters for payoff diagram dot (right)
+        option_price_dot.add_updater(lambda m: m.become(self.create_payoff_diagram()[1]))
+
+        # sweep the dot left and right before we show the actual option price plot
+        for v in (260.0, 340.0, 300.0):  # larger range than before
+            self.play(self.S0.animate.set_value(v), run_time=2.0)
+            self.wait(1.0)
+
+        self.play(FadeIn(option_price_plot))
+        self.wait(1.0)
+
+        # this updater needs to come after the FadeIn for it to render properly
+        option_price_plot.add_updater(lambda m: m.become(self.create_payoff_diagram()[2]))
+
+        # sweeping all the variables again (including the risk-free rate) now that the payoff diagram is displayed
+        for variable, values in [
+            (self.S0, (260.0, 340.0, 300.0)),
+            (self.sigma, (0.06, 2.0, 0.10)),
+            (self.t, (0.10, 1.0, 0.25)),
+            (self.K, (280.0, 320.0, 310.0)),
+            (self.r, (0.01, 0.10, 0.04))
+        ]:
+            for v in values:
+                self.play(variable.animate.set_value(v), run_time=2.0)
+                self.wait(1.0)
+
+        # some final sweeping to hint at basic delta sensitivity
+        for v in (260.0, 280.0, 260.0, 340.0, 320.0, 340.0, 300):
+            self.play(self.S0.animate.set_value(v), run_time=2.0)
+            self.wait(1.0)
+
+        self.wait(1.0)
+
+        for m in (price_pdf_plot, strike_line, area_above_strike, variables, option_price_dot, option_price_plot):
+            m.clear_updaters()
+        self.play(*[FadeOut(x) for x in (
+            self.price_ax, self.price_labels, price_pdf_plot, strike_line, area_above_strike, variables,
+            self.payoff_ax, self.payoff_labels, intrinsic_price, option_price_dot, option_price_plot,
+        )])

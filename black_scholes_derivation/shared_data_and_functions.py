@@ -107,6 +107,6 @@ def stock_price_simulation_graph(stock_price_range=(250, 350.1, 25), strike=300,
 
 def black_scholes_price(S0, K, sigma, t, r):
     D = np.exp(-r * t)
-    d_plus = np.log(np.log(S0 / D / K) + sigma ** 2 * t / 2) / (sigma * np.sqrt(t))
+    d_plus = (np.log(S0 / D / K) + sigma ** 2 * t / 2) / (sigma * np.sqrt(t))
     d_minus = d_plus - sigma * np.sqrt(t)
     return D * (S0 / D * norm.cdf(d_plus) - K * norm.cdf(d_minus))
