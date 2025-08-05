@@ -1,7 +1,7 @@
 from manim import *
 from scipy.stats import lognorm
 
-from shared_data_and_functions import TEXT_SIZE_MEDIUM, MATH_SIZE_MEDIUM, black_scholes_price
+from shared_data_and_functions import TEXT_SIZE_MEDIUM, MATH_SIZE_MEDIUM, black_scholes_price, display_section_title
 
 
 class BlackScholesVisualization(Scene):
@@ -30,6 +30,7 @@ class BlackScholesVisualization(Scene):
 
         self.S0, self.sigma, self.t, self.K, self.r = (ValueTracker(x) for x in (300.0, 0.10, 0.25, 310.0, 0.04))
         self.variable_positions = None  # will be used to fix positions of the Black-Scholes variables latex
+        self.variable_highlight_idx = None
 
         self.payoff_ax = Axes(
             x_range=[250.0, 350.1, 25],
@@ -77,7 +78,10 @@ class BlackScholesVisualization(Scene):
             MathTex(rf"t = {self.t.get_value():.2f}", font_size=MATH_SIZE_MEDIUM),
             MathTex(rf"K = \${self.K.get_value():.0f}", font_size=MATH_SIZE_MEDIUM),
             MathTex(rf"r = {100 * self.r.get_value():.1f}\%", font_size=MATH_SIZE_MEDIUM)
-        ).arrange(RIGHT, buff=0.8).to_edge(UP, buff=0.5)
+        ).arrange(RIGHT, buff=0.75).to_edge(UP, buff=0.5)
+
+        if self.variable_highlight_idx:
+            variables[self.variable_highlight_idx].set_color(YELLOW)
 
         if self.variable_positions:
             # overriding positions from arrange to avoid shifting text as latex width changes
@@ -103,18 +107,36 @@ class BlackScholesVisualization(Scene):
                 S0=x, K=self.K.get_value(), sigma=self.sigma.get_value(), t=self.t.get_value(), r=self.r.get_value()
             )
 
-        option_price_dot = Dot(
-            self.payoff_ax.c2p(self.S0.get_value(), option_price_fn(self.S0.get_value())),
-            color=WHITE, radius=0.1
-        )
         option_price_plot = self.payoff_ax.plot_line_graph(
             x_values=plot_xs,
             y_values=[option_price_fn(x) for x in plot_xs],
-            line_color=BLUE, add_vertex_dots=False, z_index=1
+            line_color=BLUE, add_vertex_dots=False, z_index=2
+        )
+        option_price_dot = Dot(
+            self.payoff_ax.c2p(self.S0.get_value(), option_price_fn(self.S0.get_value())),
+            color=WHITE, radius=0.1, z_index=3
         )
         return intrinsic_price, option_price_dot, option_price_plot
 
+    def sweep_variables(self, sweep_sequence):
+        """
+        Sweep all the Black-Scholes variables up and down.
+
+        The order of the sweep_sequence list is S0, sigma, t, K, r.
+        """
+        assert len(sweep_sequence) == 5
+
+        self.variable_highlight_idx = 0
+        for variable, values in zip((self.S0, self.sigma, self.t, self.K, self.r), sweep_sequence):
+            for v in values:
+                self.play(variable.animate.set_value(v), run_time=2.0)
+                self.wait(0.5)
+            self.variable_highlight_idx += 1
+        self.variable_highlight_idx = None
+
     def construct(self):
+        display_section_title(self, "Visualizing")
+
         variables = self.create_text()
         self.play(Write(variables), run_time=2.0)
         self.wait(1.0)
@@ -135,15 +157,10 @@ class BlackScholesVisualization(Scene):
         variables.add_updater(lambda m: m.become(self.create_text()))
 
         # while just the price distribution is on screen, sweep each variable up and down
-        for variable, values in [
-            (self.S0, (280.0, 320.0, 300.0)),
-            (self.sigma, (0.06, 2.0, 0.10)),
-            (self.t, (0.10, 1.0, 0.25)),
-            (self.K, (280.0, 320.0, 310.0))
-        ]:
-            for v in values:
-                self.play(variable.animate.set_value(v), run_time=2.0)
-                self.wait(1.0)
+        self.sweep_variables([
+            # S0, sigma, t, K, r (note r is skipped for now)
+            (280.0, 320.0, 300.0), (0.06, 0.20, 0.10), (0.10, 1.0, 0.25), (280.0, 320.0, 310.0), ()
+        ])
 
         intrinsic_price, option_price_dot, option_price_plot = self.create_payoff_diagram()
         self.play(Create(self.payoff_ax), Write(self.payoff_labels), run_time=2.0)
@@ -156,10 +173,11 @@ class BlackScholesVisualization(Scene):
         # updaters for payoff diagram dot (right)
         option_price_dot.add_updater(lambda m: m.become(self.create_payoff_diagram()[1]))
 
-        # sweep the dot left and right before we show the actual option price plot
-        for v in (260.0, 340.0, 300.0):  # larger range than before
-            self.play(self.S0.animate.set_value(v), run_time=2.0)
-            self.wait(1.0)
+        # sweep the dot left and right before we show the actual option price plot (larger range for S0 than before)
+        self.sweep_variables([
+            # S0, sigma, t, K, r (note r is skipped for now)
+            (260.0, 340.0, 300.0), (), (), (), ()
+        ])
 
         self.play(FadeIn(option_price_plot))
         self.wait(1.0)
@@ -168,21 +186,14 @@ class BlackScholesVisualization(Scene):
         option_price_plot.add_updater(lambda m: m.become(self.create_payoff_diagram()[2]))
 
         # sweeping all the variables again (including the risk-free rate) now that the payoff diagram is displayed
-        for variable, values in [
-            (self.S0, (260.0, 340.0, 300.0)),
-            (self.sigma, (0.06, 2.0, 0.10)),
-            (self.t, (0.10, 1.0, 0.25)),
-            (self.K, (280.0, 320.0, 310.0)),
-            (self.r, (0.01, 0.10, 0.04))
-        ]:
-            for v in values:
-                self.play(variable.animate.set_value(v), run_time=2.0)
-                self.wait(1.0)
+        self.sweep_variables([
+            (260.0, 340.0, 300.0), (0.06, 0.20, 0.10), (0.10, 1.0, 0.25), (280.0, 320.0, 310.0), (0.01, 0.10, 0.04)
+        ])
 
-        # some final sweeping to hint at basic delta sensitivity
-        for v in (260.0, 280.0, 260.0, 340.0, 320.0, 340.0, 300):
-            self.play(self.S0.animate.set_value(v), run_time=2.0)
-            self.wait(1.0)
+        # some final sweeping of S0 to hint at basic delta sensitivity
+        self.sweep_variables([
+            (260.0, 280.0, 260.0, 340.0, 320.0, 340.0, 300), (), (), (), ()
+        ])
 
         self.wait(1.0)
 
@@ -192,3 +203,8 @@ class BlackScholesVisualization(Scene):
             self.price_ax, self.price_labels, price_pdf_plot, strike_line, area_above_strike, variables,
             self.payoff_ax, self.payoff_labels, intrinsic_price, option_price_dot, option_price_plot,
         )])
+
+
+class FinalTakeaways(Scene):
+    def construct(self):
+        pass
