@@ -288,10 +288,11 @@ class AnalyticCalculation(Scene):
 
         shorthand = MathTex(
             r"\text{where } d_+ = "
-            r"{ \ln\left(S(0) \over K\right) - {\sigma^2 \over 2} \cdot t \over \sigma \cdot \sqrt{t} }, "
+            r"{ \ln\left(S(0) \over ",
+            r"K",
+            r"\right) - {\sigma^2 \over 2} \cdot t \over \sigma \cdot \sqrt{t} }, "
             r"\hspace{0.5em}"
-            r"d_- = d_+ - \sigma \cdot \sqrt{t}", font_size=MATH_SIZE_SMALL,
-            substrings_to_isolate=["K"]
+            r"d_- = d_+ - \sigma \cdot \sqrt{t}", font_size=MATH_SIZE_SMALL
         ).next_to(math_lines[-1], DOWN, buff=0.5).align_to(math_lines[0], LEFT)
         self.play(Write(shorthand))
         self.wait(1.0)
@@ -339,11 +340,18 @@ class AnalyticCalculation(Scene):
             self.play(Write(line))
             self.wait(1.0)
 
-        footer_extension = MathTex(
-            previous_footer.tex_string + r", \hspace{0.5em} D = e^{-rt}",
+        # rewriting this whole thing to avoid quirks of MatchingTex and nested \overs
+        extended_footer = MathTex(
+            r"\text{where } d_+ = "
+            r"{ \ln\left(S(0) \over ",
+            r"K",
+            r"\right) - {\sigma^2 \over 2} \cdot t \over \sigma \cdot \sqrt{t} }, "
+            r"\hspace{0.5em}"
+            r"d_- = d_+ - \sigma \cdot \sqrt{t}, \hspace{0.5em} D = e^{-rt}",
             font_size=MATH_SIZE_SMALL
-        ).move_to(previous_footer, LEFT).align_to(previous_footer, DOWN)[-6:]  # I just want that last discounting part
-        self.play(FadeIn(footer_extension))
+        ).move_to(previous_footer, LEFT).align_to(previous_footer, DOWN)
+        self.play(FadeIn(extended_footer))
+        self.remove(previous_footer)
 
         self.play(*[FadeOut(x) for x in (exp_plot, exp_labels, exp_graph, discounting_math)])
 
@@ -372,7 +380,18 @@ class AnalyticCalculation(Scene):
         self.play(Write(final_formula))
         self.wait(1.0)
 
-        # TODO: we actually need to add the D factor into the d_+ term as well
+        # we actually need to add the D factor into the d_+ term as well
+        # K is matched to D \cdot K with the whole thing replaced to avoid quirks of MatchingTex / nested \overs
+        final_footer = MathTex(
+            r"\text{where } d_+ = "
+            r"{ \ln\left(S(0) \over ",
+            r"D \cdot K",
+            r"\right) - {\sigma^2 \over 2} \cdot t \over \sigma \cdot \sqrt{t} }, "
+            r"\hspace{0.5em}"
+            r"d_- = d_+ - \sigma \cdot \sqrt{t}, \hspace{0.5em} D = e^{-rt}", font_size=MATH_SIZE_SMALL
+        ).move_to(extended_footer, LEFT)
+        self.play(TransformMatchingTex(extended_footer, final_footer))
+        self.wait(1.0)
 
         self.play(Circumscribe(final_formula))
         self.wait(1.0)
@@ -382,7 +401,7 @@ class AnalyticCalculation(Scene):
         self.play(*[FadeOut(x) for x in (bullet_points, previous_formula)],
                   FadeIn(title),
                   final_formula.animate.move_to(ORIGIN + 0.75 * UP),
-                  VGroup(previous_footer, footer_extension).animate.move_to(ORIGIN + DOWN))
+                  final_footer.animate.move_to(ORIGIN + DOWN))
         self.wait(1.0)
 
     def construct(self):
