@@ -80,15 +80,15 @@ class BlackScholesVisualization(Scene):
             MathTex(rf"r = {100 * self.r.get_value():.1f}\%", font_size=MATH_SIZE_MEDIUM)
         ).arrange(RIGHT, buff=0.75).to_edge(UP, buff=0.5)
 
-        if self.variable_highlight_idx:
+        if self.variable_highlight_idx is not None:
             variables[self.variable_highlight_idx].set_color(YELLOW)
 
         if self.variable_positions:
             # overriding positions from arrange to avoid shifting text as latex width changes
             for i, v in enumerate(variables):
-                v.move_to(self.variable_positions[i])
+                v.move_to(self.variable_positions[i], aligned_edge=LEFT)
         else:
-            self.variable_positions = [x.get_center() for x in variables]
+            self.variable_positions = [x.get_left() for x in variables]
 
         return variables
 
