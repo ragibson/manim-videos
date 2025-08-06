@@ -18,3 +18,6 @@ The sequence of scenes here is:
 * [analytic_calculation.py](analytic_calculation.py): Finally derive the Black-Scholes formula by splitting the
   calculation into an expectation and a probability calculation. A discounting step is introduced at the very end to
   complete the derivation.
+* [visualization_conclusion.py](visualization_conclusion.py): Animation of the stock price distribution and payoff
+  diagram as we sweep each of the variables up and down. The section closes with a simple list of high-level takeaways
+  from the entire discussion.
