@@ -21,3 +21,6 @@ The sequence of scenes here is:
 * [visualization_conclusion.py](visualization_conclusion.py): Animation of the stock price distribution and payoff
   diagram as we sweep each of the variables up and down. The section closes with a simple list of high-level takeaways
   from the entire discussion.
+
+[requirements.txt](requirements.txt) lists the exact package versions installed as Manim dependencies at the time of the
+render.
