@@ -32,8 +32,9 @@ TITLES, TITLE_HIGHLIGHTS = [
     "What is a stock? What is an option?",
     "How would you assign a fair price for an option?",
     "Making things fully analytical",
-    "Visualizing our pricing formula"
-], ["option", "fair price", "analytical", "Visualizing"]
+    "Visualizing our pricing formula",
+    "6 exercises throughout (with hints and solutions!)"
+], ["option", "fair price", "analytical", "Visualizing", "exercises"]
 
 
 def display_section_title(scene, section_shorthand):

@@ -92,8 +92,6 @@ class BlackScholesTraditionalDerivation(Scene):
     def construct(self):
         title = Text("Traditional Derivation is Complicated!", font_size=TEXT_SIZE_MEDIUM, t2c={"Complicated!": RED})
         title.to_edge(UP)
-        self.play(Write(title))
-        self.wait(0.5)
 
         # bullet points of topics
         topics = VGroup(  # probably could've used BulletedList here
@@ -121,7 +119,12 @@ class BlackScholesTraditionalDerivation(Scene):
             # topics moving ->, expressions moving <-
             self.play(FadeIn(text, shift=RIGHT), FadeIn(expr, shift=LEFT))
             self.wait(0.5)
-        self.wait(1.5)
+
+            if text == topics[0]:
+                # actually choosing to do the first topic first and _then_ add in the title
+                self.play(Write(title))
+                self.wait(0.5)
+        self.wait(1.0)
 
         # cross marks through everything except probability & statistics
         xmarks = VGroup([Cross(topics[i], color=RED, stroke_width=6) for i in range(1, len(topics))]
