@@ -112,6 +112,7 @@ class DemonstrateSimulation(Scene):
         schedule = [(1, t) if t >= 1 / 60 else (int(np.ceil(1 / 60 / t)), 1 / 60)
                     for t in decay_curve]
         schedule += [schedule[-1]] * 120
+        path_opacity = lambda: min(0.2, max(0.005, 1.0 / len(self.simulation_paths)))
 
         # add new paths, faster and faster
         for num_paths_this_tick, run_time in schedule:
@@ -119,7 +120,7 @@ class DemonstrateSimulation(Scene):
 
             # dim prior paths, generate new paths, update histogram
             self.play(*[
-                self.simulation_graphs[-idx].animate.set_stroke(opacity=min(0.1, 1.0 / len(self.simulation_paths)))
+                self.simulation_graphs[-idx].animate.set_stroke(opacity=path_opacity())
                 for idx in range(1, num_paths_this_tick + 1)], run_time=run_time)
             for _ in range(num_paths_this_tick):
                 self.generate_next_path(ax)
@@ -132,7 +133,7 @@ class DemonstrateSimulation(Scene):
         else:
             # dim final paths
             self.play(*[
-                self.simulation_graphs[-idx].animate.set_stroke(opacity=min(0.1, 1.0 / len(self.simulation_paths)))
+                self.simulation_graphs[-idx].animate.set_stroke(opacity=path_opacity())
                 for idx in range(1, num_paths_this_tick + 1)], run_time=run_time)
 
         self.wait(1.0)
