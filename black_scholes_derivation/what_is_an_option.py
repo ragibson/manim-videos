@@ -139,7 +139,7 @@ class StockSimulation(Scene):
 class WhatIsAnOption(Scene):
     def written_description(self):
         lines = [
-            f'An option<sup>*</sup> is a contract that:',
+            f'An option is a contract that:',
             f'• gives you the <span foreground="{YELLOW}">option</span> to buy a stock',
             f'• at a <span foreground="{GREEN}">predetermined price</span> (the "strike price")',
             f'• on a <span foreground="{BLUE}">specific date</span> in the future.'
@@ -186,6 +186,7 @@ class WhatIsAnOption(Scene):
         ).next_to(example_text, RIGHT, buff=0.25).align_to(example_text, UP)
         self.play(Write(example_text), run_time=0.25)
         self.play(FadeOut(footnote), Write(example_body))
+        self.wait(1.0)
 
         # two cases to show off asymmetry
         lines = [
