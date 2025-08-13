@@ -116,19 +116,77 @@ Let's look at an example to make this a bit more concrete.
 Say you're entering into one of these contracts to buy a share of Apple's stock for $300 in 3 months.
 
 If at that time, Apple's stock price has increased to $325, you've made $25 in profit! You could buy the stock for $300
-and then immediately sell it in the market for $325, pocketing the $25 difference.
+in the contract and then immediately sell it in the market for $325, pocketing the $25 difference.
 
 On the other hand, if Apple's stock fell to $275, you make nothing. But you also don't lose anything! You simply
 choose to not exercise the option to buy the stock!
+
+(Screen switches to showing a payoff diagram)
 
 So this isn't symmetric! If we plot out the profit you're making on this option vs. the final price of stock, hopefully
 you can see that it's linear beyond that strike price of $300. For every dollar above $300, you make a dollar in profit.
 
 And then on the other side, the profit is always zero.
 
-But of course, this is a contract with no downside. So in practice the person you're buying the option from is going to
-charge you a fee to take on that risk.
+But of course, as structured here, this is a contract with no downside. So in practice the person you're buying the
+option from is going to charge you a fee to take on that risk.
 
 That fee is known as the "premium" or "price" of the option, and it's what we're interested in figuring out.
 
 What's a fair price to charge for this option? And more importantly, how much should you be willing to pay for it?
+
+## finding_a_fair_price.py
+
+(Screen shows "An option is ... on a specific date in the future")
+
+The reason why determining a fair price is so difficult is that this contract fundamentally depends on the future
+behavior of the stock price and obviously there's no way to know that in advance!
+
+In fact, before the Black-Scholes-Merton formula, people made millions exploiting the fact that these things are
+difficult to price. Before a rigorous method existed, some of it used to come down to trader intuition and vibes,
+honestly.
+
+(Screen shows "Exercise #1: How could you find a fair price for this?")
+
+This brings us to our first exercise, which is a pretty open-ended one. How would you go about finding a fair price for
+this?
+
+(pause)
+
+This really comes down to realizing that while the future is unknown, we could always try to guess!
+
+We can research how the stock price has moved in the past. So, if it's moved from $300 to around $325, we might
+predict...
+
+That maybe it keeps going up to around $350...
+
+Or maybe it goes back down to $300...
+
+And maybe it falls even more than that!
+
+(Screen shows "Simulate!")
+
+So one thing we can try is to somehow simulate all these possibilities and get a sense of how much profit this option
+would make in each case.
+
+(Screen switches over to a plot of Stock Price vs. Time on the left and a histogram of Option Profit on the right.
+The stock price paths are simulated iteratively until the histogram is denser and denser.)
+
+Let's take a look at what that might look like.
+
+Here's a plot of a simulated path of the stock price out to 3 months in the future, and it happens to end up around
+$325.
+
+That's $25 dollars above our strike price, and so the option would make $25 in profit.
+
+If we simulate out more and more paths, we can simply record how much profit the option makes in each case, and start to
+see how that profit ends up being distributed across all the various simulated scenarios.
+
+(Average of $6 is plotted on the histogram)
+
+At the end, we could look at that distribution and take the average, which ends up being about $6 here.
+
+If we charged that amount as the fee of the option, then we'd expect it to cancel out the average profit of the option.
+In other words, neither the buyer nor the seller would make any money on average.
+
+And that would be a fair price! That's the very definition of fairness in this context.

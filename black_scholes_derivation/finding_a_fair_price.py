@@ -81,12 +81,12 @@ class DemonstrateSimulation(Scene):
     def construct(self):
         # left: simulated stock prices
         ax, labels, strike_line = stock_price_simulation_graph()
-        self.play(Create(ax), Write(labels), run_time=2.0)
+        self.play(Create(ax), Write(labels), run_time=1.0)
         self.play(Create(strike_line, rate_func=linear))
         self.wait(1.0)
 
         self.generate_next_path(ax)
-        self.play(Create(self.simulation_graphs[-1], rate_func=linear), run_time=2.0)
+        self.play(Create(self.simulation_graphs[-1], rate_func=linear), run_time=1.0)
 
         # right: histogram of option profit
         bar_chart = BarChart(
