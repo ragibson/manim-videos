@@ -1,13 +1,26 @@
 from shared_data_and_functions import *
 
 
+class TweakedIntroText(Scene):
+    def construct(self):
+        title = Text("1973: Black-Scholes-Merton Formula for Pricing Options", font_size=TEXT_SIZE_MEDIUM,
+                     t2c={"1973": YELLOW})
+        self.play(Write(title), run_time=3.0)
+        self.wait(1.0)
+        self.play(title.animate.to_edge(UP, buff=0.5))
+        self.wait(1.0)
+
+
 class BlackScholesIntroduction(Scene):
     def play_BSM_title(self):
         title = Text("1973: Black-Scholes-Merton Formula for Pricing Options", font_size=TEXT_SIZE_MEDIUM,
                      t2c={"1973": YELLOW})
         title.to_edge(UP, buff=0.5)
 
+        # this effect is kept here but removed in post (wanted to tweak without changing existing timeline cuts)
         self.play(Write(title))
+
+        # TweakedIntroText continues from here
         self.wait(1.0)
         return title  # need to FadeOut later
 
