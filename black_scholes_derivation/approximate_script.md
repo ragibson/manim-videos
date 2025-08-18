@@ -190,3 +190,128 @@ If we charged that amount as the fee of the option, then we'd expect it to cance
 In other words, neither the buyer nor the seller would make any money on average.
 
 And that would be a fair price! That's the very definition of fairness in this context.
+
+## how_to_simulate.py
+
+(Screen switches to showing "How to Simulate Stock Prices?" A Distribution Density vs. Stock Price distribution will be
+plotted and have its width / standard deviation increase.)
+
+This is good progress, but it kicks the can down the road a bit. How should we perform this simulation?
+
+The first instinct of any statistician would be to throw a normal distribution down and call it a day. Then, we could
+simply sample from this distribution, and we'd be done.
+
+But think about what happens over longer periods of times or extremely volatile stocks. The distribution will get wider
+and wider until a point where it crosses over into negative prices.
+
+(Left tail highlighted, "Negative Stock Prices?")
+
+This makes no sense! Remember that a stock represents partial ownership of a company, so it can't be worth less than
+nothing. The worst-case scenario is the stock price going to zero, meaning the company went bankrupt and your shares are
+worthless. But you can never _owe_ money just for holding a share.
+
+(Screen shows: "#1: Prices should not go negative")
+
+This is going to be the first quality we're going to want from our simulation. Prices should never go negative.
+
+(A plot of Nvidia's prices over the last 1Y is shown, with the current price highlighted, ~$160. Later, Home Depot's is
+shown around $370 a share.)
+
+Another important fact is that the actual price of the stock doesn't really represent the value of the company. Here on
+the left we have NVIDIA, which is the most valuable company in the United States, worth more than $4 trillion. They
+build all the GPUs that are powering the current AI craze, so their valuations are sky-high.
+
+On the right here, we have Home Depot, trading much higher than NVIDIA. Obviously, Home Depot is nowhere near as
+valuable a company. So what gives, right?
+
+These companies basically get to choose how many shares they issue, and thus how small of a slice you get to own of the
+company when you buy a single share.
+
+At the end of the day, buying a share of NVIDIA just gives you a much, much smaller fraction of the company than buying
+a share of Home Depot.
+
+("Stock prices cannot be compared directly!" is displayed)
+
+So, stock prices can't be compared directly. We really tend to look at the relative price moves over time, so NVIDIA's
+value has increased ~27% over the last year, while Home Depot's has increased more like 10%.
+
+("#2: Price moves should be relative" is displayed)
+
+This is the second quality our simulation should have. Stock price moves should be relative to the current price.
+
+The final quality is related to this. Think about what happens if you have a constant relative price increase
+day-over-day.
+
+If we start at $100 and increase 10%, we're at $110. If we increase 10% again, we're at $121. And then $133, and so on.
+
+These relative moves are building on top of each other, so the final price increase is about 33% rather than just adding
+10% three times for 30%. This is compound growth, which is the final quality we'll want.
+
+("#3: Relative changes should compound")
+
+("Exercise #2: Let S(t) be the stock price at time t. Can you transform a normal distribution and use it to construct
+S(t) so that it has these three qualities?")
+
+So those are three qualities we want, which brings us to our second exercise.
+
+Let's say S(t) is the distribution of the stock price at time t. Can you transform a normal distribution and use it to
+construct S(t) so that it has these three qualities that we want?
+
+Again, we'd really love to use a normal distribution here, so let's see if we could tweak it a bit to meet our
+requirements.
+
+("Hint: Normal distributions 'add together.' What kind of function turns adding into multiplying?")
+
+If you're stuck here, remember that one of the important qualities of a normal distribution is that when you add two of
+them together, you still get a normal distribution, just shifted and scaled a bit differently.
+
+In this way, normal distributions are best for processes that add together, so one of the things you're looking for here
+is to use a function that turns this sort of addition into the multiplication we're looking for relative price moves and
+compound growth.
+
+(pause)
+
+(shows a plot of e^x and e^{x+y} = e^x * e^y)
+
+The perfect candidate here is an exponential function. e to the x stays positive for any input, e to the -100 is just 1
+divided by e to the 100, so it's a very small but positive value. That automatically gives us the first quality of
+avoiding negative prices.
+
+And the whole point of an exponential is that it represents repeated multiplication or compound growth. e to the x plus
+y is e to the x times e to the y, so that also gives us the compounding we want.
+
+("Consider S(t) / S(0) ~ exp(N(mu, sigma^2))")
+
+Getting relative price moves is a bit clunkier, but we can shoehorn it in. The distribution of the stock price
+relative to its starting point is S(t) / S(0). So just set that to be the exponential of a normal distribution.
+
+That gives us all three qualities.
+
+(Moves "Consider ..." to top of screen and adds "Lognormal distribution")
+("X ~ exp(N(mu, sigma^2)) <-> ln(X) ~ N(mu, sigma^2)")
+
+This exponential of a normal distribution is known as a lognormal distribution, for the somewhat confusing reason that
+the log of the distribution is normal.
+
+That log cancels out the exponential.
+
+("Plot shows a comparison of a normal density and a lognormal one")
+
+It's worth looking at what this does to the normal distribution.
+
+Here's one of those normal distributions we were looking at earlier with the negative prices.
+
+And when I switch over to this lognormal transformation, you'll see two things.
+
+("No negatives!")
+
+All the negative prices on the left tail disappear because they'll get shifted above zero by the exponential function.
+
+("Compounding returns!")
+
+And then the right tail gets a little heavier because of the exponential functions tendency to blow up. That's the
+compound growth kicking in.
+
+(mu and sigma get highlighted briefly)
+
+All that remains is to figure out what mu and sigma should be in this distribution.
