@@ -81,8 +81,7 @@ class DemonstrateSimulation(Scene):
     def construct(self):
         # left: simulated stock prices
         ax, labels, strike_line = stock_price_simulation_graph()
-        self.play(Create(ax), Write(labels), run_time=1.0)
-        self.play(Create(strike_line, rate_func=linear))
+        self.play(Create(ax), Write(labels), Create(strike_line, rate_func=linear), run_time=1.0)
         self.wait(1.0)
 
         self.generate_next_path(ax)
