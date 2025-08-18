@@ -82,10 +82,10 @@ class DemonstrateSimulation(Scene):
         # left: simulated stock prices
         ax, labels, strike_line = stock_price_simulation_graph()
         self.play(Create(ax), Write(labels), Create(strike_line, rate_func=linear), run_time=1.0)
-        self.wait(1.0)
 
         self.generate_next_path(ax)
         self.play(Create(self.simulation_graphs[-1], rate_func=linear), run_time=1.0)
+        self.wait(1.0)
 
         # right: histogram of option profit
         bar_chart = BarChart(
@@ -111,7 +111,7 @@ class DemonstrateSimulation(Scene):
         schedule = [(1, t) if t >= 1 / 60 else (int(np.ceil(1 / 60 / t)), 1 / 60)
                     for t in decay_curve]
         schedule += [schedule[-1]] * 120
-        path_opacity = lambda: min(0.2, max(0.005, 1.0 / len(self.simulation_paths)))
+        path_opacity = lambda: min(0.2, max(0.025, 1.0 / len(self.simulation_paths)))
 
         # add new paths, faster and faster
         for num_paths_this_tick, run_time in schedule:
