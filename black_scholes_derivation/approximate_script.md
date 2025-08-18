@@ -1,5 +1,9 @@
 # Can You Price Options with Just Basic Statistics? A Simple Black-Scholes Pricing Derivation
 
+(This script is mostly what's in the video along with some notes on what parts of the animation are shown at each
+point. I self-edited on the fly at a few places, so it's a little different from the final result but should be quite
+close overall.)
+
 ## introduction.py
 
 (Screen shows "1973: Black-Scholes-Merton Formula for Pricing Options" and images of the three authors)
@@ -297,7 +301,7 @@ distribution, but I didn't want to drop it on you out of nowhere. It's a choice 
 
 ("Plot shows a comparison of a normal density and a lognormal one")
 
-It's worth looking at what this does to the normal distribution.
+Let's take a look at what this transformation did for us.
 
 Here's one of those normal distributions we were looking at earlier with the negative prices.
 
@@ -309,9 +313,9 @@ All the negative prices on the left tail disappear because they get shifted abov
 
 ("Compounding returns!")
 
-And then the right tail gets a little heavier because of the exponential function's tendency to blow up. That's the
-compound returns kicking in.
+And then the right tail gets a little heavier because of e^x's tendency to blow up. Those are the compound returns
+kicking in.
 
 (mu and sigma get highlighted briefly)
 
-All that remains is to figure out what values of mu and sigma we should use for this distribution.
+All that remains for our simulation is to figure out what values of mu and sigma to use for this distribution.
