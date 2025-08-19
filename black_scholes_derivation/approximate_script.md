@@ -399,3 +399,61 @@ This second hint is more strategic. The integral you're computing here can be si
 PDF instead of a lognormal one. If you transform it accordingly, you can avoid doing more complicated integration.
 
 (pause)
+
+Following the hints, let's see what happens if we take mu = 0.
+
+The expected value of S(1) is the expected value of S(0) times the lognormal factor.
+
+And since S(0) is a constant, we can pull it out of the expectation.
+
+Then, we really just need to find the expected value of this zero-mu lognormal.
+
+So let's set that up.
+
+This is the integral of x times the PDF over its entire domain, 0 to infinity.
+
+Plugging in the PDF we derived earlier, you'll see that the x factor is going to cancel with the 1/x from the PDF, so
+I'll just rewrite that real quick.
+
+This already looks a lot taking the area under a standard normal PDF. If we could transform it to be exactly a normal,
+the entire integral would just be a normal CDF.
+
+To do this, we can set up a u-substitution. The only part that doesn't match a normal PDF is the log x term in the
+exponential, so let's change variables to get rid of it.
+
+Taking u to be log x (and thus e^u = x) gives us that du = 1/x dx.
+
+Moving that x to the left hand side and substituting, we get that exp(u) du = dx.
+
+Bringing this back into our integral, log x becomes u and then we get an extra exp(u) factor on the right side.
+
+Crucially, that bottom limit of integration becomes negative infinity to match the behavior of log x as x approaches
+zero.
+
+Simplifying a bit, let's collect the exponential terms together.
+
+This is closer to a normal PDF, but it doesn't quite match yet. We really want it to take the form of
+(u - mu)^2 / 2 sigma^2.
+
+To this end, we get a common denominator and notice that it looks even closer to a distributed version of (u - mu)^2.
+
+Writing it out explicitly, all that we're missing is the equivalent of the mu^2 term, where in our case, sigma^2 is
+actually taking the place of mu.
+
+Completing the square leaves us with an extra summand of sigma^4 in the numerator.
+
+Which I'll simplify real quick as sigma^2 / 2 and then pull it back out of the exponential.
+
+Anything involving sigma is a constant with respect to u, so we can actually pull it out of the integral altogether.
+
+And we're left this interesting integral over a normal distribution with mean sigma^2 and standard deviation sigma.
+
+But it's an integral over the entire domain, negative infinity to positive infinity. It's just 1. The whole term
+disappears.
+
+Our final answer is that the expected value term is the exponential of sigma^2 over 2.
+
+All this means that the lognormal transformation effectively shifted the normal distribution in the exponent over by
+this amount.
+
+So we can cancel out that effect by setting mu to be negative sigma^2 / 2. This completes the exercise.
