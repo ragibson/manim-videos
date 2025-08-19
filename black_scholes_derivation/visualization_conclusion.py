@@ -171,6 +171,7 @@ class BlackScholesVisualization(Scene):
         self.wait(1.0)
 
         # updaters for payoff diagram dot (right)
+        intrinsic_price.add_updater(lambda m: m.become(self.create_payoff_diagram()[0]))
         option_price_dot.add_updater(lambda m: m.become(self.create_payoff_diagram()[1]))
 
         # sweep the dot left and right before we show the actual option price plot (larger range for S0 than before)
@@ -197,7 +198,8 @@ class BlackScholesVisualization(Scene):
 
         self.wait(1.0)
 
-        for m in (price_pdf_plot, strike_line, area_above_strike, variables, option_price_dot, option_price_plot):
+        for m in (price_pdf_plot, strike_line, area_above_strike, variables, intrinsic_price,
+                  option_price_dot, option_price_plot):
             m.clear_updaters()
         self.play(*[FadeOut(x) for x in (
             self.price_ax, self.price_labels, price_pdf_plot, strike_line, area_above_strike, variables,
