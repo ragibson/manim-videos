@@ -457,3 +457,51 @@ All this means that the lognormal transformation effectively shifted the normal 
 this amount.
 
 So we can cancel out that effect by setting mu to be negative sigma^2 / 2. This completes the exercise.
+
+(Screen shows a plot of a stock price over time, briefly stopping at "Today" and continuing forward in a different
+color. A value of sigma = 10% is shown and then animated up to 30% and back down to 20%.)
+
+Let's briefly talk about the other parameter, sigma. This one won't be an exercise or anything since it's a bit more
+freeform.
+
+Sigma determines how volatile the stock is in the simulation, how wide the distribution of price changes will be, so
+this will vary from stock to stock.
+
+You could look how the stock has moved in the past and then use that to get an idea of what sigma should be. For
+example, simulating forward with a volatility of 10% here seems a bit too stable.
+
+And sweeping up to 30% looks a bit too volatile. Something like 20% is reasonable given the historical trends we have
+here.
+
+This is the type of thing you could estimate by simply calculating the standard deviation of historical returns.
+
+Otherwise, we don't need to worry about this parameter too much. Just know that it's something that can be estimated
+for a specific stock, and you can search volatilities online if you want to get a feel for them.
+
+This gives us all the parameters we were looking for. Mu is based on sigma, and sigma represents the stock's volatility.
+
+(Screen changes to "What does S(t) look like?")
+
+Taking a step back, we had calculated out the distribution for S(1), so we have to figure out what it looks like for an
+arbitrary time t.
+
+This isn't too complicated because we can just take another step ahead to get S(2). It'll be S(1) times the same type of
+lognormal distribution.
+
+Substituting back in for S(1), we see that we're multiplying by two lognormal distributions. One from the first time
+step, and one from the second.
+
+Like before, we can collect these into the exponent together and make use of the fact that normal distributions add
+together nicely.
+
+Those two means of -sigma^2/2 will add together to be twice as large, and variances add together in the same way.
+
+So, S(2) looks exactly like S(1) with its parameters doubled.
+
+Needless to say, this pattern continues for 3 and t in general.
+
+That's our distribution for the stock price at time t!
+
+S(t) is S(0) times the exponential of a normal distribution with mean -sigma^2/2 * t and variance sigma^2 * t.
+
+## analytic_calculation.py

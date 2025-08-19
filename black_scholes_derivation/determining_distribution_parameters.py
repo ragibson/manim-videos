@@ -348,8 +348,8 @@ class DeterminingDistributionSigmaAndSt(Scene):
         self.wait(1.0)
 
         ax, labels, simulated_path, past_graph, _ = stock_price_to_today(S1_header, sigma=0.2)
-        self.play(Create(ax), Write(labels), run_time=2.0)
-        self.play(Create(past_graph, rate_func=linear, run_time=2.0))
+        self.play(Create(ax), Write(labels), run_time=1.0)
+        self.play(Create(past_graph, rate_func=linear, run_time=1.0))
         self.wait(1.0)
 
         def create_future_graph_and_text(sigma):
@@ -382,7 +382,7 @@ class DeterminingDistributionSigmaAndSt(Scene):
         footnote = Tex(r"$^*$\text{This really tells us how volatile the stock \emph{used to be}. In practice, you'd "
                        r"use slightly more complicated techniques to estimate \emph{future} volatility.}",
                        font_size=TEXT_SIZE_TINY).scale(0.9)
-        footnote.to_edge(DOWN, buff=0.25).to_edge(LEFT, buff=0.25)
+        footnote.to_edge(DOWN, buff=0.25).to_edge(LEFT, buff=0.15)
         self.play(FadeIn(footnote))
         self.wait(1.0)
 
