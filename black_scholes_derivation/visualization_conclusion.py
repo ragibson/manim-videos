@@ -188,7 +188,7 @@ class BlackScholesVisualization(Scene):
 
         # sweeping all the variables again (including the risk-free rate) now that the payoff diagram is displayed
         self.sweep_variables([
-            (260.0, 340.0, 300.0), (0.06, 0.20, 0.10), (0.10, 1.0, 0.25), (280.0, 320.0, 310.0), (0.01, 0.10, 0.04)
+            (260.0, 340.0, 300.0), (0.06, 0.20, 0.10), (0.10, 1.0, 0.25), (290.0, 320.0, 310.0), (0.01, 0.10, 0.04)
         ])
 
         # some final sweeping of S0 to hint at basic delta sensitivity
