@@ -354,7 +354,7 @@ Not too bad. And this will come in very handy for the later exercises.
 Going back to our stock price simulation, S(t) / S(0) is lognormally distributed, and we're interested in what those
 parameters, mu and sigma, should be in general.
 
-To start off simple, let's just think about S(1) and look at the mu term.
+To start off simple, let's just think about S(1) and look at that mu term.
 
 Mu will shift the distribution left and right, so it determines how much the stock price tends to drift upward or
 downward on average.
@@ -365,14 +365,7 @@ The whole point of our simulation is to predict a bunch of future scenarios, and
 up incorrectly pricing our option. Nobody truly knows whether the stock will rise or fall, so we want our simulation to
 be unbiased.
 
-In fact, if there were strong public reasons to believe the stock was going to rise, that would already be baked into
-today's stock price.
-
-If you remember the buyer-seller price discovery dynamic from earlier, if everyone expects the stock price to go up in
-the near future, nobody would sell their shares, and buyers would have to pay more to get them. This would push the
-price upward until it reflected people's expectations.
-
-Okay, so do we just set mu to be zero? It's not so simple.
+Okay, so do we just set mu to be zero? It's not actually as simple as that.
 
 (Normal Distribution Density vs. Stock Price is plotted)
 
@@ -384,13 +377,13 @@ The left tail had its values shifted right when we eliminated negative prices.
 
 And then also the right tail had its values shifted right because of our compounding returns.
 
-Both of these are upward shifts to the distribution, so the lognormal will definitely have a larger mean than the normal
-distribution that it came from.
+Both of these are upward shifts to the distribution, so that lognormal will definitely have a larger mean than the
+normal distribution that it came from.
 
 ("Exercise #4: Given sigma, find the value of mu that keeps the stock price flat, on average. That is, E[S(1)] = S(0).")
 
-This is our fourth exercise. If you knew sigma, find the value of mu that keeps the stock price flat on average. That
-is, the expected value of S(1) should be S(0).
+This is our fourth exercise. If you knew sigma already, find the value of mu that keeps the stock price flat on average.
+That is, the expected value of S(1) should be S(0).
 
 (pause)
 ("Hint 1: What happens if mu = 0?")
