@@ -319,3 +319,90 @@ kicking in.
 (mu and sigma get highlighted briefly)
 
 All that remains for our simulation is to figure out what values of mu and sigma to use for this distribution.
+
+## determining_distribution_parameters.py
+
+("Exercise #3: Determine the probability density of X ~ exp(N(mu, sigma^2))")
+
+("Remember: f_{N(mu, sigma^2)}(x) = 1/(sigma * sqrt(2*pi)) * exp(-(x - mu)^2 / (2 * sigma^2)))
+
+Before that, we're going to need the probability density function of the lognormal distribution.
+
+This will be our third exercise, and I've put the normal PDF on the screen for reference if you need it.
+
+(pause)
+
+This is a pretty standard exercise. Let's say that Y is the normal distribution in question, and let X be e^Y.
+
+We know that the PDF of X is going to be the derivative of its cumulative distribution function, which I'll write here
+as the probability that capital X is less than or equal to x.
+
+But since X is the exponential of Y, this is the same as the probability that capital Y is less than or equal to the log
+of x.
+
+That, in turn, is the CDF of Y evaluated at log(x).
+
+Taking the derivative, we get the PDF of Y, evaluated at log(x), and then we pick up a factor of 1/x from the chain
+rule.
+
+Plugging everything in, this looks like the normal PDF, except you replace x with log(x) and add a 1/x in front.
+
+Not too bad. And this will come in very handy for the later exercises.
+
+(Screen switches to "S(t) / S(0) ~ exp(N(mu, sigma^2))", and then "S(t)" becomes "S(1)")
+
+Going back to our stock price simulation, S(t) / S(0) is lognormally distributed, and we're interested in what those
+parameters, mu and sigma, should be in general.
+
+To start off simple, let's just think about S(1) and look at the mu term.
+
+Mu will shift the distribution left and right, so it determines how much the stock price tends to drift upward or
+downward on average.
+
+But actually we don't want to assume that the stock drifts up or down at all!
+
+The whole point of our simulation is to predict a bunch of future scenarios, and if we built in an upward bias, we'd end
+up incorrectly pricing our option. Nobody truly knows whether the stock will rise or fall, so we want our simulation to
+be unbiased.
+
+In fact, if there were strong public reasons to believe the stock was going to rise, that would already be baked into
+today's stock price.
+
+If you remember the buyer-seller price discovery dynamic from earlier, if everyone expects the stock price to go up in
+the near future, nobody would sell their shares, and buyers would have to pay more to get them. This would push the
+price upward until it reflected people's expectations.
+
+Okay, so do we just set mu to be zero? It's not so simple.
+
+(Normal Distribution Density vs. Stock Price is plotted)
+
+Look, here's a normal distribution and let's think back at what the lognormal transformation did.
+
+(Transformed to Lognormal Distribution Density. Movement in the left tail is highlighted, and then the right tail.)
+
+The left tail had its values shifted right when we eliminated negative prices.
+
+And then also the right tail had its values shifted right because of our compounding returns.
+
+Both of these are upward shifts to the distribution, so the lognormal will definitely have a larger mean than the normal
+distribution that it came from.
+
+("Exercise #4: Given sigma, find the value of mu that keeps the stock price flat, on average. That is, E[S(1)] = S(0).")
+
+This is our fourth exercise. If you knew sigma, find the value of mu that keeps the stock price flat on average. That
+is, the expected value of S(1) should be S(0).
+
+(pause)
+("Hint 1: What happens if mu = 0?")
+
+We know a mu of zero won't work, but you can try that as a starting point as see how far off you are. That should give
+you a sense of how to adjust mu accordingly.
+
+(pause)
+("Hint 2: The integral for E[S(1)] can be transformed so that you're integrating a normal PDF. Then, no integration
+calculations are needed.")
+
+This second hint is more strategic. The integral you're computing here can be simplified so that it looks like a normal
+PDF instead of a lognormal one. If you transform it accordingly, you can avoid doing more complicated integration.
+
+(pause)

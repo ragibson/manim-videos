@@ -123,7 +123,7 @@ class DeterminingDistributionMu(Scene):
 
     def exercise_mu(self, S1_header):
         exercise_label = (Text("Exercise #4:", color=YELLOW, font_size=TEXT_SIZE_MEDIUM)
-                          .next_to(S1_header, DOWN, buff=0.5).to_edge(LEFT, buff=1.0))
+                          .next_to(S1_header, DOWN, buff=0.5).to_edge(LEFT, buff=0.5))
         exercise_text = Tex(
             r"\begin{flushleft}"  # a bit of a weird hack to get left-aligned multi-line latex
             r"Given $\sigma$, find the value of $\mu$ that keeps the stock \\"
