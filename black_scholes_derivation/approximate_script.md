@@ -525,12 +525,12 @@ part of the distribution on the right tail.
 
 ("Calculate it all analytically!")
 
-So really there's no point in doing a simulation at all! We can analytically calculate the probabilities directly.
+So really there's no point in doing a simulation at all! We can calculate the probabilities directly.
 
 This was honestly the whole point of basing the distribution off of a normal in the first place. We needed this to
-remain simple enough to be converted into a formula at the end of the day.
+remain simple enough to be converted into an analytic formula at the end of the day.
 
-So let's see this analytic calculation through.
+Let's see this calculation through.
 
 (Left plot disappears and \tilde{C} = E[S(t) - K | S(t) > K] is shown.)
 
@@ -541,7 +541,7 @@ And we've set it up so that the price is the average profit. That's the expected
 the strike, in the cases where the stock actually ends up above the strike.
 
 Visually, this is the average amount that S(t) exceeds the strike in that right tail I've highlighted. Whenever S(t)
-finishes below the strike, the option pays nothing, it's worthless.
+finishes below the strike, the option pays nothing, it's worthless, so we just need to focus on the right tail.
 
 (Formula is expanded into E[S(t) | S(t) > K] - K * P[S(t) > K])
 
@@ -575,3 +575,18 @@ The CDF gives the probability of the left tail, so our right tail probability is
 expression that we've created.
 
 That completes exercise 5.
+
+("Exercise #6: Calculate E[S(t) | S(t) > K]")
+
+The last exercise is to compute the expectation term. What's the average value of the stock price when it's above the
+strike.
+
+(pause)
+
+This will be an integral very similar to the one we did in Exercise 4.
+
+(pause)
+
+It will be easier to work with a lognormal distribution directly, so I'm going to move S(0) into the exponential by
+taking its log and then also into the mean of the normal distribution.
+

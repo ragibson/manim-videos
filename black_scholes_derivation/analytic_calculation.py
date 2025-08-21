@@ -205,6 +205,10 @@ class AnalyticCalculation(Scene):
             font_size=MATH_SIZE_SMALL
         ).next_to(answer_start, DOWN, buff=0.5).align_to(answer_start, LEFT).shift(RIGHT * 1.0)
 
+        for line in answer_body:
+            self.play(Write(line))
+            self.wait(1.0)
+
         # moving up last line to replace the first equality, fading out everything else
         self.play(*[FadeOut(x) for x in (answer_start, exercise_label, exercise_text,
                                          distribution_header, answer_body[1])],
