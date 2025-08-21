@@ -227,6 +227,15 @@ class AnalyticCalculation(Scene):
             self.play(Write(line))
             self.wait(1.0)
 
+        combined_dx = MathTex(
+            r"S(0) \cdot \sigma\sqrt{t} \cdot \exp\left(u \cdot \sigma\sqrt{t} - \frac{\sigma^2}{2}\cdot t\right) "
+            r"\text{d}u = \text{d}x",
+            font_size=MATH_SIZE_SMALL, color=BLUE_B
+        ).align_to(u_substitution[2], DOWN)
+        self.play(FadeOut(u_substitution[2], shift=LEFT), FadeOut(u_substitution[3], shift=LEFT),
+                  FadeIn(combined_dx, shift=LEFT))
+        self.wait(1.0)
+
         # continuing with the main calculation
         answer_body_end = MathTex(
             r"&= \int_{\frac{\ln K - \ln S(0) + \frac{\sigma^2}{2}\cdot t}{\sigma \sqrt{t}}}^{\infty} "
@@ -243,7 +252,7 @@ class AnalyticCalculation(Scene):
 
         self.play(Write(answer_body_end[0]))
         self.wait(1.0)
-        self.play(FadeOut(u_substitution))
+        self.play(FadeOut(u_substitution[0]), FadeOut(u_substitution[1]), FadeOut(combined_dx))
         self.wait(1.0)
 
         for line in answer_body_end[1:-1]:

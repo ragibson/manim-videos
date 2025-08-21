@@ -604,13 +604,11 @@ du is just 1/x from the log term along with the sigma sqrt(t) constant, times dx
 
 And so our dx will become x times sigma sqrt(t) du, where x comes from solving for x in our u substitution.
 
-That ends up being S(0) times the exponential of u times sigma sqrt(t) - sigma^2 / 2 times t.
+If we bring that all together and rearrange a bit, dx is S(0) times sigma sqrt(t) times the exponential of u sigma sqrt(
+t) - sigma^2 / 2 t.
 
-When we plug all this back into our integral, the exponential term becomes -u^2/2 from our substitution, and then we get
-a few extra terms from x sigma sqrt(t) du.
-
-The two terms in the exponential for x get added in to the integral, the sigma sqrt(t) factors cancel out, and we get an
-S(0) in front.
+When we plug all this back into our integral, the sigma sqrt(t) factor at the start cancels out, and the exponential
+term becomes -u^2/2 from our substitution along with those two terms from the dx expression.
 
 Remember that we also have to adjust the lower limit of integration, so that becomes our u substitution with K in place
 of x.
