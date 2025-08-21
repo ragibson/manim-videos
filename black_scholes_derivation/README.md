@@ -1,6 +1,5 @@
 # black_scholes_derivation
 
-TODO: create frozen requirements.txt for final package versions used in the render
 TODO: more comments throughout the scripts?
 
 The sequence of scenes here is:
@@ -22,5 +21,5 @@ The sequence of scenes here is:
   diagram as we sweep each of the variables up and down. The section closes with a simple list of high-level takeaways
   from the entire discussion.
 
-[requirements.txt](requirements.txt) lists the exact package versions installed as Manim dependencies at the time of the
-render.
+[frozen_requirements.txt](requirements.txt) lists the exact package versions installed as Manim dependencies at the time
+of the render.
