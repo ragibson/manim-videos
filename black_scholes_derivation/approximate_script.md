@@ -588,24 +588,24 @@ This will be an integral very similar to the one we did in Exercise 4.
 (pause)
 
 It will be easier to work with a lognormal distribution directly, so I'm going to move S(0) into the exponential by
-taking its log and then also into the mean of the normal distribution.
+taking its log and then also moving it into the mean of the normal distribution.
 
-The expectation that we're trying to calculate is going to be the integral of x times the PDF on the right tail, K to
-infinity.
+The expectation that we're trying to calculate is going to be the integral of x times the PDF over the right tail only,
+K to infinity.
 
-Once again, that leading x will cancel with the 1/x from the PDF, so plugging everything in gives us this integral. The
-mean of the normal is inside the square in the exponent, and the variance is in the denominator.
+Once again, that leading x will cancel with the 1/x from the lognormal PDF, so plugging everything in gives us this
+integral.
 
 We'll be doing another u substitution here to try and get everything looking more like a standard normal, so let's
 choose u to normalize the entire distribution in the exponent. We're including both the mean and the standard deviation
-to try and get to mean 0 and standard deviation 1.
+to try and get it to mean 0 and standard deviation 1.
 
-du is just 1/x from the log term along with the sigma sqrt(t) constant, times dx.
+du is just 1/x from the log term along with the sigma sqrt(t) constant, all times dx.
 
-And so our dx will become x times sigma sqrt(t) du, where x comes from solving for x in our u substitution.
+And so our dx will become x times sigma sqrt(t) du, where we get x by solving for it in the u substitution.
 
-If we bring that all together and rearrange a bit, dx is S(0) times sigma sqrt(t) times the exponential of u sigma sqrt(
-t) - sigma^2 / 2 t.
+If we bring that all together and rearrange a bit, dx is S(0) times sigma sqrt(t) times the exponential of
+u sigma sqrt(t) - sigma^2 / 2 t.
 
 When we plug all this back into our integral, the sigma sqrt(t) factor at the start cancels out, and the exponential
 term becomes -u^2/2 from our substitution along with those two terms from the dx expression.
@@ -614,34 +614,33 @@ Remember that we also have to adjust the lower limit of integration, so that bec
 of x.
 
 Simplifying the exponent and pulling the S(0) constant out of the integral, we see that this is a normal distribution
-with mean sigma sqrt(t).
+PDF with mean sigma sqrt(t).
 
-We can get right tail of the distribution from 1 minus the standard normal CDF as long as we adjust by that mean.
+And we can get this right tail of the distribution by calculating 1 minus the standard normal CDF as long as we adjust
+by that mean.
 
 Simplifying a bit again, we can collect those log terms and bring everything into a single fraction, which just ends up
 flipping the sign on the sigma summand.
 
-And that's it!
-
 ("C = E[S(t) | S(t) > K] - K * P[S(t) > K]" and it's solved out piece by piece)
 
-All that we have to do now is put these answers from our exercises back into the formula we had before.
+All we have to do now is put these answers from our exercises back into the formula we had before.
 
-I'll simplify this a bit so it looks a tiny bit nicer.
-
-We can take advantage of the symmetry of the standard normal to rewrite 1 - CDF(x) as CDF(-x).
+I'll simplify this so it looks a tiny bit nicer. We can take advantage of the symmetry of the standard normal to rewrite
+1 - CDF(x) as CDF(-x).
 
 And then distribute that negative sign into the fractions themselves.
 
 So our final answer is S(0) times the CDF of a large expression, minus the strike times the CDF of a similar looking
 expression.
 
-Most often, this is written with those expression as helper variables d+ and d-. And since they're basically the same
+Most often, this is written with those expressions as helper variables d+ and d-. And since they're basically the same
 with just a sign flipped, we write d- as d+ with the necessary adjustment from earlier.
 
 (Plot shows "Future Value of Money" vs. "Time (years)")
 
-Now, there is actually one minor piece to add. In finance, a dollar today is worth more than a dollar in the future.
+Now, there is actually one minor piece to add. In finance, getting a dollar today is worth more than getting a dollar in
+the future.
 
 Why? Because if you had the money right now, you could earn interest on it in something like a savings account, and it
 would grow exponentially in value over time.
@@ -664,8 +663,8 @@ And then our probability calculations were all about the stock price at time t. 
 To make it consistent with those future-time calculations, we actually need to convert S(0) to future value by dividing
 by D.
 
-Bringing it all together, that's an extra D factor on the outside to bring the future option profit back to today, and a
-division by D on S(0) to bring the stock price into the future.
+Bringing it all together, that's an extra D factor on the outside and a division by D whenever we're using S(0).
+
+Note that this division of S(0)/D also takes place in the helper variables defined.
 
 And that's it! That's the full Black-Scholes-Merton formula for pricing an option.
-

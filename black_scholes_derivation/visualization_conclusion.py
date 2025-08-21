@@ -49,7 +49,7 @@ class BlackScholesVisualization(Scene):
 
         self.payoff_labels = self.payoff_ax.get_axis_labels(
             x_label=Tex(r"\text{Current Stock Price}", font_size=TEXT_SIZE_MEDIUM),
-            y_label=Tex(r"\text{Option Payoff}", font_size=TEXT_SIZE_MEDIUM)
+            y_label=Tex(r"\text{Option Price}", font_size=TEXT_SIZE_MEDIUM)
         )
         self.payoff_labels[0].next_to(self.payoff_ax.x_axis.get_center(), DOWN, buff=0.75)
 

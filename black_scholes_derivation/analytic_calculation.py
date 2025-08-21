@@ -417,6 +417,9 @@ class AnalyticCalculation(Scene):
                   final_footer.animate.move_to(ORIGIN + DOWN))
         self.wait(1.0)
 
+        self.play(*[FadeOut(x) for x in (title, final_formula, final_footer)])
+        self.wait(1.0)
+
     def construct(self):
         display_section_title(self, "fully analytical")
 
