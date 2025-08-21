@@ -505,3 +505,73 @@ That's our distribution for the stock price at time t!
 S(t) is S(0) times the exponential of a normal distribution with mean -sigma^2/2 * t and variance sigma^2 * t.
 
 ## analytic_calculation.py
+
+(Left side shows simulations of stock prices from $300 out to 0.25 years. The header displays
+S(t) ~ S(0) * exp(N(-sigma^2/2 * t, sigma^2 * t)). The right side shows the distribution density of the final stock
+price.)
+
+Up to this point, we've been simulating the stock price into the future, which looks something like this out to 3
+months.
+
+We've calculated that this should follow the lognormal distribution with the parameters that we derived.
+
+On the right, you can see what the distribution of the final stock price looks like.
+
+So, if this were an option with strike $320, we care about how often the stock finishes above that strike after 3
+months.
+
+On the left plot, that's all the simulated paths that end up above the strike, and on the right plot it's the shaded
+part of the distribution on the right tail.
+
+("Calculate it all analytically!")
+
+So really there's no point in doing a simulation at all! We can analytically calculate the probabilities directly.
+
+This was honestly the whole point of basing the distribution off of a normal in the first place. We needed this to
+remain simple enough to be converted into a formula at the end of the day.
+
+So let's see this analytic calculation through.
+
+(Left plot disappears and \tilde{C} = E[S(t) - K | S(t) > K] is shown.)
+
+We want to calculate the price of the option, which is traditionally denoted C since this type of option is referred to
+as a "call option".
+
+And we've set it up so that the price is the average profit. That's the expected value of the stock price minus
+the strike, in the cases where the stock actually ends up above the strike.
+
+Visually, this is the average amount that S(t) exceeds the strike in that right tail I've highlighted. Whenever S(t)
+finishes below the strike, the option pays nothing, it's worthless.
+
+(Formula is expanded into E[S(t) | S(t) > K] - K * P[S(t) > K])
+
+Expanding this into two terms, we have the average value of S(t) when it's above the strike, minus the strike times the
+probability of this scenario.
+
+Our final two exercises will be to calculate each of these terms.
+
+("Exercise #5 : Calculate P[S(t) > K]". Later, a hint is shown of "Hint: Transform S(t) so that you can use the standard
+normal CDF.")
+
+First, we'll do the probability term, so the exercise is to calculate the probability that S(t) ends up larger than K.
+
+(pause)
+
+This will come down to manipulating the form of S(t) until you can use the standard normal CDF.
+
+(pause)
+
+Towards the goal of manipulating S(t) into a normal, let's divide through by S(0) and take the log of both sides.
+
+Then, we've really isolated the normal distribution inside the exponent, so we just need to determine the probability
+this normal part exceeds log(K / S(0)).
+
+We want to use the standard normal CDF, so let's normalize it piece by piece. We can move the mean over to the right
+side.
+
+And then divide through by the variance to get this into the form of a standard normal.
+
+The CDF gives the probability of the left tail, so our right tail probability is just 1 minus the CDF of this larger
+expression that we've created.
+
+That completes exercise 5.
