@@ -211,16 +211,21 @@ class FinalTakeaways(Scene):
     def construct(self):
         header = (Text("What We Learned", font_size=TEXT_SIZE_MEDIUM, color=YELLOW)
                   .to_edge(LEFT, buff=1.0).to_edge(UP, buff=0.5))
-        topics = BulletedList(
+        topics = (BulletedList(
             "Some new financial knowledge",
-            r"Brief peek into the surprising complexities\\of mathematical finance",
+            r"Brief peek into the complexities of mathematical finance",
             r"General problem-solving technique: simulate, iterate,\\and possibly refine to an analytic result",
             font_size=MATH_SIZE_MEDIUM,  # this is apparently tex
             buff=0.5
-        ).next_to(header, DOWN, buff=0.75).align_to(header, LEFT)
+        ).next_to(header, DOWN, buff=0.75).align_to(header, LEFT))
+
+        # hack since BulletedList can't properly isolate substrings for coloring
+        topics[-1][:len("General problem-solving technique")].set_color(BLUE)
 
         self.play(Write(header))
         self.wait(1.0)
         for line in topics:
             self.play(Write(line))
             self.wait(1.0)
+
+        self.play(*[FadeOut(x) for x in (header, topics)])
