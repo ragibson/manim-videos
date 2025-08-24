@@ -668,3 +668,105 @@ Bringing it all together, that's an extra D factor on the outside and a division
 Note that this division of S(0)/D also takes place in the helper variables defined.
 
 And that's it! That's the full Black-Scholes-Merton formula for pricing an option.
+
+# visualization_conclusion.py
+
+I wanted to finish off with some visualizations of this pricing formula to get some intuition on how it behaves in
+general. Especially how each parameter affects the option price.
+
+(parameters are shown at top of screen)
+
+These are all the parameters in the formula. Remember,
+
+S(0) is the current stock price,
+sigma is the volatility of the stock,
+t is the number of until the option expires,
+K is the strike price of the option,
+and r is the interest rate you could earn on money in the meantime that we were using in the discounting factor.
+
+(Stock price distribution is shown on left, "Stock Price at Time t" vs "Distribution Density")
+
+Let's plot the lognormal distribution of our final stock price on the left. And then the strike as a vertical dotted
+line.
+
+This shaded area on the right is where the option makes money, so its size and distance from the strike will determine
+how valuable the option is.
+
+(Sweep through changing the parameters one-by-one. The plots are animated accordingly.)
+
+Let's change each of these parameters one at a time to see how the distribution changes.
+
+Changing the current stock price S(0) just shifts the whole distribution left and right, with some slight nonlinearity
+because of the focus on relative price moves.
+
+The volatility sigma changes how much the stock price can move around, so decreasing it makes the prices cluster more
+around the current price. And increasing it widens the distribution out.
+
+The time t has a similar effect since the variance of the normal component scaled with sigma^2 * t. If there's less time
+for the stock to move, the distribution is narrower. And as t increases, the distribution widens.
+
+Finally, moving the strike around will just change how much of the distribution is above it.
+
+We'll get back to r later.
+
+("Current stock price vs. option price" plot is shown on the left. The intrinsic price is plotted in a dashed line.)
+
+On the right, let's plot the current stock price against the option price. As a dashed line, I'll show the profit you'd
+make it you were able to exercise the option right now at the current stock price.
+
+The white dot is the price of the option. For this particular example, it's worth about $3.
+
+(Sweeping through all the parameters again)
+
+Moving S(0) down makes the option basically worthless since the stock price is virtually never going to rise above the
+strike. And moving it very far above the strike means the option is worth a bit more than what you'd make by exercising
+it now.
+
+This is all tracing out a curve above that dashed line, so let's show it. This is the option price as S(0) changes.
+
+For volatility, decreasing it reduces the value of the option since the stock is less likely to ever rise above the
+strike. And increasing it raises the price of the option since there's _more_ of a chance for the stock to end above the
+strike.
+
+Again time has a similar effect. Less time before expiration means the stock is less likely to rise above the strike,
+decreasing the price of the option. And more time increases the option price for the opposite reason.
+
+For the strike, decreasing it raises the option price since more of the distribution is in the profitable region. And
+increasing it lowers the option price by making the profitable region smaller.
+
+The interest rate r has a smaller effect since it scales how much you prefer money right now vs. the option's profit
+in the future.
+
+Decreasing r means you get less value from money right now, so the option price decreases. And then as you increase r,
+that means you could get better returns on money in the meantime instead of buying the option, so the option price
+increases.
+
+(Going back to sweeping S(0) briefly)
+
+This also gives some intuition on how the option price will change in various situations. If the stock price is very far
+below the strike, movements in the stock price won't change the option price much at all since the stock is probably
+never going to move into the profitable region regardless.
+
+But if the stock is far above the strike, basically the entire distribution is profitable. So each dollar change in the
+stock price will affect the profit of the option by the same amount. In this case, there's basically a one-to-one
+relationship between movements in the stock price and movements in the option price.
+
+(Visualization fades out and is replaced with "What We Learned"
+"Some new financial knowledge"
+"Brief peek into the complexities of mathematical finance"
+"*General problem-solving technique:* simulate, iterate, and possibly refine to an analytic result")
+
+I want to briefly look back at what we've done and highlight some things I hope you take away from this.
+
+We covered some details about stocks, options, and so on that may have been new to you.
+
+But I also hope this gave you some insight into how complicated mathematical finance can be. People in the financial
+industry are constantly inventing new products and adding exotic features to existing ones, so it's extremely important
+to be able to determine how much these things are worth. And that's far from a simple task in general!
+
+Most importantly, the technique we applied here is something you should have in your mathematical toolbox. There's a
+whole class of problems that you can simplify by thinking about simulating them first. Then, you can try and find ways
+to simplify and refine the simulation bit by bit. Either you end up with a fully analytic result like we did here, or
+you find more efficient ways to simulate the problem!
+
+That's all I've got for you today, so thanks for watching, and I hope you learned something.
