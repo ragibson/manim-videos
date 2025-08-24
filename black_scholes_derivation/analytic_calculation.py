@@ -303,7 +303,7 @@ class AnalyticCalculation(Scene):
             r"\text{where } d_+ = "
             r"{ \ln\left(S(0) \over ",
             r"K",
-            r"\right) - {\sigma^2 \over 2} \cdot t \over \sigma \cdot \sqrt{t} }, "
+            r"\right) + {\sigma^2 \over 2} \cdot t \over \sigma \cdot \sqrt{t} }, "
             r"\hspace{0.5em}"
             r"d_- = d_+ - \sigma \cdot \sqrt{t}", font_size=MATH_SIZE_SMALL
         ).next_to(math_lines[-1], DOWN, buff=0.5).align_to(math_lines[0], LEFT)
@@ -358,7 +358,7 @@ class AnalyticCalculation(Scene):
             r"\text{where } d_+ = "
             r"{ \ln\left(S(0) \over ",
             r"K",
-            r"\right) - {\sigma^2 \over 2} \cdot t \over \sigma \cdot \sqrt{t} }, "
+            r"\right) + {\sigma^2 \over 2} \cdot t \over \sigma \cdot \sqrt{t} }, "
             r"\hspace{0.5em}"
             r"d_- = d_+ - \sigma \cdot \sqrt{t}, \hspace{0.5em} D = e^{-rt}",
             font_size=MATH_SIZE_SMALL
