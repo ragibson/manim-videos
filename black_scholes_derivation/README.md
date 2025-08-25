@@ -1,6 +1,7 @@
 # black_scholes_derivation
 
 TODO: more comments throughout the scripts?
+TODO: fix markdown formatting in plaintext-style approximate script
 
 The sequence of scenes here is:
 
@@ -23,3 +24,6 @@ The sequence of scenes here is:
 
 [frozen_requirements.txt](requirements.txt) lists the exact package versions installed as Manim dependencies at the time
 of the render.
+
+[licensed_images/README.md](licensed_images/README.md) describes the specific licenses for the author and Nobel Prize
+images used at the very start of the video.

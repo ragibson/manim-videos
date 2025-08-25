@@ -1,4 +1,8 @@
-from scipy.stats import norm, lognorm
+"""
+Explain qualities of a simulation that we would like to have, and the corresponding distribution that gives us these
+qualities is the lognormal distribution.
+"""
+from scipy.stats import lognorm
 
 from shared_data_and_functions import *
 

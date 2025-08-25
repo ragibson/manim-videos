@@ -1,3 +1,6 @@
+"""
+Derive the PDF of a lognormal distribution and the parameters for a particular stock (mu, sigma).
+"""
 from scipy.optimize import bisect
 
 from how_to_simulate import create_normal_lognormal_comparison

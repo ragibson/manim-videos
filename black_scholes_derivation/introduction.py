@@ -1,7 +1,16 @@
+"""
+Introduce authors, Nobel Prize, and options market growth. Then, allude to the traditional derivation being
+complicated and some basic steps we'll take to dodge those complications.
+"""
 from shared_data_and_functions import *
 
 
 class TweakedIntroText(Scene):
+    """
+    A tweaked version of the title text with an extra animation. This had to be added as a separate scene late in
+    post-production in order to avoid messing with my existing timeline cuts.
+    """
+
     def construct(self):
         title = Text("1973: Black-Scholes-Merton Formula for Pricing Options", font_size=TEXT_SIZE_MEDIUM,
                      t2c={"1973": YELLOW})

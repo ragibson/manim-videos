@@ -1,3 +1,7 @@
+"""
+Mention the difficulty of pricing an asset that depends on (unknown) future stock prices, and how a simulation could
+address this.
+"""
 from shared_data_and_functions import *
 
 

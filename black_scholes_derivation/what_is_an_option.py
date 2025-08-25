@@ -1,3 +1,7 @@
+"""
+Describe what a stock is, how stock value is determined over time, and what an option is. The option introduction
+includes an explicit example and the (call) payoff diagram.
+"""
 from shared_data_and_functions import *
 
 

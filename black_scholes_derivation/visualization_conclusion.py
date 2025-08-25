@@ -1,3 +1,7 @@
+"""
+Animation of the stock price distribution and payoff diagram as we sweep each of the variables up and down. The section
+closes with a simple list of high-level takeaways from the entire discussion.
+"""
 from manim import *
 from scipy.stats import lognorm
 

@@ -1,3 +1,7 @@
+"""
+Finally derive the Black-Scholes formula by splitting the calculation into an expectation and a probability calculation.
+A discounting step is introduced at the very end to complete the derivation.
+"""
 from scipy.stats import lognorm
 
 from shared_data_and_functions import *

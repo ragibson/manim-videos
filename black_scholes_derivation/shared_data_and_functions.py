@@ -1,3 +1,4 @@
+"""A set of a few common utilities and functions shared across multiple scripts."""
 from manim import *
 from scipy.stats import norm
 
