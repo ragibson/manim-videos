@@ -2,7 +2,7 @@
 
 (This script is mostly what's in the video along with some notes on what parts of the animation are shown at each
 point. I self-edited on the fly at a few places, so it's a little different from the final result but should be quite
-close overall.)
+close overall. In particular, I think a few asides were completely cut due to pacing issues.)
 
 ## introduction.py
 

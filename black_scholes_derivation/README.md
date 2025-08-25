@@ -1,7 +1,5 @@
 # black_scholes_derivation
 
-TODO: fix markdown formatting in plaintext-style approximate script
-
 The sequence of scenes here is:
 
 * [introduction.py](introduction.py): Introduce authors, Nobel Prize, and options market growth. Then, allude to the
