@@ -671,7 +671,7 @@ And that's it! That's the full Black-Scholes-Merton formula for pricing an optio
 
 # visualization_conclusion.py
 
-I want to finish off with some visualizations of this pricing formula to build some intuition for how it behaves, and
+I want to finish off with a visualization of this pricing formula to build some intuition for how it behaves, and
 especially how each parameter influences the option price.
 
 (parameters are shown at top of screen)
@@ -682,7 +682,7 @@ S(0) is the current stock price,
 sigma is the stock's volatility,
 t is the years until the option expires,
 K is the strike price,
-and r is the interest rate that you could earn on money in the meantime, which we were using in the discounting factor.
+and r is the interest rate that you could earn on money in the meantime, which we were using in the discount factor.
 
 (Stock price distribution is shown on left, "Stock Price at Time t" vs "Distribution Density")
 
@@ -698,7 +698,7 @@ Let's change each of these parameters one at a time and see what happens.
 
 Changing S(0), the current stock price, shifts the whole distribution left and right.
 
-The volatility sigma controls how much the stock price tends to move. Lower volatility keeps the prices clustered
+The volatility sigma controls how much the stock price tends to move. So, lower volatility keeps the prices clustered
 near the current level. And higher volatility widens the distribution out.
 
 The time t has a similar effect. If there's less time for the stock to move, its price can't wander very far. And as t
@@ -707,22 +707,25 @@ increases, the distribution widens.
 Moving the strike K just shifts the vertical line, changing how much of the distribution falls into the profitable
 region.
 
-We'll get back to r later.
+And we'll get back to r later.
 
 ("Current stock price vs. option price" plot is shown on the left. The intrinsic price is plotted in a dashed line.)
 
 Now, on the right, let's plot the option price against the current stock price. The dashed line shows how much money
-you'd make if you were able to exercise the option immediately.
+you'd make if you were able to exercise the option immediately, so it's the stock price minus the strike.
 
-The white dot is the actual option price for this example, about $3.
+The white dot is the actual option price for this example, a few dollars.
 
 (Sweeping through all the parameters again)
 
-Moving S(0) down makes the option decrease in value since it's increasingly unlikely to ever end above the strike. And
-pushing it far above the strike means it's a bit more valuable than just exercising it now, because of that extra chance
-of even higher profits before expiration.
+Now, let's change each parameter again.
 
-This is all tracing out a curve above that dashed line, so let's show it for all potential S(0) values.
+Moving S(0) down makes the option decrease in value since it's increasingly unlikely to ever end above the strike. And
+pushing S(0) far above the strike means it's a bit more valuable than just exercising the option now. The extra value
+comes from the extra chance of even higher profits before expiration.
+
+This is all tracing out a curve above that dashed line, so let's show it for all potential S(0) values. As we change
+S(0), the white dot will follow this blue curve.
 
 For volatility, decreasing it lowers the option value since the stock is less likely to rise above the
 strike. And increasing it raises the value since there's _more_ chance to profit.
@@ -736,8 +739,8 @@ And raising it does the opposite by making the profitable region smaller.
 The interest rate r has a smaller effect since it adjusts how much you prefer having money now vs. waiting for the
 option's profit in the future.
 
-A lower r decreases the option price since there's not much benefit to holding onto cash right now. And a higher r makes
-cash more attractive because it could grow more in the meantime, so the option price increases.
+A lower r decreases the option price since there's less benefit to holding onto cash right now. And a higher r makes
+cash more attractive, so the option price increases.
 
 (Going back to sweeping S(0) briefly)
 
@@ -767,10 +770,10 @@ to be able to determine how much these things are worth.
 And it's far from a simple task in general! The Black-Scholes-Merton formula we derived here is one of the simpler
 cases.
 
-Most importantly, the technique we applied here is something you should have in your mathematical problem-solving
-toolbox. There's a whole class of problems that are hard to work with but relatively easy to simulate. Then, you can
-try and find ways to refine or simplify the simulation bit by bit. Either you end up with a fully analytic solution like
-we had here, or you simply find more efficient ways to simulate your problem!
+Most importantly, the technique we applied here is a general problem-solving strategy that you should have in your
+mathematical toolbox. There's a whole class of problems that are hard to reason about but relatively easy to simulate.
+Then, you can try and find ways to refine or simplify the simulation bit by bit. Either you'll end up with a fully
+analytic solution like we had here, or you simply find more efficient ways to simulate your problem!
 
 Far outside of finance, that is a really powerful tool to have on hand.
 

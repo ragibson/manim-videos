@@ -48,7 +48,7 @@ class BlackScholesVisualization(Scene):
                                           for i in np.arange(*self.payoff_ax.y_range)})
 
         self.payoff_labels = self.payoff_ax.get_axis_labels(
-            x_label=Tex(r"\text{Current Stock Price}", font_size=TEXT_SIZE_MEDIUM),
+            x_label=Tex(r"\text{Current Stock Price, $S(0)$}", font_size=TEXT_SIZE_MEDIUM),
             y_label=Tex(r"\text{Option Price}", font_size=TEXT_SIZE_MEDIUM)
         )
         self.payoff_labels[0].next_to(self.payoff_ax.x_axis.get_center(), DOWN, buff=0.75)
@@ -128,6 +128,7 @@ class BlackScholesVisualization(Scene):
 
         self.variable_highlight_idx = 0
         for variable, values in zip((self.S0, self.sigma, self.t, self.K, self.r), sweep_sequence):
+            self.wait(0.25)
             for v in values:
                 self.play(variable.animate.set_value(v), run_time=2.0)
                 self.wait(0.5)
@@ -140,6 +141,14 @@ class BlackScholesVisualization(Scene):
         variables = self.create_text()
         self.play(Write(variables), run_time=2.0)
         self.wait(1.0)
+
+        # highlight the variables in order by sweeping with the current values
+        variables.add_updater(lambda m: m.become(self.create_text()))
+        self.sweep_variables([
+            # S0, sigma, t, K, r
+            (self.S0.get_value(),), (self.sigma.get_value(),), (self.t.get_value(),), (self.K.get_value(),),
+            (self.r.get_value(),)
+        ])
 
         price_pdf_plot, strike_line, area_above_strike = self.create_price_distribution()
         self.play(Create(self.price_ax), Write(self.price_labels), run_time=2.0)
@@ -154,7 +163,6 @@ class BlackScholesVisualization(Scene):
         price_pdf_plot.add_updater(lambda m: m.become(self.create_price_distribution()[0]))
         strike_line.add_updater(lambda m: m.become(self.create_price_distribution()[1]))
         area_above_strike.add_updater(lambda m: m.become(self.create_price_distribution()[2]))
-        variables.add_updater(lambda m: m.become(self.create_text()))
 
         # while just the price distribution is on screen, sweep each variable up and down
         self.sweep_variables([
