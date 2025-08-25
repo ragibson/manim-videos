@@ -421,7 +421,7 @@ the entire integral would just be a normal CDF.
 To do this, we can set up a u-substitution. The only part that doesn't match a normal PDF is the log x term in the
 exponential, so let's change variables to get rid of it.
 
-Taking u to be log x (and thus e^u = x) gives us that du = 1/x dx.
+Taking u to be log x (and thus e^u to be x) gives us that du = 1/x dx.
 
 Moving that x to the left hand side and substituting, we get that exp(u) du = dx.
 
@@ -718,7 +718,7 @@ The white dot is the actual option price for this example, a few dollars.
 
 (Sweeping through all the parameters again)
 
-Now, let's change each parameter again.
+Let's change each parameter again.
 
 Moving S(0) down makes the option decrease in value since it's increasingly unlikely to ever end above the strike. And
 pushing S(0) far above the strike means it's a bit more valuable than just exercising the option now. The extra value
@@ -731,7 +731,8 @@ For volatility, decreasing it lowers the option value since the stock is less li
 strike. And increasing it raises the value since there's _more_ chance to profit.
 
 Again, time has a similar effect. Less time before expiration means the stock is less likely to rise above the strike,
-decreasing the price of the option. And more time increases the option price for the opposite reason.
+decreasing the price of the option towards that dashed line. And more time increases the option price for the opposite
+reason.
 
 For the strike, lowering it makes the option more valuable, since more of the distribution is in the profitable region.
 And raising it does the opposite by making the profitable region smaller.
@@ -759,7 +760,7 @@ the stock price itself.
 "Brief peek into the complexities of mathematical finance"
 "*General problem-solving technique:* simulate, iterate, and possibly refine to an analytic result")
 
-I want to briefly take a step back and look at what we've done.
+Finally, I want to briefly take a step back and look at what we've done.
 
 We covered some basics about stocks, options, and so on that may have been new to you.
 

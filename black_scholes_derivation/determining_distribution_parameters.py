@@ -424,6 +424,7 @@ class DeterminingDistributionSigmaAndSt(Scene):
         self.play(*[FadeOut(x) for x in (header_text, math_lines[-1])])
 
     def construct(self):
+        # forgot to keep the 1 colored blue here, fixed it in post
         S1_header = DeterminingDistributionMu().final_header()
         self.add(S1_header)
         self.discuss_sigma(S1_header)
