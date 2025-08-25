@@ -14,9 +14,48 @@ class TweakedIntroText(Scene):
     def construct(self):
         title = Text("1973: Black-Scholes-Merton Formula for Pricing Options", font_size=TEXT_SIZE_MEDIUM,
                      t2c={"1973": YELLOW})
-        self.play(Write(title), run_time=3.0)
-        self.wait(1.0)
-        self.play(title.animate.to_edge(UP, buff=0.5))
+
+        # faded axes beneath the title itself
+        axes = Axes(
+            x_range=[0, 1.01, 0.25],
+            y_range=[80, 100.1, 10],
+            x_length=12,
+            y_length=3.25,
+            tips=False,
+            axis_config={"include_numbers": False, "stroke_width": 1, "stroke_opacity": 0.2},
+        ).set_opacity(0.3).to_edge(DOWN, buff=0.25)
+
+        # this seed happens to never exceed the bounds here
+        stock_prices = simple_stock_simulation(start_price=85, sigma=0.20, dt=1 / 100, T=1.0, seed=1234)
+        stock_prices += np.linspace(0, 5.0, len(stock_prices))  # adding upward drift to get to the other corner
+        stock_line = axes.plot_line_graph(
+            x_values=np.linspace(0, 1.0, len(stock_prices)),
+            y_values=stock_prices,
+            add_vertex_dots=False,
+            line_color=GREEN,
+            stroke_width=2,
+            stroke_opacity=0.5
+        )
+
+        # dollar signs on the top half and bottom edges of the screen that gradually float upwards
+        np.random.seed(0)
+        dollar_signs = VGroup([Text("$", font_size=TEXT_SIZE_SMALL, color=GREEN, fill_opacity=0.4
+                                    ).move_to([np.random.uniform(*xbounds), np.random.uniform(*ybounds), 0])
+                               for xbounds, ybounds in  # 10 on top, 3 on bottom left, 3 on bottom right
+                               [((-7, 7), (0.5, 3))] * 10 + [((-7, -6.5), (-4, -1))] * 3 + [((6.5, 7), (-4, -1))] * 3])
+        dollar_animations = [dollar.animate(run_time=12.0, rate_func=linear)
+                             .move_to(dollar.get_center() + np.array([np.random.uniform(-0.5, 0.5), 1.5, 0]))
+                             .set_opacity(0) for dollar in dollar_signs]
+
+        # fade in dollar signs and axes
+        self.play(*[FadeIn(dollar, shift=UP * 0.3, run_time=1.0) for dollar in dollar_signs],
+                  Create(axes, run_time=1.0))
+
+        # title, stock simulation, and dollar movements
+        self.play(Write(title, run_time=3.0), Create(stock_line, run_time=6.0, rate_func=linear), *dollar_animations)
+
+        # fade out everything and prepare title at top edge
+        self.play(title.animate.to_edge(UP, buff=0.5), FadeOut(axes, stock_line, dollar_signs), run_time=1.0)
         self.wait(1.0)
 
 
