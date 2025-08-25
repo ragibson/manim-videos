@@ -8,6 +8,8 @@ from shared_data_and_functions import *
 
 
 class DeterminingDistributionMu(Scene):
+    """Derive the PDF of a lognormal distribution and the value of mu that keeps the stock price flat on average."""
+
     def calculate_lognormal_pdf(self):
         exercise_label = (Text("Exercise #3:", color=YELLOW, font_size=TEXT_SIZE_MEDIUM)
                           .to_edge(UP, buff=0.5).to_edge(LEFT, buff=1.0))
@@ -55,6 +57,7 @@ class DeterminingDistributionMu(Scene):
         self.play(*[FadeOut(x) for x in (exercise_label, exercise_text, answer_start, answer_body)])
 
     def consider_S1(self):
+        """To keep the initial work simpler, we just consider S(1) instead of S(t)."""
         math_header = MathTex(r"{S(t ) \over S(0)} \sim \exp\left(N(\mu, \sigma^2)\right)",
                               substrings_to_isolate=["t ", r"\mu", r"\sigma^2"],
                               font_size=MATH_SIZE_MEDIUM).to_edge(UP, buff=0.5)
@@ -125,6 +128,7 @@ class DeterminingDistributionMu(Scene):
         return math_header
 
     def exercise_mu(self, S1_header):
+        """Exercise for determining the appropriate mu that avoids upward or downward bias/drift."""
         exercise_label = (Text("Exercise #4:", color=YELLOW, font_size=TEXT_SIZE_MEDIUM)
                           .next_to(S1_header, DOWN, buff=0.5).to_edge(LEFT, buff=0.5))
         exercise_text = Tex(
@@ -345,6 +349,8 @@ class DeterminingDistributionMu(Scene):
 
 
 class DeterminingDistributionSigmaAndSt(Scene):
+    """Discuss the effect of the stocks volatility and derive S(t) from our prior work on S(1)."""
+
     def discuss_sigma(self, S1_header):
         self.wait(1.0)
         self.play(S1_header[-2].animate.set_color(YELLOW))  # highlighting sigma
@@ -356,6 +362,7 @@ class DeterminingDistributionSigmaAndSt(Scene):
         self.wait(1.0)
 
         def create_future_graph_and_text(sigma):
+            """Plotting a simulation of the future stock price to be animated as sigma changes."""
             graph = ax.plot_line_graph(
                 x_values=np.linspace(0.5, 1.0, len(simulated_path)),
                 y_values=simple_stock_simulation(start_price=simulated_path[-1], sigma=sigma, seed=1, T=0.5),
@@ -370,6 +377,7 @@ class DeterminingDistributionSigmaAndSt(Scene):
         self.play(FadeIn(sigma_text), Create(future_graph, rate_func=linear), run_time=1.0)
         self.wait(1.0)
 
+        # intuition here is that 10% is too low for this historical data, 30% is too high, 20% is about right
         future_graph.add_updater(
             lambda g: g.become(create_future_graph_and_text(future_sigma.get_value())[0])
         )

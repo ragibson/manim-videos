@@ -9,6 +9,8 @@ from shared_data_and_functions import TEXT_SIZE_MEDIUM, MATH_SIZE_MEDIUM, black_
 
 
 class BlackScholesVisualization(Scene):
+    """Animate the price distribution and payoff diagram as we sweep each of the variables up and down."""
+
     def __init__(self):
         super().__init__()
 
@@ -220,6 +222,8 @@ class BlackScholesVisualization(Scene):
 
 
 class FinalTakeaways(Scene):
+    """Final high-level takeaways from the video, one is an important one about a broader problem-solving technique."""
+
     def construct(self):
         header = (Text("What We Learned", font_size=TEXT_SIZE_MEDIUM, color=YELLOW)
                   .to_edge(LEFT, buff=1.0).to_edge(UP, buff=0.5))

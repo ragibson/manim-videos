@@ -1,6 +1,5 @@
 # black_scholes_derivation
 
-TODO: more comments throughout the scripts?
 TODO: fix markdown formatting in plaintext-style approximate script
 
 The sequence of scenes here is:

@@ -46,7 +46,15 @@ def create_normal_lognormal_comparison(ax):
 
 
 class DesiredSimulationQualities(Scene):
+    """
+    Lengthy of sequence of animations to try and motivate the qualities we want in a stock price simulation.
+
+    Here, I'm trying to lead the viewer to geometric Brownian motion, though it is presented as a lognormal distribution
+    since we do not discuss any stochastic calculus topics.
+    """
+
     def normal_allows_negative_prices(self, title_text, first_quality_text):
+        """Discuss the problem that a normal distribution would give us negative stock prices."""
         ax = Axes(
             x_range=[-10, 50.1, 10],
             y_range=[0.0, 0.08, 0.02],
@@ -98,6 +106,7 @@ class DesiredSimulationQualities(Scene):
         self.wait(1.0)
 
     def stock_prices_are_on_different_scales(self, second_quality_text):
+        """Motivate that stock price moves should be relative to the current price, not absolute."""
         nvda_image = (ImageMobject("stock_history_examples/NVDA.png").scale(1.25)
                       .to_edge(LEFT, buff=0.5).shift(DOWN * 0.5))
         nvda_price_rectangle = Rectangle(width=1.35, height=0.4, color=YELLOW).move_to((-5.9, 0.7, 0))
@@ -108,6 +117,7 @@ class DesiredSimulationQualities(Scene):
         self.play(Create(nvda_price_rectangle))
         self.wait(1.0)
 
+        # adding in Home Depot to contrast Nvidia since it has a larger stock price but much smaller market cap
         hd_image = (ImageMobject("stock_history_examples/HD.png").scale(1.25)
                     .to_edge(RIGHT, buff=0.5).shift(DOWN * 0.5))
         hd_price_rectangle = Rectangle(width=1.45, height=0.4, color=YELLOW).move_to((1.1, 0.7, 0))
@@ -122,7 +132,7 @@ class DesiredSimulationQualities(Scene):
         self.play(Create(comparison_text))
         self.wait(1.0)
 
-        # moving price boxes over to the returns
+        # moving price boxes over to the returns, motivate the use of relative returns
         self.play(Transform(hd_price_rectangle, hd_return_rectangle),
                   Transform(nvda_price_rectangle, nvda_return_rectangle))
         self.wait(1.0)
@@ -134,6 +144,7 @@ class DesiredSimulationQualities(Scene):
         self.wait(1.0)
 
     def relative_moves_should_compound(self, third_quality_text):
+        """As a consequence of using relative returns, we want the returns to compound / multiply together."""
         # have to split these to get the alignment right
         left_text = VGroup(
             Tex(r"Starting Price:", font_size=MATH_SIZE_MEDIUM),

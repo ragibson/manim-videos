@@ -6,6 +6,11 @@ from shared_data_and_functions import *
 
 
 class WhatIsAStock(Scene):
+    """
+    Explanation of how stocks are small pieces of company ownership, and how that makes them have inherent value. Makes
+    a slight simplification that the company pays profits as dividends to shareholders, but it's a minor nitpick.
+    """
+
     def construct(self):
         display_section_title(self, "What is a stock?")
 
@@ -82,6 +87,8 @@ class WhatIsAStock(Scene):
 
 
 class StockSimulation(Scene):
+    """Explains how a stock price is the middle ground between buyers and sellers, and that it varies over time."""
+
     def construct(self):
         ax = Axes(
             x_range=[0, 1.01, 0.25],
@@ -141,6 +148,8 @@ class StockSimulation(Scene):
 
 
 class WhatIsAnOption(Scene):
+    """Explain a formal definition of an option, show an example, and plot the payoff diagram."""
+
     def written_description(self):
         lines = [
             f'An option is a contract that:',

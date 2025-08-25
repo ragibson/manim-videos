@@ -6,9 +6,12 @@ from shared_data_and_functions import *
 
 
 class GuessingTheFuture(Scene):
+    """First exercise on brainstorming how to find a fair price for an option. Suggests a basic simulation approach."""
+
     def construct(self):
         display_section_title(self, "fair price for an option?")
 
+        # the main difficulty here is that everything depends on unknown future prices
         future_quote = MarkupText(f'"An option is ... '
                                   f'on a specific date <span foreground="{BLUE}">in the future</span>."',
                                   font_size=TEXT_SIZE_MEDIUM).to_edge(UP, buff=0.5)
@@ -59,12 +62,22 @@ class GuessingTheFuture(Scene):
 
 
 class DemonstrateSimulation(Scene):
+    """
+    Plot a large number of simulated paths along with the corresponding histogram of option profits.
+
+    The average profit of the option is then used to suggest a fair price since then neither the buyer nor the seller
+    ends up ahead on average.
+
+    The actual simulation is very intensive in the renderer since it's multiple frames per path in general, plus
+    everything is transparent.
+    """
     _current_seed = 12347
     simulation_paths = []
     simulation_graphs = []
     histogram_counts = [0.0] * 11
 
     def generate_next_path(self, ax):
+        """Generates a path and updates the class bookkeeping for use in the other functions."""
         T = 0.25
         simulated_path = simple_stock_simulation(start_price=300, sigma=0.1, T=T, seed=self._current_seed)
         self._current_seed += 1

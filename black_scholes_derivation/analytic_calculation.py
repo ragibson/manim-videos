@@ -9,6 +9,7 @@ from shared_data_and_functions import *
 
 class AnalyticCalculation(Scene):
     def plot_distribution(self):
+        """Plot out simulated paths and the distribution of final prices to motivate a purely analytical approach."""
         # left: simulated stock prices from before
         stock_S0, stock_sigma, T = 300, 0.1, 0.25
         strike = 320
@@ -71,10 +72,12 @@ class AnalyticCalculation(Scene):
         self.play(Create(distribution_graph, rate_func=linear), run_time=2.0)
         self.wait(1.0)
 
+        # showing a horizontal strike in the simulated paths and a vertical strike in the distribution
         strike_line_right = DashedLine(distribution_ax.c2p(strike, 0.0), distribution_ax.c2p(strike, density_range[1]))
         self.play(Create(strike_line_left, rate_func=linear), Create(strike_line_right, rate_func=linear), run_time=1.0)
         self.wait(1.0)
 
+        # highlighting all paths that end in the money and the corresponding area in the distribution
         profit_path_indices = [i for i, p in enumerate(simulation_paths) if p[-1] >= strike]
         right_pdf_area = distribution_ax.get_area(distribution_graph, x_range=(strike, stock_range[1]), color=GREEN,
                                                   opacity=0.5)
@@ -97,6 +100,7 @@ class AnalyticCalculation(Scene):
         return distribution_form, distribution_group
 
     def display_option_price_formula(self, distribution_group):
+        """Write out the call option price and expand into two terms, an expectation and a probability."""
         math_lines = MathTex(
             r"{{\widetilde{C} &=}} \mathbb{E}\left[S(t)-K \mid S(t) > K\right]\\",
             r"&= \mathbb{E}\left[S(t) \mid S(t) > K\right] {{- K \cdot \mathbb{P}\left[S(t) > K\right]}}",
@@ -110,6 +114,7 @@ class AnalyticCalculation(Scene):
         self.play(*[FadeOut(x) for x in (distribution_group, math_lines)])
 
     def calculate_probability_term(self, distribution_header):
+        """Exercise on computing the probability term, how often does S(t) end above K?"""
         exercise_label = (Text("Exercise #5:", color=YELLOW, font_size=TEXT_SIZE_MEDIUM)
                           .next_to(distribution_header, DOWN, buff=0.3).to_edge(LEFT, buff=1.0))
         exercise_text = Tex(r"Calculate $\mathbb{P}\left[S(t) > K\right]$", font_size=MATH_SIZE_MEDIUM
@@ -169,6 +174,7 @@ class AnalyticCalculation(Scene):
         self.play(*[FadeOut(x) for x in (exercise_label, exercise_text, answer_body[0][:9], answer_body[-2:])])
 
     def calculate_expectation_term(self, distribution_header):
+        """Final exercise on computing the expectation term, average value of S(t) given S(t) > K."""
         exercise_label = (Text("Exercise #6:", color=YELLOW, font_size=TEXT_SIZE_MEDIUM)
                           .next_to(distribution_header, DOWN, buff=0.3).to_edge(LEFT, buff=0.5))
         exercise_text = Tex(r"Calculate $\mathbb{E}\left[S(t) \mid S(t) > K\right]$", font_size=MATH_SIZE_MEDIUM
@@ -275,6 +281,7 @@ class AnalyticCalculation(Scene):
         self.play(*[FadeOut(x) for x in (answer_body[0], answer_body_end)])
 
     def combining_together(self):
+        """Bringing the final two exercises together and simplifying to get something very close to the final form."""
         math_lines = MathTex(
             r"\widetilde{C} &= \mathbb{E}\left[S(t)-K \mid S(t) > K\right]\\",
             r"&= \mathbb{E}\left[S(t) \mid S(t) > K\right] - K \cdot \mathbb{P}\left[S(t) > K\right]\\",
@@ -317,6 +324,7 @@ class AnalyticCalculation(Scene):
         return VGroup(math_lines[0][:2], math_lines[-1]), shorthand
 
     def discuss_discounting(self, previous_formula, previous_footer):
+        """Discuss time value of money and use it to motivate the final discounting piece of Black-Scholes."""
         exp_plot = Axes(
             x_range=[0, 10, 2],
             y_range=[1.00, 1.51, 0.1],

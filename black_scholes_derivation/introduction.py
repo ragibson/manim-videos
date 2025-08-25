@@ -41,8 +41,11 @@ class TweakedIntroText(Scene):
         np.random.seed(0)
         dollar_signs = VGroup([Text("$", font_size=TEXT_SIZE_SMALL, color=GREEN, fill_opacity=0.4
                                     ).move_to([np.random.uniform(*xbounds), np.random.uniform(*ybounds), 0])
-                               for xbounds, ybounds in  # 10 on top, 3 on bottom left, 3 on bottom right
-                               [((-7, 7), (0.5, 3))] * 10 + [((-7, -6.5), (-4, -1))] * 3 + [((6.5, 7), (-4, -1))] * 3])
+                               # disgusting comprehension: 10 on top, 3 on bottom left, 3 on bottom right, 1 more on top
+                               for xbounds, ybounds in ([((-7, 7), (0.5, 3))] * 10
+                                                        + [((-7, -6.5), (-4, -1))] * 3
+                                                        + [((6.5, 7), (-4, -1))] * 3
+                                                        + [((-4, -3), (0.5, 1.5))])])
         dollar_animations = [dollar.animate(run_time=12.0, rate_func=linear)
                              .move_to(dollar.get_center() + np.array([np.random.uniform(-0.5, 0.5), 1.5, 0]))
                              .set_opacity(0) for dollar in dollar_signs]
@@ -60,6 +63,8 @@ class TweakedIntroText(Scene):
 
 
 class BlackScholesIntroduction(Scene):
+    """Introduce authors, mention the Nobel Prize, and plot the explosion of options trading activity."""
+
     def play_BSM_title(self):
         title = Text("1973: Black-Scholes-Merton Formula for Pricing Options", font_size=TEXT_SIZE_MEDIUM,
                      t2c={"1973": YELLOW})
@@ -133,7 +138,7 @@ class BlackScholesIntroduction(Scene):
         )
 
         self.play(
-            Write(y_label),  # using this as kind of a slide header
+            Write(y_label),  # using this "Average Daily Trading Volume" as kind of a slide header
             nobel_image.animate.shift(LEFT * 1.0),
             Create(axes, run_time=2.0), Write(x_label),
             Create(graph, run_time=2.0, rate_func=linear)
@@ -150,6 +155,11 @@ class BlackScholesIntroduction(Scene):
 
 
 class BlackScholesTraditionalDerivation(Scene):
+    """
+    Mention that we'll only be using basic probability and statistics while the traditional derivation includes a list
+    of more complex topics.
+    """
+
     def construct(self):
         title = Text("Traditional Derivation is Complicated!", font_size=TEXT_SIZE_MEDIUM, t2c={"Complicated!": RED})
         title.to_edge(UP)
@@ -212,6 +222,8 @@ class BlackScholesTraditionalDerivation(Scene):
 
 
 class LookingAhead(Scene):
+    """Table of contents for the video, with a mention of the exercise (with hints and solutions) structure."""
+
     def construct(self):
         title = Text('Looking Ahead: "Pricing an Option"', font_size=TEXT_SIZE_MEDIUM,
                      t2c={'"Pricing an Option"': BLUE})
@@ -219,7 +231,7 @@ class LookingAhead(Scene):
         self.play(Write(title))
         self.wait(0.5)
 
-        # bullet points of topics
+        # bullet points of topics sourced from shared_data_and_functions.py
         topics = VGroup(  # probably could've used BulletedList here
             Text(f"• {t}", font_size=TEXT_SIZE_MEDIUM, t2c={h: YELLOW}) for t, h in zip(TITLES, TITLE_HIGHLIGHTS)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.5)
