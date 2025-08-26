@@ -1,5 +1,10 @@
 # black_scholes_derivation
 
+This is the source code for a video explaining the Nobel Prize-winning Black-Scholes formula for a general
+audience, ["Can You Price Options with Just Basic Statistics? A Simple Black-Scholes Pricing Derivation"](https://www.youtube.com/watch?v=aRYJ5U0Bjc8)
+
+Some thoughts on this project are available at https://ryanagibson.com/posts/some4-submission/.
+
 The sequence of scenes here is:
 
 * [introduction.py](introduction.py): Introduce authors, Nobel Prize, and options market growth. Then, allude to the
