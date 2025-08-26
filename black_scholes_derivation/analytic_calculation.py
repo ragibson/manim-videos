@@ -411,7 +411,7 @@ class AnalyticCalculation(Scene):
             r"\text{where } d_+ = "
             r"{ \ln\left(S(0) \over ",
             r"D \cdot K",
-            r"\right) - {\sigma^2 \over 2} \cdot t \over \sigma \cdot \sqrt{t} }, "
+            r"\right) + {\sigma^2 \over 2} \cdot t \over \sigma \cdot \sqrt{t} }, "
             r"\hspace{0.5em}"
             r"d_- = d_+ - \sigma \cdot \sqrt{t}, \hspace{0.5em} D = e^{-rt}", font_size=MATH_SIZE_SMALL
         ).move_to(extended_footer, LEFT)
