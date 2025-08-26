@@ -569,7 +569,7 @@ this normal part exceeds log(K / S(0)).
 We want to use the standard normal CDF, so let's normalize it piece by piece. We can move the mean over to the right
 side.
 
-And then divide through by the variance to get this into the form of a standard normal.
+And then divide through by the standard deviation to get this into the form of a standard normal.
 
 The CDF gives the probability of the left tail, so our right tail probability is just 1 minus the CDF of this larger
 expression that we've created.
