@@ -24,8 +24,8 @@ The sequence of scenes here is:
   diagram as we sweep each of the variables up and down. The section closes with a simple list of high-level takeaways
   from the entire discussion.
 
-[frozen_requirements.txt](requirements.txt) lists the exact package versions installed as Manim dependencies at the time
-of the render.
+[frozen_requirements.txt](frozen_requirements.txt) lists the exact package versions installed as Manim dependencies at
+the time of the render.
 
 [licensed_images/README.md](licensed_images/README.md) describes the specific licenses for the author and Nobel Prize
 images used at the very start of the video.
